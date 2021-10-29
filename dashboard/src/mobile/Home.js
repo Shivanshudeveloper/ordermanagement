@@ -79,7 +79,7 @@ const Home = () => {
                 <DialogContent>
                     <section>
                         <center>
-                            <img style={{ width: '100%', borderRadius: '10px' }} src="https://wallpapercave.com/wp/wp1987065.jpg" />
+                            <img alt="" style={{ width: '100%', borderRadius: '10px' }} src="https://wallpapercave.com/wp/wp1987065.jpg" />
                         </center>
 
                         <h4 style={{ marginTop: '10px', color: 'green' }}>

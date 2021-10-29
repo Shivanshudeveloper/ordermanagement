@@ -6,12 +6,12 @@ import CustomerList from './pages/CustomerList';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
-import ProductList from './pages/ProductList';
+import Menu from './pages/Menu';
 import Register from './pages/Register';
 import Settings from './pages/Settings';
 import Orders from './pages/Orders';
 import Reports from './pages/Reports';
-
+import Categories from './pages/Categories'
 // Mobile
 import HomeMobile from './mobile/Home';
 
@@ -27,7 +27,8 @@ const routes = [
       { path: 'orders', element: <Orders /> },
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'reports', element: <Reports /> },
-      { path: 'products', element: <ProductList /> },
+      { path: 'Menu', element: <Menu /> },
+      { path: 'categories', element: <Categories /> },
       { path: 'settings', element: <Settings /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]

@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const CategoriesRouter=require('./categories/CategoriesRouter');
+const MenuRouter=require("../routes/Menu/MenuRouter");
 const { v4: uuidv4 } = require("uuid");
 // Getting Module
 const Products_Model = require("../models/Products");
@@ -88,8 +90,7 @@ router.get("/getallproductsapifilters/:filter", (req, res) => {
     })
     .catch((err) => res.status(400).json(`Error: ${err}`));
 });
-
-
-
+router.use('/',CategoriesRouter);
+router.use('/menu',MenuRouter);
 
 module.exports = router;

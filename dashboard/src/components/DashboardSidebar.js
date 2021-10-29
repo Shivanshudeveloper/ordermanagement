@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import FastfoodIcon from '@material-ui/icons/Fastfood';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
+import CategoryIcon from '@material-ui/icons/Category';
 import {
   AlertCircle as AlertCircleIcon,
   BarChart as BarChartIcon,
@@ -27,7 +28,7 @@ import NavItem from './NavItem';
 
 
 const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
+  avatar: '',
   jobTitle: '',
   name: 'Katarina Smith'
 };
@@ -49,7 +50,7 @@ const items = [
     title: 'Customers'
   },
   {
-    href: '/app/products',
+    href: '/app/menu',
     icon: ShoppingBagIcon,
     title: 'Menu'
   },
@@ -57,6 +58,11 @@ const items = [
     href: '/app/orders',
     icon: FastfoodIcon,
     title: 'Orders'
+  },
+  {
+    href: '/app/categories',
+    icon: CategoryIcon,
+    title: 'categories'
   },
   {
     href: '/app/account',
