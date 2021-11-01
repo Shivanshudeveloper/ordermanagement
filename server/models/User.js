@@ -1,37 +1,22 @@
 const mongoose = require("mongoose");
 
 const userDataSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  clientFor: {
+  username: {
     type: String,
     required: true,
   },
   email: {
     type: String,
-    required: true,
-  },
-  location: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: String,
-    required: true,
-  },
-  regDate: {
-    type: Date,
+    unique:true,
     required: true,
   },
   description: {
     type: String,
     required: false,
   },
-  image: {
-    type: String,
-    required: true,
+  restaurantName:{
+    type:String,
+    required:true
   },
   date: {
     type: Date,

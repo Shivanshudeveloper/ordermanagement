@@ -1,11 +1,12 @@
 const Categories_Model = require("../../models/Categories");
 
 module.exports.addcategory = async (req, res) => {
-  const { category } = req.body;
+  const { category ,restaurantName,email} = req.body;
   try {
     const categories = new Categories_Model({
-      category,
+      category,email,restaurantName
     });
+
     await categories.save();
     res.status(200).send(categories);
   } catch (err) {
@@ -15,8 +16,10 @@ module.exports.addcategory = async (req, res) => {
 };
 
 module.exports.getcategories = async (req, res) => {
+
   try {
-    const data = await Categories_Model.find({});
+    const data = await Categories_Model.find({email:req.params.email});
+
     res.status(200).json(data);
   } catch (err) {
     res.status(400).json(`Error: ${err}`);

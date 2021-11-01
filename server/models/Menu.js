@@ -15,7 +15,23 @@ const MenuSchema = new mongoose.Schema({
     price:{
         type: String,
         required: true 
-    }
+    },
+    userID:{
+        type:String,
+        required:false,
+        unique:true
+    },
+    email:{
+        type:String,
+        required:true,
+        unique:true
+    },
+    restaurantName:{
+        type:String,
+        required:true
+      }
+
+    //email name
     
 })
 const Menu = mongoose.model('Menu', MenuSchema)

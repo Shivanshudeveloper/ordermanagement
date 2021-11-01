@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -25,12 +25,12 @@ import {
   Users as UsersIcon
 } from 'react-feather';
 import NavItem from './NavItem';
-
-
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react';
 const user = {
   avatar: '',
   jobTitle: '',
-  name: 'Katarina Smith'
+  name: ''
 };
 
 const items = [
@@ -68,17 +68,41 @@ const items = [
     href: '/app/account',
     icon: UserIcon,
     title: 'Account'
-  },
-  {
-    href: '/app/settings',
-    icon: SettingsIcon,
-    title: 'Settings'
   }
 ];
 
 const DashboardSidebar = ({ onMobileClose, openMobile }) => {
   const location = useLocation();
+  const [restaurantName,setRestaurantName]=useState("");
+  const [User, setUser] = useState({ displayName: '', photoURL: '' });
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(user);
 
+        setUser(user);
+      } else {
+        // ...
+      }
+    });
+  }, []);
+  useEffect(()=>{
+    const get = async () => {
+      try {
+        const rawResponse = await fetch(
+          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+        );
+        const content = await rawResponse.json();
+       console.log(content);
+        setRestaurantName(content[0].restaurantName);
+      
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    get();
+  },[User])
   useEffect(() => {
     if (openMobile && onMobileClose) {
       onMobileClose();
@@ -103,7 +127,7 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
       >
         <Avatar
           component={RouterLink}
-          src={user.avatar}
+          src={User.photoURL}
           sx={{
             cursor: 'pointer',
             width: 64,
@@ -111,17 +135,11 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
           }}
           to="/app/account"
         />
-        <Typography
-          color="textPrimary"
-          variant="h5"
-        >
-          {user.name}
+        <Typography color="textPrimary" variant="h5">
+          {User.displayName}    
         </Typography>
-        <Typography
-          color="textSecondary"
-          variant="body2"
-        >
-          {user.jobTitle}
+        <Typography color="textPrimary" variant="h5">
+        {restaurantName}
         </Typography>
       </Box>
       <Divider />

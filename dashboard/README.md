@@ -28,8 +28,6 @@ We also have a pro version of this product which bundles even more pages and com
 - [Register Page](https://material-kit-react.devias.io/register)
 - [Login Page](https://material-kit-react.devias.io/login)
 - [Account Page](https://material-kit-react.devias.io/app/account)
-- [Settings Page](https://material-kit-react.devias.io/app/settings)
-
 
 ## Quick start
 

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const CategoriesRouter=require('./categories/CategoriesRouter');
 const MenuRouter=require("../routes/Menu/MenuRouter");
+const UserRouter=require("../routes/User/UserRouter");
 const { v4: uuidv4 } = require("uuid");
 // Getting Module
 const Products_Model = require("../models/Products");
@@ -92,5 +93,5 @@ router.get("/getallproductsapifilters/:filter", (req, res) => {
 });
 router.use('/',CategoriesRouter);
 router.use('/menu',MenuRouter);
-
+router.use('/user',UserRouter)
 module.exports = router;

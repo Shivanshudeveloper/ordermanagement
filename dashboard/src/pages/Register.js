@@ -1,7 +1,7 @@
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
-import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import * as Yup from "yup";
+import { Formik } from "formik";
 import {
   Box,
   Button,
@@ -10,12 +10,46 @@ import {
   FormHelperText,
   Link,
   TextField,
-  Typography
-} from '@material-ui/core';
+  Typography,
+} from "@material-ui/core";
+import { auth } from "../Firebase/index";
 
 const Register = () => {
   const navigate = useNavigate();
 
+  const register = (values, { setErrors, setSubmitting }) => {
+    const { firstName, lastName, password, email, restaurantName } = values;
+    const name = `${firstName} ${lastName}`;
+    fetch("http://localhost:5000/api/v1/main/user/register", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: name,
+        email: email,
+        restaurantName: restaurantName,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => console.log(res));
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((results) => {
+        const { user } = results;
+
+        user.updateProfile({
+          displayName: name,
+        });
+        console.log(user);
+        navigate("/login", { replace: true });
+      })
+      .catch((err) => {
+        setSubmitting(false);
+        setErrors({ password: err.message.replace("Firebase:", "") });
+      });
+  };
   return (
     <>
       <Helmet>
@@ -23,34 +57,39 @@ const Register = () => {
       </Helmet>
       <Box
         sx={{
-          backgroundColor: 'background.default',
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          justifyContent: 'center'
+          backgroundColor: "background.default",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          justifyContent: "center",
         }}
       >
         <Container maxWidth="sm">
           <Formik
             initialValues={{
-              email: '',
-              firstName: '',
-              lastName: '',
-              password: '',
-              policy: false
+              email: "",
+              firstName: "",
+              lastName: "",
+              password: "",
+              restaurantName: "",
+              policy: false,
             }}
-            validationSchema={
-            Yup.object().shape({
-              email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-              firstName: Yup.string().max(255).required('First name is required'),
-              lastName: Yup.string().max(255).required('Last name is required'),
-              password: Yup.string().max(255).required('password is required'),
-              policy: Yup.boolean().oneOf([true], 'This field must be checked')
-            })
-          }
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
-            }}
+            validationSchema={Yup.object().shape({
+              email: Yup.string()
+                .email("Must be a valid email")
+                .max(255)
+                .required("Email is required"),
+              firstName: Yup.string()
+                .max(255)
+                .required("First name is required"),
+              lastName: Yup.string().max(255).required("Last name is required"),
+              password: Yup.string().max(255).required("password is required"),
+              restaurantName: Yup.string()
+                .max(255)
+                .required("password is required"),
+              policy: Yup.boolean().oneOf([true], "This field must be checked"),
+            })}
+            onSubmit={register}
           >
             {({
               errors,
@@ -59,14 +98,11 @@ const Register = () => {
               handleSubmit,
               isSubmitting,
               touched,
-              values
+              values,
             }) => (
               <form onSubmit={handleSubmit}>
                 <Box sx={{ mb: 3 }}>
-                  <Typography
-                    color="textPrimary"
-                    variant="h2"
-                  >
+                  <Typography color="textPrimary" variant="h2">
                     Create new account
                   </Typography>
                   <Typography
@@ -102,6 +138,20 @@ const Register = () => {
                   variant="outlined"
                 />
                 <TextField
+                  error={Boolean(
+                    touched.restaurantName && errors.restaurantName
+                  )}
+                  fullWidth
+                  helperText={touched.restaurantName && errors.restaurantName}
+                  label="restaurant Name"
+                  margin="normal"
+                  name="restaurantName"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.restaurantName}
+                  variant="outlined"
+                />
+                <TextField
                   error={Boolean(touched.email && errors.email)}
                   fullWidth
                   helperText={touched.email && errors.email}
@@ -129,9 +179,9 @@ const Register = () => {
                 />
                 <Box
                   sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    ml: -1
+                    alignItems: "center",
+                    display: "flex",
+                    ml: -1,
                   }}
                 >
                   <Checkbox
@@ -139,12 +189,8 @@ const Register = () => {
                     name="policy"
                     onChange={handleChange}
                   />
-                  <Typography
-                    color="textSecondary"
-                    variant="body1"
-                  >
-                    I have read the
-                    {' '}
+                  <Typography color="textSecondary" variant="body1">
+                    I have read the{" "}
                     <Link
                       color="primary"
                       component={RouterLink}
@@ -157,9 +203,7 @@ const Register = () => {
                   </Typography>
                 </Box>
                 {Boolean(touched.policy && errors.policy) && (
-                <FormHelperText error>
-                  {errors.policy}
-                </FormHelperText>
+                  <FormHelperText error>{errors.policy}</FormHelperText>
                 )}
                 <Box sx={{ py: 2 }}>
                   <Button
@@ -173,13 +217,14 @@ const Register = () => {
                     Sign up now
                   </Button>
                 </Box>
-                <Typography
-                  color="textSecondary"
-                  variant="body1"
-                >
-                  Have an account?
-                  {' '}
-                  <Link component={RouterLink} to="/login" variant="h6" underline="hover">
+                <Typography color="textSecondary" variant="body1">
+                  Have an account?{" "}
+                  <Link
+                    component={RouterLink}
+                    to="/login"
+                    variant="h6"
+                    underline="hover"
+                  >
                     Sign in
                   </Link>
                 </Typography>

@@ -49,5 +49,6 @@ const MenuList = (props) => {
 
 MenuList.propTypes = {
   menuList: PropTypes.array,
+
 };
 export default MenuList;

@@ -13,8 +13,12 @@ module.exports.addmenu = async (req, res) => {
 };
 
 module.exports.getmenu = async (req, res) => {
+  const {email}=req.params;
+  
+  
   try {
-    const data = await Menu_Model.find({});
+    const data = await Menu_Model.find({email:email});
+
     res.status(200).json(data);
   } catch (err) {
     res.status(400).json(`Error: ${err}`);

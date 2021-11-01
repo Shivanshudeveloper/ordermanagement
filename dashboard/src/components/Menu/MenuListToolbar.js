@@ -15,7 +15,7 @@ import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 const MenuListToolbar = (props) => {
-  const { handleClickOpen, handleClose, setMenuListHandler, open } = props;
+  const { handleClickOpen, handleClose, setMenuListHandler, open ,User,restaurantName} = props;
   const [menu, setMenu] = useState({
     item: "",
     price: null,
@@ -31,8 +31,9 @@ const MenuListToolbar = (props) => {
     const getCategories = async () => {
       if (categories.length !== 0) return;
       try {
+
         const rawResponse = await fetch(
-          "http://localhost:5000/api/v1/main/getcategories"
+          `http://localhost:5000/api/v1/main/getcategories/${User.email}`
         );
         const content = await rawResponse.json();
 
@@ -41,8 +42,9 @@ const MenuListToolbar = (props) => {
         console.log(err);
       }
     };
+
     getCategories();
-  }, []);
+  }, [User]);
 
   return (
     <>
@@ -116,7 +118,7 @@ const MenuListToolbar = (props) => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={()=>{setMenuListHandler(menu); handleClose(menu);}}>Add</Button>
+            <Button onClick={()=>{setMenuListHandler({...menu,email:User.email,restaurantName:restaurantName,userID:User.uid}); handleClose({...menu,email:User.email,restaurantName:restaurantName,userID:User.uid});}}>Add</Button>
           </DialogActions>
         </Dialog>
       </Box>
@@ -129,5 +131,7 @@ MenuListToolbar.propTypes = {
   setCategoryHandler: PropTypes.func,
   open: PropTypes.bool,
   categories: PropTypes.array,
+  User:PropTypes.object,
+  restaurantName:PropTypes.any
 };
 export default MenuListToolbar;
