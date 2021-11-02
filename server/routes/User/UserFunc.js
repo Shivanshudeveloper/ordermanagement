@@ -10,9 +10,9 @@ module.exports.adduser = async (req, res) => {
   }
 };
 module.exports.getuser = async (req, res) => {
-const {email}=req.params;
+  const { email } = req.params;
   try {
-    const user =  await User_Model.find({email:email});
+    const user = await User_Model.find({ email: email });
 
     res.status(200).send(user);
   } catch (err) {
@@ -21,13 +21,42 @@ const {email}=req.params;
   }
 };
 
-module.exports.setlayout=(req,res)=>{
-  const {email,grid}=req.body;
-  console.log(grid);
-  User_Model.findOneAndUpdate({email:email}, {layout:grid}, { runValidators: true }, function(err, doc) {
-    if (err) return res.send(500, {error: err});
-    return res.send(doc);
-});
-}
+module.exports.setlayout = (req, res) => {
+  const { email, grid } = req.body;
 
+  User_Model.findOneAndUpdate(
+    { email: email },
+    { layout: grid },
+    { runValidators: true },
+    function (err, doc) {
+      if (err) return res.send(500, { error: err });
+      return res.send(doc);
+    }
+  );
+};
+module.exports.updaterestaurantName = (req, res) => {
+  const { email, restaurantName } = req.body;
+  User_Model.findOneAndUpdate(
+    { email: email },
+    { restaurantName: restaurantName },
+    { runValidators: true },
+    function (err, doc) {
+      if (err) return res.send(500, { error: err });
+      return res.send(doc);
+    }
+  );
+};
 
+module.exports.updatelogo = async (req, res) => {
+  const { email, logo } = req.body;
+
+  User_Model.findOneAndUpdate(
+    { email: email },
+    { logo: logo },
+    { runValidators: true },
+    function (err, doc) {
+      if (err) return res.send(500, { error: err });
+      return res.send(doc);
+    }
+  );
+};

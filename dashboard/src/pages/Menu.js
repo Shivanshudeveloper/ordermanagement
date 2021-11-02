@@ -20,11 +20,10 @@ const Menu = () => {
   };
   useEffect(() => {
     const get = async () => {
-      const us=await getUser();
+      const us = await getUser();
       setUser(us);
     };
-  if(User===null)
-    get();
+    if (User === null) get();
   }, []);
   const handleClose = (men) => {
     setOpen(false);
@@ -110,9 +109,7 @@ const Menu = () => {
           />
           <Grid container spacing={3}>
             <Grid item lg={12} md={12} xl={12} xs={12}>
-              <MenuList
-                menuList={menuList}
-              />
+              <MenuList menuList={menuList} />
             </Grid>
           </Grid>
         </Container>

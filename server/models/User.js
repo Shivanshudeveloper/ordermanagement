@@ -7,20 +7,24 @@ const userDataSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    unique:true,
+    unique: true,
     required: true,
   },
   description: {
     type: String,
     required: false,
   },
-  restaurantName:{
-    type:String,
-    required:true
+  restaurantName: {
+    type: String,
+    required: true,
   },
-  layout:{
-    type:Boolean,
-    default:true
+  layout: {
+    type: Boolean,
+    default: true,
+  },
+  logo: {
+    type: String,
+    default: "",
   },
   date: {
     type: Date,

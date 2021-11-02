@@ -40,14 +40,20 @@ export default function CheckboxList() {
         const labelId = `checkbox-list-label-${value}`;
 
         return (
-          <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
+          <ListItem
+            key={value}
+            role={undefined}
+            dense
+            button
+            onClick={handleToggle(value)}
+          >
             <ListItemIcon>
               <Checkbox
                 edge="start"
                 checked={checked.indexOf(value) !== -1}
                 tabIndex={-1}
                 disableRipple
-                inputProps={{ 'aria-labelledby': labelId }}
+                inputProps={{ "aria-labelledby": labelId }}
               />
             </ListItemIcon>
             <ListItemText id={labelId} primary={`Add Cheese ${value + 1}`} />

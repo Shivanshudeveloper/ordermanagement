@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import {
-  getAuth, updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider
+  getAuth, updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider,onAuthStateChanged
 } from 'firebase/auth';
 import { useNavigate } from 'react-router';
 
@@ -31,15 +31,70 @@ const AccountProfileDetails = (props) => {
   const [oldPassword, setOldPassword] = useState('');
   const [oldEmail, setoldEmail] = useState('');
   const [val, setVal] = useState({ values: null, setSubmitting: null });
+  const [User,setUser]=useState("");
   const [notify, setNotify] = useState({ success: false, message: '' });
+  const [RestaurantName,setRestaurantName]=useState('');
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(user);
 
+        setUser(user);
+      } else {
+        // ...
+      }
+    });
+  }, []);
+  const updaterestaurantName=async(restaurantName)=>{
+    try{
+      const rawres=await fetch(
+       `http://localhost:5000/api/v1/main/user/updaterestaurantName`,    {
+         method: "PATCH",
+         headers: {
+           Accept: "application/json",
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({restaurantName:restaurantName,email:User.email}),
+       }
+     );
+     const content=await rawres.json();
+     setRestaurantName(content[0].restaurantName);
+     setNotify({ success: true, message: 'Restaurant Name  updated' });
+     
+   }catch(err){
+
+     console.log(err);
+   }
+  }
+  useEffect(()=>{
+    const get = async () => {
+      try {
+        const rawResponse = await fetch(
+          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+        );
+        const content = await rawResponse.json();
+       console.log(content);
+        setRestaurantName(content[0].restaurantName);
+       
+      } catch (err) {
+    
+        console.log(err);
+      }
+    };
+    get();
+  },[User])
   const saveProfile = () => {
     const { values, setSubmitting } = val;
     if (showDialog.isCancel === true) { setSubmitting(false); return; }
     const {
-      firstName, lastName, email, password
+      firstName, lastName, email, password,restaurantName
     } = values;
     const auth = getAuth();
+    if(restaurantName!=='' && restaurantName!==RestaurantName){
+      updaterestaurantName(restaurantName);
+      setSubmitting(false);
+  }
     if (`${firstName} ${lastName}` !== user.displayName) {
       updateProfile(auth.currentUser, {
         displayName: `${firstName} ${lastName}`
@@ -85,6 +140,7 @@ const AccountProfileDetails = (props) => {
         setNotify({ success: false, message: error.message.replace('Firebase:', '') });
       });
     }
+
     setSubmitting(false);
   };
   const handleClickOpen = (values, { setSubmitting }) => {
@@ -110,7 +166,8 @@ const AccountProfileDetails = (props) => {
             firstName: (user.displayName).split(' ')[0],
             lastName: (user.displayName).split(' ')[1],
             email: user.email,
-            password: ''
+            password: '',
+            restaurantName:RestaurantName
           }}
           enableReinitialize
           validationSchema={Yup.object().shape({
@@ -121,7 +178,8 @@ const AccountProfileDetails = (props) => {
             firstName: Yup.string()
               .max(255)
               .required('First name is required'),
-            lastName: Yup.string().max(255).required('Last name is required')
+            lastName: Yup.string().max(255).required('Last name is required'),
+            restaurantName:Yup.string().max(255).required('is required')
           })}
           onSubmit={
             handleClickOpen
@@ -204,6 +262,25 @@ const AccountProfileDetails = (props) => {
                         onChange={handleChange}
                         required
                         value={values.email}
+                        variant="outlined"
+                        onBlur={handleBlur}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      md={6}
+                      xs={12}
+                    >
+                      <TextField
+                        error={Boolean(touched.restaurantName && errors.restaurantName)}
+                        fullWidth
+                        helperText={touched.restaurantName && errors.restaurantName}
+                        label="restaurantName"
+                        name="restaurantName"
+                        
+                        onChange={handleChange}
+                        required
+                        value={values.restaurantName}
                         variant="outlined"
                         onBlur={handleBlur}
                       />
