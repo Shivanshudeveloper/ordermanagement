@@ -14,6 +14,7 @@ import {
 import FastfoodIcon from '@material-ui/icons/Fastfood';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import CategoryIcon from '@material-ui/icons/Category';
+import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
 import {
   AlertCircle as AlertCircleIcon,
   BarChart as BarChartIcon,
@@ -63,6 +64,11 @@ const items = [
     href: '/app/categories',
     icon: CategoryIcon,
     title: 'categories'
+  },
+  {
+    href: '/app/templates',
+    icon: ChangeHistoryIcon,
+    title: 'templates'
   },
   {
     href: '/app/account',

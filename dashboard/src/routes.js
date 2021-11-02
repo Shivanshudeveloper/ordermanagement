@@ -14,6 +14,7 @@ import Reports from './pages/Reports';
 import Categories from './pages/Categories'
 // Mobile
 import HomeMobile from './mobile/Home';
+import Templates from './pages/Templates';
 
 
 
@@ -27,6 +28,7 @@ const routes = [
       { path: 'orders', element: <Orders /> },
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'reports', element: <Reports /> },
+      { path: 'templates', element:<Templates /> },
       { path: 'Menu', element: <Menu /> },
       { path: 'categories', element: <Categories /> },
       { path: '*', element: <Navigate to="/404" /> }
@@ -46,7 +48,7 @@ const routes = [
   {
     path: 'mobile',
     children: [
-      { path: '/', element: <HomeMobile /> },
+      { path: '/', element:<HomeMobile />},
     ]
   }
 ];

@@ -7,7 +7,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Header from './components/Header';
-import Radio from '@material-ui/core/Radio';
+
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -15,9 +15,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Slide from '@material-ui/core/Slide';
 
-
 import List from './components/List';
-
+import getUser from '../Firebase/getUser';
+import { useEffect ,useState} from 'react';
 const useStyles = makeStyles((theme) => ({
     root: {
       padding: '2px 4px',
@@ -46,14 +46,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
+
+
 const Home = () => {
     const classes = useStyles();
-
-    const [selectedValue, setSelectedValue] = React.useState(6);
-
-    const handleChange = (event) => {
-        setSelectedValue(Number(event.target.value));
-    };
+    const [User,setUser]=useState(null);
+    const [dbUser,setdbUser]=useState(null);
+   
 
     const [open, setOpen] = React.useState(false);
 
@@ -64,6 +63,30 @@ const Home = () => {
     const handleClose = () => {
         setOpen(false);
     };
+    useEffect(() => {
+        const get = async () => {
+          setUser(await getUser());
+        };
+    if(User===null)
+        get();
+      }, []);
+    useEffect(() => {
+        const get = async () => {
+            try {
+              const rawResponse = await fetch(
+                `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+              );
+              const content = await rawResponse.json();
+      
+              setdbUser(content[0]);
+              console.log(content);
+            } catch (err) {
+              console.log(err);
+            }
+          };
+
+        get();
+      }, [User]);
 
     return (
         <>
@@ -117,29 +140,16 @@ const Home = () => {
                         <SearchIcon />
                     </IconButton>
                 </Paper>
-                <Radio
-                    checked={selectedValue === 6}
-                    onChange={handleChange}
-                    value="6"
-                    name="radio-button-demo"
-                    inputProps={{ 'aria-label': 'A' }}
-                />
-                <Radio
-                    checked={selectedValue === 12}
-                    onChange={handleChange}
-                    value="12"
-                    name="radio-button-demo"
-                    inputProps={{ 'aria-label': 'B' }}
-                />
+          
 
                 <h4 style={{ marginTop: '10px', marginBottom: '10px' }}>
                     Restaurent Items
                 </h4>
                 <Grid container spacing={3}>
-                    <Grid item xs={selectedValue}>
+                    <Grid item xs={dbUser===null?6:dbUser.layout?6:12}>
                         <Paper onClick={handleClickOpen} className={classes.paper}>
                             <center>
-                                <img src="https://img.icons8.com/color/48/000000/hamburger.png"/>
+                                <img alt="" src="https://img.icons8.com/color/48/000000/hamburger.png"/>
                             </center>
                             <h4 style={{ marginTop: '10px' }}>
                                 Cheese Burger
@@ -150,7 +160,63 @@ const Home = () => {
                             </h5>
                         </Paper>
                     </Grid>
-                    <Grid item xs={selectedValue}>
+                    <Grid item xs={dbUser===null?6:dbUser.layout?6:12}>
+                        <Paper className={classes.paper}>
+                            <center>
+                                <img alt="" src="https://img.icons8.com/color/48/000000/hamburger.png"/>
+                            </center>
+                            <h4 style={{ marginTop: '10px' }}>
+                                Cheese Burger
+                            </h4>
+                            <small style={{ marginTop: '6px' }}>Double Veg</small>
+                            <h5 style={{ color: 'red' }}>
+                                RM 12.58
+                            </h5>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={dbUser===null?6:dbUser.layout?6:12}>
+                        <Paper className={classes.paper}>
+                            <center>
+                                <img alt="" src="https://img.icons8.com/color/48/000000/hamburger.png"/>
+                            </center>
+                            <h4 style={{ marginTop: '10px' }}>
+                                Cheese Burger
+                            </h4>
+                            <small style={{ marginTop: '6px' }}>Double Veg</small>
+                            <h5 style={{ color: 'red' }}>
+                                RM 12.58
+                            </h5>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={dbUser===null?6:dbUser.layout?6:12}>
+                        <Paper className={classes.paper}>
+                            <center>
+                                <img alt="" src="https://img.icons8.com/color/48/000000/hamburger.png"/>
+                            </center>
+                            <h4 style={{ marginTop: '10px' }}>
+                                Cheese Burger
+                            </h4>
+                            <small style={{ marginTop: '6px' }}>Double Veg</small>
+                            <h5 style={{ color: 'red' }}>
+                                RM 12.58
+                            </h5>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={dbUser===null?6:dbUser.layout?6:12}>
+                        <Paper className={classes.paper}>
+                            <center>
+                                <img alt="" src="https://img.icons8.com/color/48/000000/hamburger.png"/>
+                            </center>
+                            <h4 style={{ marginTop: '10px' }}>
+                                Cheese Burger
+                            </h4>
+                            <small style={{ marginTop: '6px' }}>Double Veg</small>
+                            <h5 style={{ color: 'red' }}>
+                                RM 12.58
+                            </h5>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={dbUser===null?6:dbUser.layout?6:12}>
                         <Paper className={classes.paper}>
                             <center>
                                 <img src="https://img.icons8.com/color/48/000000/hamburger.png"/>
@@ -164,7 +230,7 @@ const Home = () => {
                             </h5>
                         </Paper>
                     </Grid>
-                    <Grid item xs={selectedValue}>
+                    <Grid item xs={dbUser===null?6:dbUser.layout?6:12}>
                         <Paper className={classes.paper}>
                             <center>
                                 <img src="https://img.icons8.com/color/48/000000/hamburger.png"/>
@@ -178,63 +244,7 @@ const Home = () => {
                             </h5>
                         </Paper>
                     </Grid>
-                    <Grid item xs={selectedValue}>
-                        <Paper className={classes.paper}>
-                            <center>
-                                <img src="https://img.icons8.com/color/48/000000/hamburger.png"/>
-                            </center>
-                            <h4 style={{ marginTop: '10px' }}>
-                                Cheese Burger
-                            </h4>
-                            <small style={{ marginTop: '6px' }}>Double Veg</small>
-                            <h5 style={{ color: 'red' }}>
-                                RM 12.58
-                            </h5>
-                        </Paper>
-                    </Grid>
-                    <Grid item xs={selectedValue}>
-                        <Paper className={classes.paper}>
-                            <center>
-                                <img src="https://img.icons8.com/color/48/000000/hamburger.png"/>
-                            </center>
-                            <h4 style={{ marginTop: '10px' }}>
-                                Cheese Burger
-                            </h4>
-                            <small style={{ marginTop: '6px' }}>Double Veg</small>
-                            <h5 style={{ color: 'red' }}>
-                                RM 12.58
-                            </h5>
-                        </Paper>
-                    </Grid>
-                    <Grid item xs={selectedValue}>
-                        <Paper className={classes.paper}>
-                            <center>
-                                <img src="https://img.icons8.com/color/48/000000/hamburger.png"/>
-                            </center>
-                            <h4 style={{ marginTop: '10px' }}>
-                                Cheese Burger
-                            </h4>
-                            <small style={{ marginTop: '6px' }}>Double Veg</small>
-                            <h5 style={{ color: 'red' }}>
-                                RM 12.58
-                            </h5>
-                        </Paper>
-                    </Grid>
-                    <Grid item xs={selectedValue}>
-                        <Paper className={classes.paper}>
-                            <center>
-                                <img src="https://img.icons8.com/color/48/000000/hamburger.png"/>
-                            </center>
-                            <h4 style={{ marginTop: '10px' }}>
-                                Cheese Burger
-                            </h4>
-                            <small style={{ marginTop: '6px' }}>Double Veg</small>
-                            <h5 style={{ color: 'red' }}>
-                                RM 12.58
-                            </h5>
-                        </Paper>
-                    </Grid>
-                    <Grid item xs={selectedValue}>
+                    <Grid item xs={dbUser===null?6:dbUser.layout?6:12}>
                         <Paper className={classes.paper}>
                             <center>
                                 <img src="https://img.icons8.com/color/48/000000/hamburger.png"/>

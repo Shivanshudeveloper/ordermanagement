@@ -1,5 +1,4 @@
 const User_Model = require("../../models/User");
-
 module.exports.adduser = async (req, res) => {
   try {
     const user = new User_Model(req.body);
@@ -21,3 +20,14 @@ const {email}=req.params;
     console.log(err);
   }
 };
+
+module.exports.setlayout=(req,res)=>{
+  const {email,grid}=req.body;
+  console.log(grid);
+  User_Model.findOneAndUpdate({email:email}, {layout:grid}, { runValidators: true }, function(err, doc) {
+    if (err) return res.send(500, {error: err});
+    return res.send(doc);
+});
+}
+
+

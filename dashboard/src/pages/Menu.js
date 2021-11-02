@@ -23,7 +23,7 @@ const Menu = () => {
       const us=await getUser();
       setUser(us);
     };
-
+  if(User===null)
     get();
   }, []);
   const handleClose = (men) => {

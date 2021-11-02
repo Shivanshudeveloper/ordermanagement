@@ -18,6 +18,10 @@ const userDataSchema = new mongoose.Schema({
     type:String,
     required:true
   },
+  layout:{
+    type:Boolean,
+    default:true
+  },
   date: {
     type: Date,
     default: Date.now,

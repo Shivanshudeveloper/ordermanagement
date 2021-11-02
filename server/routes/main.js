@@ -44,6 +44,7 @@ router.post("/charges", async (req, res) => {
 // Database CRUD Operations
 // @POST Request to GET the People
 // GET
+
 router.get("/getallproductapi", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   Products_Model.find({})
