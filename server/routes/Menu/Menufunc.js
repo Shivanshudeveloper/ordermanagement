@@ -24,3 +24,23 @@ module.exports.getmenu = async (req, res) => {
     res.status(400).json(`Error: ${err}`);
   }
 };
+module.exports.removemenu = (req,res) => {
+  Menu_Model.deleteOne({ _id: req.params.id }, (err,docs)=> {
+    if (!err) {
+      res.status(200).send(docs);
+    } else {
+      res.status(400).json(`Error: ${err}`);
+    }
+  });
+};
+module.exports.updatemenu = (req, res) => {
+  const { id } = req.params;
+
+  Menu_Model.findOneAndUpdate({_id:id},
+    {$set: req.body}, {useFindAndModify: false},
+    function (err, doc) {
+      if (err) return res.send(500, { error: err });
+      return res.send(doc);
+    }
+  );
+};

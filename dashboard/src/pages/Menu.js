@@ -8,9 +8,11 @@ const Menu = () => {
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(null);
   const [menuList, setMenuList] = useState([]);
+  const [filteredMenuList,setFilteredMenuList]=useState([]);
   const [User, setUser] = useState(null);
   const [error, setError] = useState({ error: false, message: "" });
   const [restaurantName, setRestaurantName] = useState("");
+  const [searchText,setSearchText]=useState("");
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -27,6 +29,7 @@ const Menu = () => {
   }, []);
   const handleClose = (men) => {
     setOpen(false);
+   
     if (men !== null) {
       console.log(men);
       const addMenuFunction = async () => {
@@ -45,6 +48,7 @@ const Menu = () => {
           const content = await rawResponse.json();
           console.log(content);
           setMenuList((old) => [...old, content]);
+          
           setError({ error: false, message: "" });
           setMenuListHandler(null);
         } catch (err) {
@@ -54,6 +58,40 @@ const Menu = () => {
       addMenuFunction();
     }
   };
+  const updateMenu=(menu)=>{
+    const MenuList=menuList;
+    const index=MenuList.findIndex((m=>m._id===menu._id));
+    MenuList[index]=menu;
+    const FilteredMenuList=filteredMenuList;
+    const indexfiltered=filteredMenuList.findIndex((m=>m._id===menu._id));
+    FilteredMenuList[indexfiltered]=menu;
+    
+    const updateMenuList = async () => {
+      try {
+        const rawResponse = await fetch(
+          `http://localhost:5000/api/v1/main/menu/updatemenu/${menu._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(menu),
+          }
+        );
+        const content = await rawResponse.json();
+        console.log(content);
+     
+        setError({ error: false, message: "" });
+        setMenuListHandler(null);
+        setMenuList(MenuList);
+        setFilteredMenuList(FilteredMenuList);
+      } catch (err) {
+        setError({ error: true, message: err.message });
+      }
+    };
+    updateMenuList();
+  }
   useEffect(() => {
     const getmenu = async () => {
       try {
@@ -84,6 +122,35 @@ const Menu = () => {
 
     get();
   }, [User]);
+  const handleDeleteMenu = async (id) => {
+    const newMenu = menuList.filter(
+      (m) => m._id !== id
+    );
+    const newFilteredList=filteredMenuList.filter((m)=>m._id!==id);
+
+    try {
+      const rawResponse = await fetch(
+        `http://localhost:5000/api/v1/main/menu/removemenu/${id}`,
+        {
+          method: "delete",
+        }
+      );
+      const res = await rawResponse.json();
+      console.log(res);
+
+      setMenuList(newMenu);
+      setFilteredMenuList(newFilteredList);
+      setError({ error: false, message: "" });
+    } catch (err) {
+      setError({ error: true, message: err.message });
+    }
+  };
+  const searchHandler=(value)=>{
+    let filteredCurrent=menuList.filter((obj)=>obj.item.toLowerCase().includes(value.toLowerCase()));
+    console.log(filteredCurrent);
+    setSearchText(value);
+    setFilteredMenuList(filteredCurrent);
+  }
   return (
     <>
       <Helmet>
@@ -106,10 +173,11 @@ const Menu = () => {
             menuList={menuList}
             User={User}
             restaurantName={restaurantName}
+            searchHandler={searchHandler}
           />
           <Grid container spacing={3}>
             <Grid item lg={12} md={12} xl={12} xs={12}>
-              <MenuList menuList={menuList} />
+              <MenuList menuList={menuList} filteredMenuList={filteredMenuList} updateMenu={updateMenu} searchText={searchText}     User={User} handleDeleteMenu={handleDeleteMenu}/>
             </Grid>
           </Grid>
         </Container>

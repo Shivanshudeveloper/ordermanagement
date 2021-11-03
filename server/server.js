@@ -11,7 +11,8 @@ const main = require('./routes/main');
 // DB Connection
 const db = require('./config/keys').MongoURI;
 // Connect MongoDB
-mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.set('useFindAndModify', false);
+mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true ,useFindAndModify: false})
     .then( () => console.log('MongoDB Connected'.green.bold) )
     .catch(err => console.log(err));
 

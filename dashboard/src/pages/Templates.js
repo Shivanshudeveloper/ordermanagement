@@ -38,6 +38,7 @@ const Templates = () => {
     let grid;
     if (event.target.value === "Grid Layout") grid = true;
     else grid = false;
+    console.log(grid);
     setlayoutfunction(grid);
     setLayout(event.target.value);
   };
@@ -57,13 +58,13 @@ const Templates = () => {
         const content = await rawResponse.json();
 
         setsetdbUser(content[0]);
-        if (content.layout) setLayout("Grid Layout");
+        if (content[0].layout) setLayout("Grid Layout");
         else setLayout("Tabular Layout");
       } catch (err) {
         console.log(err);
       }
     };
-    if (User === null) get();
+ get();
   }, [User]);
   return (
     <>

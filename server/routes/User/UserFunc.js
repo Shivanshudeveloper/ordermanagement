@@ -24,10 +24,8 @@ module.exports.getuser = async (req, res) => {
 module.exports.setlayout = (req, res) => {
   const { email, grid } = req.body;
 
-  User_Model.findOneAndUpdate(
-    { email: email },
-    { layout: grid },
-    { runValidators: true },
+  User_Model.findOneAndUpdate({email:email},
+    {$set: {layout:grid}}, {useFindAndModify: false},
     function (err, doc) {
       if (err) return res.send(500, { error: err });
       return res.send(doc);

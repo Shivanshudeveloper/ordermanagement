@@ -261,7 +261,7 @@ const AccountProfile = (props) => {
                 variant="contained"
                 component="label"
                 onClick={handleUpdatelogo}
-                disabled={loading}
+                disabled={loadinglogo}
               >
                 Update logo
               </Button>
