@@ -29,7 +29,13 @@ const MenuSchema = new mongoose.Schema({
     restaurantName:{
         type:String,
         required:true
-      }
+      },
+    image:{
+        type:String
+    },
+    description:{
+        type:String
+    }
 
     //email name
     

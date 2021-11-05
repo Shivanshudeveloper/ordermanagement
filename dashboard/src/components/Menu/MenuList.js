@@ -19,10 +19,16 @@ import {
   TextField,
   InputLabel,
   Select,
+  Avatar,
+  CardContent,
+  Typography,
+  CircularProgress,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
+import firebase from "../../Firebase/index";
+import { Label } from "@material-ui/icons";
 
 const MenuList = (props) => {
   const {
@@ -37,11 +43,17 @@ const MenuList = (props) => {
   const [openEditMenu, setOpenEditMenu] = useState(false);
   const [id, setId] = useState(null);
   const [MenuList, setMenuList] = useState([]);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [itemImage, setItemImage] = useState(null);
+  const [showView, setShowView] = useState(false);
+  const [loading,setloading]=useState(false);
   const [menu, setMenu] = useState({
     item: "",
     price: null,
     discount: "",
     category: "",
+    description: "",
+    image: "",
   });
   const [categories, setCategories] = useState([]);
   const handleClickOpen = (_id) => {
@@ -86,6 +98,41 @@ const MenuList = (props) => {
   const handleCloseEditMenu = () => {
     setOpenEditMenu(false);
   };
+  const handleUpdateItemImage = () => {
+    const storage = firebase.storage();
+    console.log(storage);
+    const uploadTask = storage
+      .ref(`itemImage/${itemImage.name}`)
+      .put(itemImage);
+    uploadTask.on(
+      "state_changed",
+      () => {},
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        storage
+          .ref("itemImage")
+          .child(itemImage.name)
+          .getDownloadURL()
+          .then((ul) => {
+            let m=menu;
+            m.image=ul;
+            setMenu({ ...menu, image: ul })
+            setImageUrl(ul);
+            updateMenu(m);
+            setloading(false);
+            handleCloseEditMenu(null);
+          });
+      }
+    );
+  };
+  const imageChangeHandler = (e) => {
+    e.preventDefault();
+    setItemImage(e.target.files[0]);
+
+    setImageUrl(URL.createObjectURL(e.target.files[0]));
+  };
   return (
     <Card {...props}>
       <CardHeader title="Menu" />
@@ -118,6 +165,17 @@ const MenuList = (props) => {
                         }}
                       >
                         Edit Menu
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          setMenu(menu);
+                         setShowView(true)
+                        }}
+                      >
+                        View Menu
                       </Button>
                     </TableCell>
                     <TableCell>
@@ -192,6 +250,18 @@ const MenuList = (props) => {
             variant="standard"
             onChange={(e) => setMenu({ ...menu, discount: e.target.value })}
           />
+          <TextField
+            margin="dense"
+            id="name"
+            label="Edit Description"
+            type="text"
+            fullWidth
+            multiline
+            minRows={3}
+            value={menu.description}
+            variant="standard"
+            onChange={(e) => setMenu({ ...menu, description: e.target.value })}
+          />
           <Box sx={{ mt: 3 }}>
             <InputLabel id="demo-simple-select-label">
               Select Category
@@ -213,6 +283,42 @@ const MenuList = (props) => {
                 );
               })}
             </Select>
+
+            <Card sx={{ marginTop: "20px" }}>
+              <CardContent sx={{ height: "200px" }}>
+                <Box
+                  sx={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Avatar
+                    variant="rounded"
+                    src={imageUrl!==null?imageUrl:menu.image}
+                    sx={{
+                      height: 100,
+                      width: 100,
+                    }}
+                  />
+                </Box>
+              </CardContent>
+
+              <Box
+                sx={{
+                  alignItems: "center",
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  mb: 4,
+                }}
+              >
+                <Button variant="contained" component="label">
+                  Change Item Image
+                  <input type="file" hidden onChange={imageChangeHandler} />
+                </Button>
+              </Box>
+            </Card>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -223,16 +329,79 @@ const MenuList = (props) => {
           >
             Cancel
           </Button>
+
           <Button
             onClick={() => {
-              updateMenu(menu);
-              handleCloseEditMenu(null);
+              setloading(true);
+             
+              if(itemImage===null){
+                updateMenu(menu);
+                setloading(false);
+                handleCloseEditMenu(null);
+               
+              }else{
+                handleUpdateItemImage();
+              }
             }}
           >
-            Save Changes
+            Save Changes    {loading && <CircularProgress/>}
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={showView} fullWidth onClose={() => setShowView(false)}>
+      <DialogTitle>Details</DialogTitle>
+
+      <Card sx={{ marginTop: "20px" }}>
+            <CardContent sx={{ height: "200px" }}>
+              <Box
+                sx={{
+                  alignItems: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Avatar
+                  variant="rounded"
+                  src={menu.image}
+                  sx={{
+                    height: 100,
+                    width: 100,
+                  }}
+                />
+              </Box>
+            </CardContent>
+          </Card>
+      <DialogContent sx={{display:"flex",justifyContent:"space-between"}}>
+       <Box>     <InputLabel id="demo-simple-select-label">Menu Item</InputLabel>
+        <Typography  gutterBottom >{menu.item}</Typography>
+        <InputLabel id="demo-simple-select-label">Price</InputLabel>
+        <Typography  gutterBottom  >{menu.price}</Typography></Box>
+      <Box>  <InputLabel id="demo-simple-select-label">Discount</InputLabel>
+        <Typography  gutterBottom  >{menu.discount}</Typography>
+        <InputLabel id="demo-simple-select-label">
+          Description
+        </InputLabel>
+        <Typography gutterBottom >{menu.description}</Typography>
+        </Box>
+       
+        <Box sx={{ mt: 3 }}>
+          <InputLabel id="demo-simple-select-label">Category</InputLabel>
+
+          <InputLabel id="demo-simple-select-label">{menu.category}</InputLabel>
+
+      
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => {
+            setShowView(null);
+          }}
+        >
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
     </Card>
   );
 };

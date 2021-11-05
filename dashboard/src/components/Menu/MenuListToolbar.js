@@ -12,13 +12,16 @@ import {
   Paper,
   IconButton,
   Divider,
-  InputBase
+  InputBase,
+  CardContent,
+  Card,
+  Avatar,  CircularProgress,
 } from "@material-ui/core";
 
 import PropTypes from "prop-types";
 
 import SearchIcon from "@material-ui/icons/Search";
-
+import firebase from "../../Firebase/index"
 
 import { useState, useEffect } from "react";
 const MenuListToolbar = (props) => {
@@ -35,11 +38,53 @@ const MenuListToolbar = (props) => {
     price: null,
     discount: "",
     category: "",
+    description:"",
+    image:""
   });
   const [categories, setCategories] = useState([]);
-
+  const [imageUrl,setImageUrl]=useState(null);
+  const [itemImage,setItemImage]=useState(null);
+  const [loading,setloading]=useState(false);
   const handleChange = (e) => {
     setMenu({ ...menu, category: e.target.value });
+  };
+  const handleUpdateItemImage = () => {
+  
+    const storage = firebase.storage();
+    console.log(storage);
+    const uploadTask = storage.ref(`itemImage/${itemImage.name}`).put(itemImage);
+    uploadTask.on(
+      "state_changed",
+      () => {},
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        storage
+          .ref("itemImage")
+          .child(itemImage.name)
+          .getDownloadURL()
+          .then((ul) => {
+            setImageUrl(ul);
+            setMenuListHandler({
+              ...menu,
+              email: User.email,
+              restaurantName: restaurantName,
+              userID: User.uid,
+              image:imageUrl
+
+            });
+            handleClose({
+              ...menu,
+              email: User.email,
+              restaurantName: restaurantName,
+              userID: User.uid,
+              image:imageUrl
+            });
+            setloading(false);
+          });
+      }
+    );
   };
   useEffect(() => {
     const getCategories = async () => {
@@ -61,6 +106,13 @@ const MenuListToolbar = (props) => {
 const searchValueHandle=(e)=>{
   searchHandler(e.target.value);
 }
+const imageChangeHandler=(e)=>{
+  e.preventDefault();
+  setItemImage(e.target.files[0]);
+
+  setImageUrl(URL.createObjectURL(e.target.files[0]));
+}
+
   return (
     <>
       {" "}
@@ -103,7 +155,8 @@ const searchValueHandle=(e)=>{
         </Box>
         <Dialog open={open} fullWidth onClose={() => handleClose(null)}>
           <DialogTitle>Enter Details</DialogTitle>
-          <DialogContent>
+          <DialogContent >
+          
             <TextField
               autoFocus
               margin="dense"
@@ -132,6 +185,17 @@ const searchValueHandle=(e)=>{
               variant="standard"
               onChange={(e) => setMenu({ ...menu, discount: e.target.value })}
             />
+            <TextField
+              margin="dense"
+              id="name"
+              label="Add Description"
+              type="text"
+              fullWidth
+              multiline
+              minRows={3}
+              variant="standard"
+              onChange={(e) => setMenu({ ...menu, description: e.target.value })}
+            />
             <Box sx={{ mt: 3 }}>
               <InputLabel id="demo-simple-select-label">
                 Select Category
@@ -152,9 +216,51 @@ const searchValueHandle=(e)=>{
                     </MenuItem>
                   );
                 })}
-              </Select>
+              </Select> 
+  
+              <Card sx={{marginTop:"20px"}}>
+          <CardContent sx={{ height: "200px" }}>
+            <Box
+              sx={{
+                alignItems: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Avatar
+                variant="rounded"
+                src={imageUrl ? imageUrl : itemImage}
+                sx={{
+                  height: 100,
+                  width: 100,
+                }}
+              />
+
+              
+            </Box>
+          </CardContent>
+      
+
+          <Box
+            sx={{
+              alignItems: "center",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              mb:4
+            }}
+          >
+        
+              <Button variant="contained" component="label">
+                Choose Item Image
+                <input type="file" hidden onChange={imageChangeHandler} />
+              </Button>
+          
+          </Box>
+        </Card>
             </Box>
           </DialogContent>
+
           <DialogActions>
             <Button
               onClick={() => {
@@ -163,6 +269,8 @@ const searchValueHandle=(e)=>{
                   price: null,
                   discount: "",
                   category: "",
+                  description:"",
+                  image:""
                 });
                 handleClose(null);
               }}
@@ -171,24 +279,33 @@ const searchValueHandle=(e)=>{
             </Button>
             <Button
               onClick={() => {
-                setMenuListHandler({
-                  ...menu,
-                  email: User.email,
-                  restaurantName: restaurantName,
-                  userID: User.uid,
-                });
-                handleClose({
-                  ...menu,
-                  email: User.email,
-                  restaurantName: restaurantName,
-                  userID: User.uid,
-                });
+                setloading(true);
+                handleUpdateItemImage();
+                if(itemImage===null){
+                  setMenuListHandler({
+                    ...menu,
+                    email: User.email,
+                    restaurantName: restaurantName,
+                    userID: User.uid,
+                    image:imageUrl
+  
+                  });
+                  handleClose({
+                    ...menu,
+                    email: User.email,
+                    restaurantName: restaurantName,
+                    userID: User.uid,
+                    image:imageUrl
+                  });
+                }
               }}
             >
-              Add
+              Add         {loading && <CircularProgress/>}
             </Button>
+           
           </DialogActions>
         </Dialog>
+
       </Box>
     </>
   );
