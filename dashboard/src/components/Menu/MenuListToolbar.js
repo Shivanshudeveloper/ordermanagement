@@ -148,7 +148,7 @@ const imageChangeHandler=(e)=>{
             color="primary"
             variant="contained"
             sx={{ mb: 5 }}
-            onClick={handleClickOpen}
+            onClick={()=>{setImageUrl(null);handleClickOpen();}}
           >
             Add Menu
           </Button>

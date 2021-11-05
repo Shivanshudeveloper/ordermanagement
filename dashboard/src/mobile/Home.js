@@ -6,6 +6,8 @@ import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 import Header from "./components/Header";
 
 import Dialog from "@material-ui/core/Dialog";
@@ -51,8 +53,11 @@ const Home = () => {
   const [User, setUser] = useState(null);
   const [dbUser, setdbUser] = useState(null);
 
-  const [open, setOpen] = React.useState(false);
-
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState();
+  const [menuList, setMenuList] = useState([]);
+  const [filteredMenuList, setFilteredMenuList] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -80,9 +85,32 @@ const Home = () => {
         console.log(err);
       }
     };
+    const getmenu = async () => {
+      try {
+        const rawResponse = await fetch(
+          `http://localhost:5000/api/v1/main/menu/getmenu/${User.email}`
+        );
+        const content = await rawResponse.json();
+
+        setMenuList(content);
+        setError({ error: false, message: "" });
+      } catch (err) {
+        setError({ error: true, message: err.message });
+      }
+    };
 
     get();
+    getmenu();
   }, [User]);
+
+  const searchHandler = (e) => {
+    let value = e.target.value;
+    setSearchText(value);
+    let filteredList = menuList.filter((menu) =>
+      menu.item.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredMenuList(filteredList);
+  };
 
   return (
     <>
@@ -134,6 +162,8 @@ const Home = () => {
             className={classes.input}
             placeholder="Search Menu Items"
             inputProps={{ "aria-label": "search google maps" }}
+            value={searchText}
+            onChange={(e) => searchHandler(e)}
           />
           <IconButton
             type="button"
@@ -148,101 +178,59 @@ const Home = () => {
           Restaurent Items
         </h4>
         <Grid container spacing={3}>
-          <Grid item xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}>
-            <Paper onClick={handleClickOpen} className={classes.paper}>
-              <center>
-                <img
-                  alt=""
-                  src="https://img.icons8.com/color/48/000000/hamburger.png"
-                />
-              </center>
-              <h4 style={{ marginTop: "10px" }}>Cheese Burger</h4>
-              <small style={{ marginTop: "6px" }}>Double Veg</small>
-              <h5 style={{ color: "red" }}>RM 12.58</h5>
-            </Paper>
-          </Grid>
-          <Grid item xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}>
-            <Paper className={classes.paper}>
-              <center>
-                <img
-                  alt=""
-                  src="https://img.icons8.com/color/48/000000/hamburger.png"
-                />
-              </center>
-              <h4 style={{ marginTop: "10px" }}>Cheese Burger</h4>
-              <small style={{ marginTop: "6px" }}>Double Veg</small>
-              <h5 style={{ color: "red" }}>RM 12.58</h5>
-            </Paper>
-          </Grid>
-          <Grid item xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}>
-            <Paper className={classes.paper}>
-              <center>
-                <img
-                  alt=""
-                  src="https://img.icons8.com/color/48/000000/hamburger.png"
-                />
-              </center>
-              <h4 style={{ marginTop: "10px" }}>Cheese Burger</h4>
-              <small style={{ marginTop: "6px" }}>Double Veg</small>
-              <h5 style={{ color: "red" }}>RM 12.58</h5>
-            </Paper>
-          </Grid>
-          <Grid item xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}>
-            <Paper className={classes.paper}>
-              <center>
-                <img
-                  alt=""
-                  src="https://img.icons8.com/color/48/000000/hamburger.png"
-                />
-              </center>
-              <h4 style={{ marginTop: "10px" }}>Cheese Burger</h4>
-              <small style={{ marginTop: "6px" }}>Double Veg</small>
-              <h5 style={{ color: "red" }}>RM 12.58</h5>
-            </Paper>
-          </Grid>
-          <Grid item xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}>
-            <Paper className={classes.paper}>
-              <center>
-                <img
-                  alt=""
-                  src="https://img.icons8.com/color/48/000000/hamburger.png"
-                />
-              </center>
-              <h4 style={{ marginTop: "10px" }}>Cheese Burger</h4>
-              <small style={{ marginTop: "6px" }}>Double Veg</small>
-              <h5 style={{ color: "red" }}>RM 12.58</h5>
-            </Paper>
-          </Grid>
-          <Grid item xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}>
-            <Paper className={classes.paper}>
-              <center>
-                <img src="https://img.icons8.com/color/48/000000/hamburger.png" />
-              </center>
-              <h4 style={{ marginTop: "10px" }}>Cheese Burger</h4>
-              <small style={{ marginTop: "6px" }}>Double Veg</small>
-              <h5 style={{ color: "red" }}>RM 12.58</h5>
-            </Paper>
-          </Grid>
-          <Grid item xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}>
-            <Paper className={classes.paper}>
-              <center>
-                <img src="https://img.icons8.com/color/48/000000/hamburger.png" />
-              </center>
-              <h4 style={{ marginTop: "10px" }}>Cheese Burger</h4>
-              <small style={{ marginTop: "6px" }}>Double Veg</small>
-              <h5 style={{ color: "red" }}>RM 12.58</h5>
-            </Paper>
-          </Grid>
-          <Grid item xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}>
-            <Paper className={classes.paper}>
-              <center>
-                <img src="https://img.icons8.com/color/48/000000/hamburger.png" />
-              </center>
-              <h4 style={{ marginTop: "10px" }}>Cheese Burger</h4>
-              <small style={{ marginTop: "6px" }}>Double Veg</small>
-              <h5 style={{ color: "red" }}>RM 12.58</h5>
-            </Paper>
-          </Grid>
+          {filteredMenuList.length > 0 ? (
+            filteredMenuList.map((menu) => {
+              return (
+                <Grid
+                  key={menu._id}
+                  item
+                  xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}
+                >
+                  <Paper onClick={handleClickOpen} className={classes.paper}>
+                    <center>
+                      <img
+                        alt=""
+                        src={menu.image}
+                        width="100px"
+                        height="100px"
+                      />
+                    </center>
+                    <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+
+                    <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                  </Paper>
+                </Grid>
+              );
+            })
+          ) : searchText !== "" ? (
+            <Box sx={{ marginLeft: "45%", marginTop: "10%" }}>
+              <Typography>Not Found</Typography>
+            </Box>
+          ) : (
+            menuList.map((menu) => {
+              return (
+                <Grid
+                  key={menu._id}
+                  item
+                  xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}
+                >
+                  <Paper onClick={handleClickOpen} className={classes.paper}>
+                    <center>
+                      <img
+                        alt=""
+                        src={menu.image}
+                        width="100px"
+                        height="100px"
+                      />
+                    </center>
+                    <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+
+                    <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                  </Paper>
+                </Grid>
+              );
+            })
+          )}
         </Grid>
       </Container>
     </>

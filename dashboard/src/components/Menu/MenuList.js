@@ -46,7 +46,7 @@ const MenuList = (props) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [itemImage, setItemImage] = useState(null);
   const [showView, setShowView] = useState(false);
-  const [loading,setloading]=useState(false);
+  const [loading, setloading] = useState(false);
   const [menu, setMenu] = useState({
     item: "",
     price: null,
@@ -116,9 +116,9 @@ const MenuList = (props) => {
           .child(itemImage.name)
           .getDownloadURL()
           .then((ul) => {
-            let m=menu;
-            m.image=ul;
-            setMenu({ ...menu, image: ul })
+            let m = menu;
+            m.image = ul;
+            setMenu({ ...menu, image: ul });
             setImageUrl(ul);
             updateMenu(m);
             setloading(false);
@@ -156,6 +156,18 @@ const MenuList = (props) => {
                     <TableCell>{menu.price}</TableCell>
                     <TableCell>{menu.discount}</TableCell>
                     <TableCell>{menu.category}</TableCell>
+       
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          setMenu(menu);
+                          setShowView(true);
+                        }}
+                      >
+                        View Menu
+                      </Button>
+                    </TableCell>
                     <TableCell>
                       <Button
                         variant="outlined"
@@ -165,17 +177,6 @@ const MenuList = (props) => {
                         }}
                       >
                         Edit Menu
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        onClick={() => {
-                          setMenu(menu);
-                         setShowView(true)
-                        }}
-                      >
-                        View Menu
                       </Button>
                     </TableCell>
                     <TableCell>
@@ -295,7 +296,7 @@ const MenuList = (props) => {
                 >
                   <Avatar
                     variant="rounded"
-                    src={imageUrl!==null?imageUrl:menu.image}
+                    src={imageUrl !== null ? imageUrl : menu.image}
                     sx={{
                       height: 100,
                       width: 100,
@@ -333,75 +334,79 @@ const MenuList = (props) => {
           <Button
             onClick={() => {
               setloading(true);
-             
-              if(itemImage===null){
+
+              if (itemImage === null) {
                 updateMenu(menu);
                 setloading(false);
                 handleCloseEditMenu(null);
-               
-              }else{
+              } else {
                 handleUpdateItemImage();
               }
             }}
           >
-            Save Changes    {loading && <CircularProgress/>}
+            Save Changes {loading && <CircularProgress />}
           </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={showView} fullWidth onClose={() => setShowView(false)}>
-      <DialogTitle>Details</DialogTitle>
+        <DialogTitle>Details</DialogTitle>
 
-      <Card sx={{ marginTop: "20px" }}>
-            <CardContent sx={{ height: "200px" }}>
-              <Box
+        <Card sx={{ marginTop: "20px" }}>
+          <CardContent sx={{ height: "200px" }}>
+            <Box
+              sx={{
+                alignItems: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Avatar
+                variant="rounded"
+                src={menu.image}
                 sx={{
-                  alignItems: "center",
-                  display: "flex",
-                  flexDirection: "column",
+                  height: 100,
+                  width: 100,
                 }}
-              >
-                <Avatar
-                  variant="rounded"
-                  src={menu.image}
-                  sx={{
-                    height: 100,
-                    width: 100,
-                  }}
-                />
-              </Box>
-            </CardContent>
-          </Card>
-      <DialogContent sx={{display:"flex",justifyContent:"space-between"}}>
-       <Box>     <InputLabel id="demo-simple-select-label">Menu Item</InputLabel>
-        <Typography  gutterBottom >{menu.item}</Typography>
-        <InputLabel id="demo-simple-select-label">Price</InputLabel>
-        <Typography  gutterBottom  >{menu.price}</Typography></Box>
-      <Box>  <InputLabel id="demo-simple-select-label">Discount</InputLabel>
-        <Typography  gutterBottom  >{menu.discount}</Typography>
-        <InputLabel id="demo-simple-select-label">
-          Description
-        </InputLabel>
-        <Typography gutterBottom >{menu.description}</Typography>
-        </Box>
-       
-        <Box sx={{ mt: 3 }}>
-          <InputLabel id="demo-simple-select-label">Category</InputLabel>
-
-          <InputLabel id="demo-simple-select-label">{menu.category}</InputLabel>
-
-      
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            setShowView(null);
-          }}
+              />
+            </Box>
+          </CardContent>
+        </Card>
+        <DialogContent
+          sx={{ display: "flex", justifyContent: "space-between" }}
         >
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <Box>
+            {" "}
+            <InputLabel id="demo-simple-select-label">Menu Item</InputLabel>
+            <Typography gutterBottom>{menu.item}</Typography>
+            <InputLabel id="demo-simple-select-label">Price</InputLabel>
+            <Typography gutterBottom>{menu.price}</Typography>
+          </Box>
+          <Box>
+            {" "}
+            <InputLabel id="demo-simple-select-label">Discount</InputLabel>
+            <Typography gutterBottom>{menu.discount}</Typography>
+            <InputLabel id="demo-simple-select-label">Description</InputLabel>
+            <Typography gutterBottom>{menu.description}</Typography>
+          </Box>
+
+          <Box sx={{ mt: 3 }}>
+            <InputLabel id="demo-simple-select-label">Category</InputLabel>
+
+            <InputLabel id="demo-simple-select-label">
+              {menu.category}
+            </InputLabel>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowView(null);
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 };
