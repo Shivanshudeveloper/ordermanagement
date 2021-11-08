@@ -15,6 +15,7 @@ import Categories from './pages/Categories'
 // Mobile
 import HomeMobile from './mobile/Home';
 import Templates from './pages/Templates';
+import Banners from './pages/Banners';
 
 
 
@@ -31,6 +32,7 @@ const routes = [
       { path: 'templates', element:<Templates /> },
       { path: 'Menu', element: <Menu /> },
       { path: 'categories', element: <Categories /> },
+      { path: 'Banners', element: <Banners /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   },

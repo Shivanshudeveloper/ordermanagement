@@ -3,12 +3,12 @@ const Categories_Model = require("../../models/Categories");
 module.exports.addcategory = async (req, res) => {
   const { category ,restaurantName,email} = req.body;
   try {
-    const categories = new Categories_Model({
+    const Category = new Categories_Model({
       category,email,restaurantName
     });
 
-    await categories.save();
-    res.status(200).send(categories);
+    await Category.save();
+    res.status(200).send(Category);
   } catch (err) {
     res.status(400).json({ err: err });
     console.log(err);

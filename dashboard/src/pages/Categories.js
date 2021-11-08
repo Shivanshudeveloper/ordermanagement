@@ -40,10 +40,7 @@ const Categories = () => {
     setCategory(cat);
   };
   const handleClose = () => {
-    console.log(
-      { category: category, email: User.email, restaurantName: restaurantName },
-      "fromhre"
-    );
+  
     if (category !== "") {
       const addCategoryFunction = async () => {
         try {

@@ -9,7 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Header from "./components/Header";
-
+import Carousel from 'react-material-ui-carousel'
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -23,7 +23,12 @@ import { useEffect, useState } from "react";
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
-    display: "flex",
+ 
+    alignItems: "center",
+  },
+  root2: {
+    padding: "2px 4px",
+ display:'flex',
     alignItems: "center",
   },
   input: {
@@ -47,7 +52,19 @@ const useStyles = makeStyles((theme) => ({
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+const  Item=({item})=>
+{
+    return (
+        <Box >
+         
+            <img alt="" width="100%" height="200px" src={item.banner} />
+      
+           
 
+        
+        </Box>
+    )
+}
 const Home = () => {
   const classes = useStyles();
   const [User, setUser] = useState(null);
@@ -58,6 +75,7 @@ const Home = () => {
   const [menuList, setMenuList] = useState([]);
   const [filteredMenuList, setFilteredMenuList] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [banners,setBanners]=useState([]);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -98,8 +116,20 @@ const Home = () => {
         setError({ error: true, message: err.message });
       }
     };
+    const getBanners = async () => {
+      try {
+        const rawResponse = await fetch(
+          `http://localhost:5000/api/v1/main/banners/getbanners/${User.email}`
+        );
+        const content = await rawResponse.json();
 
+        setBanners(content);
+      } catch (err) {}
+    };
+
+  
     get();
+    getBanners();
     getmenu();
   }, [User]);
 
@@ -155,9 +185,22 @@ const Home = () => {
       </Dialog>
 
       <Header />
-
-      <Container style={{ marginTop: "10px" }}>
-        <Paper component="form" className={classes.root}>
+    
+      <Container >
+            
+     
+      <Carousel     >
+           
+           
+           {banners.map( (banner, i) => <Item   key={i} item={banner} /> )      }
+         
+  
+    </Carousel>
+   
+    </Container >
+    <Container >
+        <Paper component="form" className={classes.root2}>
+     
           <InputBase
             className={classes.input}
             placeholder="Search Menu Items"

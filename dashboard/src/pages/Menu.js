@@ -99,7 +99,7 @@ const Menu = () => {
           `http://localhost:5000/api/v1/main/menu/getmenu/${User.email}`
         );
         const content = await rawResponse.json();
-
+        console.log(content);
         setMenuList(content);
         setError({ error: false, message: "" });
       } catch (err) {

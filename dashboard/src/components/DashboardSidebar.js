@@ -14,6 +14,8 @@ import {
 import FastfoodIcon from '@material-ui/icons/Fastfood';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import CategoryIcon from '@material-ui/icons/Category';
+import ViewCarouselIcon from '@material-ui/icons/ViewCarousel';
+
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
 import {
   AlertCircle as AlertCircleIcon,
@@ -74,7 +76,12 @@ const items = [
     href: '/app/account',
     icon: UserIcon,
     title: 'Account'
-  }
+  },
+  {
+    href: '/app/Banners',
+    icon: ViewCarouselIcon,
+    title: 'Banners'
+  },
 ];
 
 const DashboardSidebar = ({ onMobileClose, openMobile }) => {
