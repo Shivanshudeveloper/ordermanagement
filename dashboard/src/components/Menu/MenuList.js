@@ -80,6 +80,7 @@ const MenuList = (props) => {
         const content = await rawResponse.json();
 
         setCategories(content);
+
       } catch (err) {
         console.log(err);
       }
@@ -381,12 +382,12 @@ const MenuList = (props) => {
             <InputLabel id="demo-simple-select-label">Price</InputLabel>
             <Typography gutterBottom>{menu.price}</Typography>
           </Box>
-          <Box>
-            {" "}
+          <Box sx={{ml:2}}>
+         
             <InputLabel id="demo-simple-select-label">Discount</InputLabel>
             <Typography gutterBottom>{menu.discount}</Typography>
             <InputLabel id="demo-simple-select-label">Description</InputLabel>
-            <Typography gutterBottom>{menu.description}</Typography>
+            <Typography  gutterBottom>{menu.description}</Typography>
           </Box>
 
           <Box sx={{ mt: 3 }}>

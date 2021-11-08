@@ -16,7 +16,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import Slide from "@material-ui/core/Slide";
-
+import {
+  Snackbar,Alert
+} from '@material-ui/core';
 import List from "./components/List";
 import getUser from "../Firebase/getUser";
 import { useEffect, useState } from "react";
@@ -55,9 +57,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const  Item=({item})=>
 {
     return (
-        <Box >
+        <Box sx={{display:"flex",justifyContent:"center",mt:2}} >
          
-            <img alt="" width="100%" height="200px" src={item.banner} />
+            <img alt="" width="90%" height="200px" src={item.banner} />
       
            
 
@@ -68,7 +70,7 @@ const  Item=({item})=>
 const Home = () => {
   const classes = useStyles();
   const [User, setUser] = useState(null);
-  const [dbUser, setdbUser] = useState(null);
+  const [user, setuser] = useState(null);
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState();
@@ -76,13 +78,23 @@ const Home = () => {
   const [filteredMenuList, setFilteredMenuList] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [banners,setBanners]=useState([]);
-  const handleClickOpen = () => {
+  const [selectedItem,setSelectedItem]=useState(null);
+  const [showSnackbar,setShowSnackbar]=useState(false);
+  const [cart,setCart]=useState([]);
+  const handleClickOpen = (item) => {
+    setSelectedItem(item);
     setOpen(true);
   };
 
   const handleClose = () => {
+    setSelectedItem(null);
     setOpen(false);
   };
+  const addToCart=()=>{
+    setCart((old)=>[...old,selectedItem]);
+    setShowSnackbar(true);
+    handleClose();
+  }
   useEffect(() => {
     const get = async () => {
       setUser(await getUser());
@@ -97,7 +109,7 @@ const Home = () => {
         );
         const content = await rawResponse.json();
 
-        setdbUser(content[0]);
+        setuser(content[0]);
         console.log(content);
       } catch (err) {
         console.log(err);
@@ -152,40 +164,41 @@ const Home = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Cheese Burger</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{selectedItem?.item}</DialogTitle>
         <DialogContent>
           <section>
             <center>
               <img
                 alt=""
                 style={{ width: "100%", borderRadius: "10px" }}
-                src="https://wallpapercave.com/wp/wp1987065.jpg"
+                src={selectedItem?.image}
               />
             </center>
 
             <h4 style={{ marginTop: "10px", color: "green" }}>RM 10.00</h4>
 
             <p style={{ marginTop: "10px" }}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book.
+             {selectedItem?.description}
             </p>
-            <List />
+           
           </section>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Close
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={addToCart} color="primary">
             Add to Cart
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Header />
-    
+      <Header cart={cart} user={user} />
+      <Snackbar open={showSnackbar} autoHideDuration={6000} onClose={()=>setShowSnackbar(false)}>
+  <Alert onClose={()=>setShowSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+    Added to Cart
+  </Alert>
+</Snackbar>
       <Container >
             
      
@@ -227,7 +240,7 @@ const Home = () => {
                 <Grid
                   key={menu._id}
                   item
-                  xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}
+                  xs={user === null ? 6 : user.layout ? 6 : 12}
                 >
                   <Paper onClick={handleClickOpen} className={classes.paper}>
                     <center>
@@ -255,9 +268,9 @@ const Home = () => {
                 <Grid
                   key={menu._id}
                   item
-                  xs={dbUser === null ? 6 : dbUser.layout ? 6 : 12}
+                  xs={user === null ? 6 : user.layout ? 6 : 12}
                 >
-                  <Paper onClick={handleClickOpen} className={classes.paper}>
+                  <Paper onClick={()=>handleClickOpen(menu)} className={classes.paper}>
                     <center>
                       <img
                         alt=""

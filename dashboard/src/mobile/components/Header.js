@@ -7,6 +7,9 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
+import {
+  Box
+} from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -17,16 +20,20 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
     // marginLeft: '95px',
-    color: "#097969",
+
     margin: "auto",
     width: "50%",
     padding: "10px",
   },
+  countlabel:{
+    color:"green",
+    fontSize:"1em"
+  }
 }));
 
-export default function ButtonAppBar() {
+export default function ButtonAppBar({cart,user}) {
   const classes = useStyles();
-
+ console.log(user);
   return (
     <div className={classes.root}>
       <AppBar
@@ -42,11 +49,12 @@ export default function ButtonAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h4" className={classes.title}>
-            Digimenu
-          </Typography>
+          {user?.logo===""? <Typography variant="h4" className={classes.title} sx={{color:"black"}}>
+            {user?.restaurantName}
+          </Typography>:<Box  className={classes.title} ><img   src={user?.logo} width="50px" height="50px" alt={""} /></Box>}
           <IconButton edge="start" color="inherit" aria-label="menu">
             <ShoppingBasketIcon />
+            <Typography  className={classes.countlabel} >{cart.length}</Typography>
           </IconButton>
         </Toolbar>
       </AppBar>
