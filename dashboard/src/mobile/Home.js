@@ -9,28 +9,27 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Header from "./components/Header";
-import Carousel from 'react-material-ui-carousel'
+import Carousel from "react-material-ui-carousel";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import Slide from "@material-ui/core/Slide";
-import {
-  Snackbar,Alert
-} from '@material-ui/core';
+import { Snackbar, Alert } from "@material-ui/core";
 import List from "./components/List";
+import Categories from "./components/Categories";
 import getUser from "../Firebase/getUser";
 import { useEffect, useState } from "react";
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
- 
+
     alignItems: "center",
   },
   root2: {
     padding: "2px 4px",
- display:'flex',
+    display: "flex",
     alignItems: "center",
   },
   input: {
@@ -45,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     margin: 4,
   },
   paper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     color: theme.palette.text.secondary,
     borderRadius: "10px",
   },
@@ -54,19 +53,13 @@ const useStyles = makeStyles((theme) => ({
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-const  Item=({item})=>
-{
-    return (
-        <Box sx={{display:"flex",justifyContent:"center",mt:2}} >
-         
-            <img alt="" width="90%" height="200px" src={item.banner} />
-      
-           
-
-        
-        </Box>
-    )
-}
+const Item = ({ item }) => {
+  return (
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+      <img alt="" width="80%" height="210px" src={item.banner} />
+    </Box>
+  );
+};
 const Home = () => {
   const classes = useStyles();
   const [User, setUser] = useState(null);
@@ -77,10 +70,11 @@ const Home = () => {
   const [menuList, setMenuList] = useState([]);
   const [filteredMenuList, setFilteredMenuList] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [banners,setBanners]=useState([]);
-  const [selectedItem,setSelectedItem]=useState(null);
-  const [showSnackbar,setShowSnackbar]=useState(false);
-  const [cart,setCart]=useState([]);
+  const [banners, setBanners] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [selectedCategory, setSlectedCategory] = useState("Burger");
   const handleClickOpen = (item) => {
     setSelectedItem(item);
     setOpen(true);
@@ -90,11 +84,11 @@ const Home = () => {
     setSelectedItem(null);
     setOpen(false);
   };
-  const addToCart=()=>{
-    setCart((old)=>[...old,selectedItem]);
+  const addToCart = () => {
+    setCart((old) => [...old, selectedItem]);
     setShowSnackbar(true);
     handleClose();
-  }
+  };
   useEffect(() => {
     const get = async () => {
       setUser(await getUser());
@@ -139,7 +133,6 @@ const Home = () => {
       } catch (err) {}
     };
 
-  
     get();
     getBanners();
     getmenu();
@@ -153,7 +146,9 @@ const Home = () => {
     );
     setFilteredMenuList(filteredList);
   };
-
+  const changeCategoryHandler = (cat) => {
+    setSlectedCategory(cat);
+  };
   return (
     <>
       <Dialog
@@ -177,10 +172,7 @@ const Home = () => {
 
             <h4 style={{ marginTop: "10px", color: "green" }}>RM 10.00</h4>
 
-            <p style={{ marginTop: "10px" }}>
-             {selectedItem?.description}
-            </p>
-           
+            <p style={{ marginTop: "10px" }}>{selectedItem?.description}</p>
           </section>
         </DialogContent>
         <DialogActions>
@@ -194,26 +186,28 @@ const Home = () => {
       </Dialog>
 
       <Header cart={cart} user={user} />
-      <Snackbar open={showSnackbar} autoHideDuration={6000} onClose={()=>setShowSnackbar(false)}>
-  <Alert onClose={()=>setShowSnackbar(false)} severity="success" sx={{ width: '100%' }}>
-    Added to Cart
-  </Alert>
-</Snackbar>
-      <Container >
-            
-     
-      <Carousel     >
-           
-           
-           {banners.map( (banner, i) => <Item   key={i} item={banner} /> )      }
-         
-  
-    </Carousel>
-   
-    </Container >
-    <Container >
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setShowSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setShowSnackbar(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Added to Cart
+        </Alert>
+      </Snackbar>
+      <Container>
+        <Carousel>
+          {banners.map((banner, i) => (
+            <Item key={i} item={banner} />
+          ))}
+        </Carousel>
+      </Container>
+      <Container>
         <Paper component="form" className={classes.root2}>
-     
           <InputBase
             className={classes.input}
             placeholder="Search Menu Items"
@@ -229,7 +223,7 @@ const Home = () => {
             <SearchIcon />
           </IconButton>
         </Paper>
-
+        <Categories User={User} changeCategoryHandler={changeCategoryHandler} />
         <h4 style={{ marginTop: "10px", marginBottom: "10px" }}>
           Restaurent Items
         </h4>
@@ -242,7 +236,11 @@ const Home = () => {
                   item
                   xs={user === null ? 6 : user.layout ? 6 : 12}
                 >
-                  <Paper onClick={handleClickOpen} className={classes.paper}>
+                  <Paper
+                    sx={{ m: 0 }}
+                    onClick={handleClickOpen}
+                    className={classes.paper}
+                  >
                     <center>
                       <img
                         alt=""
@@ -265,25 +263,32 @@ const Home = () => {
           ) : (
             menuList.map((menu) => {
               return (
-                <Grid
-                  key={menu._id}
-                  item
-                  xs={user === null ? 6 : user.layout ? 6 : 12}
-                >
-                  <Paper onClick={()=>handleClickOpen(menu)} className={classes.paper}>
-                    <center>
-                      <img
-                        alt=""
-                        src={menu.image}
-                        width="100px"
-                        height="100px"
-                      />
-                    </center>
-                    <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+                <>
+                  {menu?.category === selectedCategory ? (
+                    <Grid
+                      key={menu._id}
+                      item
+                      xs={user === null ? 6 : user.layout ? 6 : 12}
+                    >
+                      <Paper
+                        onClick={() => handleClickOpen(menu)}
+                        className={classes.paper}
+                      >
+                        <center>
+                          <img
+                            alt=""
+                            src={menu.image}
+                            width="100px"
+                            height="100px"
+                          />
+                        </center>
+                        <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
 
-                    <h5 style={{ color: "red" }}>RM {menu.price}</h5>
-                  </Paper>
-                </Grid>
+                        <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                      </Paper>{" "}
+                    </Grid>
+                  ) : null}
+                </>
               );
             })
           )}

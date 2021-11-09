@@ -1,10 +1,10 @@
 const Categories_Model = require("../../models/Categories");
 
 module.exports.addcategory = async (req, res) => {
-  const { category ,restaurantName,email} = req.body;
+  const { category ,restaurantName,email,icon} = req.body;
   try {
     const Category = new Categories_Model({
-      category,email,restaurantName
+      category,email,restaurantName,icon
     });
 
     await Category.save();

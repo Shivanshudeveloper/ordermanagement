@@ -5,11 +5,80 @@ import {
   DialogTitle,
   DialogContent,
   TextField,
-  DialogActions,
+  DialogActions,Select,ImageListItem,Typography,MenuItem,Avatar,CircularProgress
 } from "@material-ui/core";
 import PropTypes from "prop-types";
+import { useState } from "react";
+import firebase from "../../Firebase/index";
+import SaveIcon from "@material-ui/icons/Save";
+
+const icons=[`${process.env.PUBLIC_URL}/static/images/categoryIcons/1.png`,`${process.env.PUBLIC_URL}/static/images/categoryIcons/2.png`,
+`${process.env.PUBLIC_URL}/static/images/categoryIcons/3.png`,`${process.env.PUBLIC_URL}/static/images/categoryIcons/4.png`,`${process.env.PUBLIC_URL}/static/images/categoryIcons/5.png`,
+`${process.env.PUBLIC_URL}/static/images/categoryIcons/6.png`,`${process.env.PUBLIC_URL}/static/images/categoryIcons/7.png`,`${process.env.PUBLIC_URL}/static/images/categoryIcons/8.png`,`${process.env.PUBLIC_URL}/static/images/categoryIcons/9.png`,
+`${process.env.PUBLIC_URL}/static/images/categoryIcons/10.png`];
+
 const CustomerListToolbar = (props) => {
   const { handleClickOpen, handleClose, setCategoryHandler,open } = props;
+  const [category,setCategory]=useState({category:"",icon:""});
+  const [selectedIcon,setSelectedIcon]=useState("");
+  const [itemImage,setItemImage]=useState(null);
+  const [image,setImage]=useState(null);
+  const [loading,setLoading]=useState(false);
+  console.log(selectedIcon);
+  const handleUpdateItemImage = (file) => {
+    const storage = firebase.storage();
+    let File=file===null?itemImage:file;
+    const uploadTask = storage
+      .ref(`categoryIcon/${File.name}`)
+      .put(File);
+    uploadTask.on(
+      "state_changed",
+      () => {},
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        storage
+          .ref("categoryIcon")
+          .child(File.name)
+          .getDownloadURL()
+          .then((ul) => {
+            setCategory((prev)=>({...prev,icon:ul}))
+            handleClose({category:category.category,icon:ul});
+            setSelectedIcon("");setItemImage(null); setImage(null);
+            setLoading(false);
+          });
+      }
+    );
+  };
+   const  createFile=async()=>{
+    let response = await fetch(selectedIcon);
+
+    let data = await response.blob();
+    let metadata = {
+      type: 'image/jpeg'
+    };
+    let file = new File([data], `${selectedIcon[selectedIcon.length-5]}.jpg`, metadata);
+    setItemImage(file);
+    handleUpdateItemImage(file);
+   
+  }
+  
+  const imageChangeHandler=(e)=>{
+    e.preventDefault();
+    setItemImage(e.target.files[0]);
+  
+    setSelectedIcon(URL.createObjectURL(e.target.files[0]));
+    setImage(URL.createObjectURL(e.target.files[0]));
+  }
+  const handleUp=()=>{
+    setLoading(true);
+    if(itemImage===null){
+      createFile();
+      return;
+    }
+    handleUpdateItemImage(null);
+  }
   return (
     <Box {...props}>
       <Box
@@ -32,12 +101,60 @@ const CustomerListToolbar = (props) => {
               type="text"
               fullWidth
               variant="standard"
-              onChange={(e) => setCategoryHandler(e.target.value)}
+              onChange={(e) => setCategory((prev)=>({...prev,category:e.target.value}))}
             />
+            
+          
+       <Box sx={{display:"flex",mt:5}} >
+       <Typography color="textPrimary" variant="h4" sx={{ m: 3 }}>
+          Select Icon
+        </Typography>
+        <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Category"
+                value={selectedIcon}
+                onChange={(e)=>setSelectedIcon(e.target.value)}
+              >
+                {icons?.map((icon,id) => {
+                  return (
+                    <MenuItem value={icon} key={id}>
+                   
+                      <img alt="" key={id} value={icon}  src={icon} width="100px" height="100px" />
+                    </MenuItem>
+                  );
+                })}
+              </Select> 
+              <Typography color="textPrimary" variant="h4" sx={{ m: 3 }}>
+         or
+        </Typography>
+        {image!==null?<Avatar
+                variant="rounded"
+                src={image}
+                sx={{
+                  height: 100,
+                  width: 100,
+                }}
+              />:null}
+        <Button variant="contained" component="label">
+        Upload Icon
+                <input type="file" hidden onChange={imageChangeHandler} />
+              </Button>
+       </Box>
+         
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={handleClose}>Add</Button>
+            <Button onClick={()=>{setSelectedIcon("");setItemImage(null); setImage(null);handleClose(null)}}>Cancel</Button>
+            <Button
+
+ 
+  startIcon={<SaveIcon />}
+  variant="outlined"
+  onClick={()=>{handleUp();}}
+>
+Add  {loading && <CircularProgress/>}
+</Button>
+           
           </DialogActions>
         </Dialog>
       </Box>

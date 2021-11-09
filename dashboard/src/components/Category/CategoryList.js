@@ -49,7 +49,7 @@ const CategoryList = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Category</TableCell>
-                <TableCell></TableCell>
+                <TableCell>Icon</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -58,6 +58,10 @@ const CategoryList = (props) => {
                   <TableRow hover key={category._id}>
                     <TableCell>{category.category}</TableCell>
 
+               
+                    <TableCell>
+                    <img alt="" width="50px" height="50px" src={category.icon}  />
+                    </TableCell>
                     <TableCell>
                       <Chip
                         label="delete"

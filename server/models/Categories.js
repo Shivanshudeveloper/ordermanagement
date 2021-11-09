@@ -15,6 +15,9 @@ const CategoriesSchema = new mongoose.Schema({
         required:true,
         unique:true
     },
+    icon:{
+type:String
+    },
     restaurantName:{
         type:String,
         required:true

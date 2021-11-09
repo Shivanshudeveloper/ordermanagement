@@ -39,9 +39,9 @@ const Categories = () => {
   const setCategoryHandler = (cat) => {
     setCategory(cat);
   };
-  const handleClose = () => {
-  
-    if (category !== "") {
+  const handleClose = (cat) => {
+    
+    if (cat!==null) {
       const addCategoryFunction = async () => {
         try {
           const rawResponse = await fetch(
@@ -53,7 +53,8 @@ const Categories = () => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                category: category,
+                category: cat.category,
+                icon:cat.icon,
                 email: User.email,
                 restaurantName: restaurantName,
                 userID: User.uid,
@@ -62,18 +63,20 @@ const Categories = () => {
           );
           const content = await rawResponse.json();
           setCategoryHandler("");
-          console.log("added");
+          
           setCategories((old) => [...old, content]);
           setError({ error: false, message: "" });
-          setOpen(false);
+         
         } catch (err) {
           setError({ error: true, message: err.message });
-          setOpen(false);
+     
         }
       };
 
-      addCategoryFunction();
+  addCategoryFunction();
+     
     }
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -83,7 +86,7 @@ const Categories = () => {
           `http://localhost:5000/api/v1/main/getcategories/${User.email}`
         );
         const content = await rawResponse.json();
-
+         console.log(content,"categopry")
         setCategories(content);
 
         setError({ error: false, message: "" });
