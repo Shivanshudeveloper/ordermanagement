@@ -21,6 +21,7 @@ import List from "./components/List";
 import Categories from "./components/Categories";
 import getUser from "../Firebase/getUser";
 import { useEffect, useState } from "react";
+import Cart from "./cart/Cart";
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
@@ -60,6 +61,7 @@ const Item = ({ item }) => {
     </Box>
   );
 };
+
 const Home = () => {
   const classes = useStyles();
   const [User, setUser] = useState(null);
@@ -75,6 +77,11 @@ const Home = () => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [cart, setCart] = useState([]);
   const [selectedCategory, setSlectedCategory] = useState("Burger");
+  const [showCart,setShowCart]=useState(false);
+ 
+  const showCartHandler=(val)=>{
+    setShowCart(val);
+  }
   const handleClickOpen = (item) => {
     setSelectedItem(item);
     setOpen(true);
@@ -85,7 +92,11 @@ const Home = () => {
     setOpen(false);
   };
   const addToCart = () => {
-    setCart((old) => [...old, selectedItem]);
+   
+
+      setCart((old) => [...old, selectedItem]);
+    
+    
     setShowSnackbar(true);
     handleClose();
   };
@@ -149,6 +160,12 @@ const Home = () => {
   const changeCategoryHandler = (cat) => {
     setSlectedCategory(cat);
   };
+  const handleDelete=(menu)=>{
+    let Cart=cart;
+    Cart=Cart.filter((m)=>m._id!==menu._id);
+    setCart(Cart);
+  }
+console.log("Cart",cart);
   return (
     <>
       <Dialog
@@ -184,8 +201,8 @@ const Home = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Header cart={cart} user={user} />
+       {showCart?<Cart handleDelete={handleDelete} showCartHandler={showCartHandler}  cart={cart} />:null}
+      <Header cart={cart} user={user} showCartHandler={showCartHandler}/>
       <Snackbar
         open={showSnackbar}
         autoHideDuration={6000}
@@ -238,7 +255,7 @@ const Home = () => {
                 >
                   <Paper
                     sx={{ m: 0 }}
-                    onClick={handleClickOpen}
+                    onClick={()=>handleClickOpen(menu)}
                     className={classes.paper}
                   >
                     <center>
