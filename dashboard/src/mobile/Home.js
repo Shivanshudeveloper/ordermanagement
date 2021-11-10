@@ -77,11 +77,11 @@ const Home = () => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [cart, setCart] = useState([]);
   const [selectedCategory, setSlectedCategory] = useState("Burger");
-  const [showCart,setShowCart]=useState(false);
- 
-  const showCartHandler=(val)=>{
+  const [showCart, setShowCart] = useState(false);
+
+  const showCartHandler = (val) => {
     setShowCart(val);
-  }
+  };
   const handleClickOpen = (item) => {
     setSelectedItem(item);
     setOpen(true);
@@ -92,11 +92,19 @@ const Home = () => {
     setOpen(false);
   };
   const addToCart = () => {
-   
+    let cartTemp = cart;
+    let index = cart.findIndex(
+      (item) => item.selectedItem._id === selectedItem._id
+    );
+    if (index >= 0) {
+      cartTemp[index].count += 1;
+      setCart(cartTemp);
+    } else {
+      setCart((old) => [...old, { selectedItem: selectedItem, count: 1 }]);
+    }
 
-      setCart((old) => [...old, selectedItem]);
-    
-    
+    setSelectedItem(null);
+
     setShowSnackbar(true);
     handleClose();
   };
@@ -160,12 +168,37 @@ const Home = () => {
   const changeCategoryHandler = (cat) => {
     setSlectedCategory(cat);
   };
-  const handleDelete=(menu)=>{
-    let Cart=cart;
-    Cart=Cart.filter((m)=>m._id!==menu._id);
-    setCart(Cart);
-  }
-console.log("Cart",cart);
+  const decreaseQuantity = (menu) => {
+    let cartTemp = [...cart];
+    let index = cart.findIndex(
+      (item) => item.selectedItem._id === menu.selectedItem._id
+    );
+    if (cartTemp[index].count > 1) {
+      cartTemp[index].count -= 1;
+
+      setCart(cartTemp);
+    }
+  };
+  const increaseQuantity = (menu) => {
+    let cartTemp = [...cart];
+    let index = cart.findIndex(
+      (item) => item.selectedItem._id === menu.selectedItem._id
+    );
+    if (cartTemp[index].count >= 1) {
+      cartTemp[index].count += 1;
+
+      setCart(cartTemp);
+    }
+  };
+  const handleDelete = (menu) => {
+    let cartTemp = [...cart];
+
+    cartTemp = cartTemp.filter(
+      (item) => item.selectedItem._id !== menu.selectedItem._id
+    );
+    setCart(cartTemp);
+  };
+
   return (
     <>
       <Dialog
@@ -187,7 +220,9 @@ console.log("Cart",cart);
               />
             </center>
 
-            <h4 style={{ marginTop: "10px", color: "green" }}>RM 10.00</h4>
+            <h4 style={{ marginTop: "10px", color: "green" }}>
+              {selectedItem?.price}
+            </h4>
 
             <p style={{ marginTop: "10px" }}>{selectedItem?.description}</p>
           </section>
@@ -201,8 +236,16 @@ console.log("Cart",cart);
           </Button>
         </DialogActions>
       </Dialog>
-       {showCart?<Cart handleDelete={handleDelete} showCartHandler={showCartHandler}  cart={cart} />:null}
-      <Header cart={cart} user={user} showCartHandler={showCartHandler}/>
+      {showCart ? (
+        <Cart
+          handleDelete={handleDelete}
+          increaseQuantity={increaseQuantity}
+          decreaseQuantity={decreaseQuantity}
+          showCartHandler={showCartHandler}
+          cart={cart}
+        />
+      ) : null}
+      <Header cart={cart} user={user} showCartHandler={showCartHandler} />
       <Snackbar
         open={showSnackbar}
         autoHideDuration={6000}
@@ -255,7 +298,7 @@ console.log("Cart",cart);
                 >
                   <Paper
                     sx={{ m: 0 }}
-                    onClick={()=>handleClickOpen(menu)}
+                    onClick={() => handleClickOpen(menu)}
                     className={classes.paper}
                   >
                     <center>
@@ -280,32 +323,30 @@ console.log("Cart",cart);
           ) : (
             menuList.map((menu) => {
               return (
-                <>
+                <Grid
+                  key={menu._id}
+                  item
+                  xs={user === null ? 6 : user.layout ? 6 : 12}
+                >
                   {menu?.category === selectedCategory ? (
-                    <Grid
-                      key={menu._id}
-                      item
-                      xs={user === null ? 6 : user.layout ? 6 : 12}
+                    <Paper
+                      onClick={() => handleClickOpen(menu)}
+                      className={classes.paper}
                     >
-                      <Paper
-                        onClick={() => handleClickOpen(menu)}
-                        className={classes.paper}
-                      >
-                        <center>
-                          <img
-                            alt=""
-                            src={menu.image}
-                            width="100px"
-                            height="100px"
-                          />
-                        </center>
-                        <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+                      <center>
+                        <img
+                          alt=""
+                          src={menu.image}
+                          width="100px"
+                          height="100px"
+                        />
+                      </center>
+                      <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
 
-                        <h5 style={{ color: "red" }}>RM {menu.price}</h5>
-                      </Paper>{" "}
-                    </Grid>
+                      <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                    </Paper>
                   ) : null}
-                </>
+                </Grid>
               );
             })
           )}
