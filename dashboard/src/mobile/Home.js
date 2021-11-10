@@ -76,7 +76,7 @@ const Home = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [cart, setCart] = useState([]);
-  const [selectedCategory, setSlectedCategory] = useState("Burger");
+  const [selectedCategory, setSlectedCategory] = useState("viewAll");
   const [showCart, setShowCart] = useState(false);
 
   const showCartHandler = (val) => {
@@ -345,7 +345,22 @@ const Home = () => {
 
                       <h5 style={{ color: "red" }}>RM {menu.price}</h5>
                     </Paper>
-                  ) : null}
+                  ) :   selectedCategory === "viewAll"?    (<Paper
+                  onClick={() => handleClickOpen(menu)}
+                  className={classes.paper}
+                >
+                  <center>
+                    <img
+                      alt=""
+                      src={menu.image}
+                      width="100px"
+                      height="100px"
+                    />
+                  </center>
+                  <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+
+                  <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                </Paper>):null }
                 </Grid>
               );
             })

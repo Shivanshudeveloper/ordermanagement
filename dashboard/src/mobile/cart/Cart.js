@@ -9,12 +9,17 @@ import {
   Grid,
   Paper,
   Typography,
+  Container,
+  Divider,
+  TextField,
 } from "@material-ui/core";
 import { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles, styled } from "@material-ui/styles";
+import { green } from "@mui/material/colors";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import getUser from "../../Firebase/getUser";
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(1),
@@ -22,7 +27,15 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "10px",
   },
 }));
-
+const ColorButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.getContrastText(green[400]),
+  backgroundColor: green[400],
+  "&:hover": {
+    backgroundColor: green[600],
+  },
+  width: "80%",
+  left: "10%",
+}));
 const Cart = ({
   cart,
   showCartHandler,
@@ -34,24 +47,66 @@ const Cart = ({
 
   const classes = useStyles();
   const [counter, setCounter] = useState(null);
+  const [amount, setAmount] = useState(0);
   const [total, setTotal] = useState(0);
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+
+  const [User, setUser] = useState({ displayName: "", email: "" });
+  const [showCouponInput, setShowCouponInput] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [coupons, setCoupons] = useState([]);
   const handleClickOpen = () => {
     setOpen(true);
   };
+  const findCoupon = () => {
+    let index = coupons.findIndex((ele) => ele.couponCode === couponCode);
+    console.log(coupons[index].discount[coupons[index].discount.length - 2]);
+    if (index >= 0) {
+      let amt = total;
 
+      let disc =
+        (amt *
+          Number(coupons[index].discount[coupons[index].discount.length - 2])) /
+        100;
+      amt = amt - disc;
+      setDiscount(disc);
+      setTotal(amt);
+      setCouponApplied(true);
+    }
+  };
   const handleClose = () => {
     setOpen(false);
   };
   useEffect(() => {
-    let amount = 0;
-    cart.forEach((item) => {
-      amount += Number(item.selectedItem.price) * item.count;
-    });
-    setTotal(amount);
-   
-  }, [cart]);
+    const getCoupons = async () => {
+      try {
+        const rawResponse = await fetch(
+          `http://localhost:5000/api/v1/main/coupons/getcoupons/${User.email}`
+        );
+        const content = await rawResponse.json();
+        console.log(content);
+        setCoupons(content);
+      } catch (err) {}
+    };
 
-  console.log(counter);
+    getCoupons();
+  }, [User]);
+  useEffect(() => {
+    let amt = 0;
+    cart.forEach((item) => {
+      amt += Number(item.selectedItem.price) * item.count;
+    });
+    setAmount(amt);
+    setTotal(amt);
+  }, [cart]);
+  useEffect(() => {
+    const get = async () => {
+      setUser(await getUser());
+    };
+    get();
+  }, []);
+
   return (
     <div>
       <Dialog
@@ -69,10 +124,22 @@ const Cart = ({
         >
           CART
         </Typography>
-        <DialogContent sx={{ height: "500px", overflow: "scroll" }}>
+        <Container
+          sx={{
+            height: "400px",
+            overflow: "scroll",
+            overflowX: "hidden",
+            mt: 3,
+          }}
+        >
           {cart?.map((menu) => {
             return (
-              <Grid key={menu.selectedItem._id} item sx={{ mb: 2 }} xs={12}>
+              <Grid
+                key={menu.selectedItem._id}
+                item
+                sx={{ mb: 2, height: "100px" }}
+                xs={12}
+              >
                 <Paper
                   sx={{
                     display: "flex",
@@ -86,8 +153,8 @@ const Cart = ({
                     <img
                       alt=""
                       src={menu.selectedItem.image}
-                      width="50px"
-                      height="50px"
+                      width="30px"
+                      height="30px"
                     />
                   </center>
                   <h4>{menu.selectedItem.item}</h4>
@@ -98,11 +165,11 @@ const Cart = ({
                     {" "}
                     <ArrowDropUpIcon
                       onClick={() => increaseQuantity(menu)}
-                      sx={{ fontSize: "3.5em" }}
+                      sx={{ fontSize: "2.5em" }}
                     />
                     <ArrowDropDownIcon
                       onClick={() => decreaseQuantity(menu)}
-                      sx={{ fontSize: "3.5em" }}
+                      sx={{ fontSize: "2.5em" }}
                     />
                   </Box>
                   <Button onClick={() => handleDelete(menu)}>
@@ -113,22 +180,76 @@ const Cart = ({
               </Grid>
             );
           })}
-        </DialogContent>
-        <Typography
-          color="textPrimary"
-          variant="h5"
-          sx={{ textAlign: "left", ml: 3 }}
-        >
-          Total Amount:
-        </Typography>
-        <Typography
-          color="textPrimary"
-          variant="h2"
-          sx={{ textAlign: "right", mr: 3 }}
-        >
-          {total}
-        </Typography>
+        </Container>
+        {!showCouponInput ? (
+          <Button onClick={() => setShowCouponInput(true)} variant="outlined">
+            APPLY COUPON
+          </Button>
+        ) : !couponApplied ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-evenly",
+            }}
+          >
+            <TextField
+              id="outlined-basic"
+              label="Coupon Code"
+              variant="outlined"
+              value={couponCode}
+              onChange={(e) => {
+                setCouponCode(e.target.value);
+              }}
+            />
+            <Button onClick={findCoupon} variant="outlined">
+              Check
+            </Button>
+          </Box>
+        ) : (
+          <TextField
+            id="outlined-basic"
+            label=""
+            variant="outlined"
+            disabled
+            value={"Coupon Applied"}
+          />
+        )}
+        <Container>
+          <Typography
+            color="textPrimary"
+            variant="h3"
+            sx={{ textAlign: "left", mt: 5, fontWeight: "800" }}
+          >
+            Bill Details
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between", m: 1 }}>
+            <label>Item Total </label>
 
+            <h3>RM {amount}</h3>
+          </Box>
+          <Divider />
+          <Box sx={{ display: "flex", justifyContent: "space-between", m: 1 }}>
+            <label>Discount </label>
+
+            <h3>RM {discount}</h3>
+          </Box>
+          <Divider sx={{ mb: 4 }} />
+          <Box sx={{ display: "flex", justifyContent: "space-between", m: 1 }}>
+            <h2>Total </h2>
+
+            <h3>RM {total}</h3>
+          </Box>
+        </Container>
+
+        <ColorButton
+          sx={{ display: "flex", justifyContent: "space-evenly", m: 1 }}
+          variant="contained"
+        >
+          {" "}
+          <label>Total</label>
+          <h4>RM {total}</h4>
+        </ColorButton>
         <DialogActions>
           <Button onClick={() => showCartHandler(false)}>Close</Button>
         </DialogActions>

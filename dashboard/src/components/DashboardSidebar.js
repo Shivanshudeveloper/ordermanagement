@@ -15,6 +15,7 @@ import FastfoodIcon from '@material-ui/icons/Fastfood';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import CategoryIcon from '@material-ui/icons/Category';
 import ViewCarouselIcon from '@material-ui/icons/ViewCarousel';
+import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
 import {
@@ -81,6 +82,11 @@ const items = [
     href: '/app/Banners',
     icon: ViewCarouselIcon,
     title: 'Banners'
+  },
+  {
+    href: '/app/Coupons',
+    icon: FolderOpenIcon,
+    title: 'Coupons'
   },
 ];
 

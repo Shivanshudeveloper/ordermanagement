@@ -4,6 +4,7 @@ const CategoriesRouter=require('./categories/CategoriesRouter');
 const MenuRouter=require("../routes/Menu/MenuRouter");
 const UserRouter=require("../routes/User/UserRouter");
 const BannersRouter=require("../routes/Banners/BannersRouter");
+const CouponsRouter=require("../routes/Coupons/CouponsRouter");
 const { v4: uuidv4 } = require("uuid");
 // Getting Module
 const Products_Model = require("../models/Products");
@@ -97,4 +98,5 @@ router.use('/',CategoriesRouter);
 router.use('/menu',MenuRouter);
 router.use('/user',UserRouter)
 router.use('/banners',BannersRouter);
+router.use('/coupons',CouponsRouter);
 module.exports = router;
