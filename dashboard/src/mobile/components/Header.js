@@ -3,15 +3,18 @@ import { makeStyles } from "@material-ui/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import {} from "@material-ui/core";
+import {SwipeableDrawer,ListItemIcon,ListItem,ListItemText,List} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Badge from "@material-ui/core/Badge";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import InboxIcon from "@material-ui/icons/MoveToInbox";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { withStyles } from "@material-ui/styles";
 import { Box } from "@material-ui/core";
+import LoginIcon from '@mui/icons-material/Login';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -43,7 +46,7 @@ const StyledBadge = withStyles((theme) => ({
 export default function ButtonAppBar({ cart, user,showCartHandler }) {
   const classes = useStyles();
   const navigate = useNavigate();
-
+ const [showDrawer,setShowDrawer]=useState(false);
  
   return (
     <div className={classes.root}>
@@ -57,9 +60,29 @@ export default function ButtonAppBar({ cart, user,showCartHandler }) {
             className={classes.menuButton}
             color="inherit"
             aria-label="menu"
+            onClick={()=>setShowDrawer(true)}
           >
+            
+            
             <MenuIcon />
           </IconButton>
+          <SwipeableDrawer
+            
+            open={showDrawer}
+            onClose={()=>setShowDrawer(false)}
+            onOpen={()=>setShowDrawer(true)}
+          >
+             <List sx={{width:"70vw"}}>
+        {['Register','Sign In'].map((text, index) => (
+          <ListItem button key={text} onClick={()=>{text==="Register"?navigate('/mobile/register'):navigate('/mobile/signin')}}>
+            <ListItemIcon>
+              {index % 2 === 0 ? <AssignmentIcon /> : <LoginIcon />}
+            </ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+          </SwipeableDrawer>
           {user?.logo === "" ? (
             <Typography
               variant="h4"

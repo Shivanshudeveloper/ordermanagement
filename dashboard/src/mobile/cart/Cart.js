@@ -28,13 +28,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const ColorButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.getContrastText(green[400]),
-  backgroundColor: green[400],
+  color: theme.palette.getContrastText(green[600]),
+  backgroundColor: green[600],
   "&:hover": {
-    backgroundColor: green[600],
+    backgroundColor: green[800],
   },
-  width: "80%",
-  left: "10%",
+  width: "95%",
+  left:"2.5%"
+ 
 }));
 const Cart = ({
   cart,
@@ -137,7 +138,7 @@ const Cart = ({
               <Grid
                 key={menu.selectedItem._id}
                 item
-                sx={{ mb: 2, height: "100px" }}
+                sx={{ mb: 2, maxHeight: "100px" }}
                 xs={12}
               >
                 <Paper
@@ -161,7 +162,7 @@ const Cart = ({
 
                   <h5 style={{ color: "red" }}>RM {menu.selectedItem.price}</h5>
                   <h4>{menu.count}</h4>
-                  <Box sx={{ mr: 4, p: 0, width: "0px" }}>
+                  {!couponApplied?<Box sx={{ mr: 4, p: 0, width: "0px" }}>
                     {" "}
                     <ArrowDropUpIcon
                       onClick={() => increaseQuantity(menu)}
@@ -171,11 +172,11 @@ const Cart = ({
                       onClick={() => decreaseQuantity(menu)}
                       sx={{ fontSize: "2.5em" }}
                     />
-                  </Box>
-                  <Button onClick={() => handleDelete(menu)}>
+                  </Box>:null}
+                  {!couponApplied?<Button onClick={() => handleDelete(menu)}>
                     {" "}
                     <DeleteIcon sx={{ color: "red", fontSize: "2.5em" }} />
-                  </Button>
+                  </Button>:null}
                 </Paper>{" "}
               </Grid>
             );
@@ -243,12 +244,15 @@ const Cart = ({
         </Container>
 
         <ColorButton
-          sx={{ display: "flex", justifyContent: "space-evenly", m: 1 }}
+          sx={{ display: "flex", justifyContent: "space-between", m: 0 }}
           variant="contained"
         >
           {" "}
-          <label>Total</label>
-          <h4>RM {total}</h4>
+        <Box   sx={{ justifyContent: "space-evenly", m: 1 }} >
+        <label style={{color:"white"}}>Total:    </label>
+          <label style={{color:"white",fontSize:"1.3em"}} >RM {total}</label>
+        </Box>
+          <label style={{color:"white",fontSize:"1.3em"}} >Continue Checkout</label>
         </ColorButton>
         <DialogActions>
           <Button onClick={() => showCartHandler(false)}>Close</Button>

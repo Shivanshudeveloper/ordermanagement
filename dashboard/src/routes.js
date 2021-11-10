@@ -17,8 +17,8 @@ import HomeMobile from './mobile/Home';
 import Templates from './pages/Templates';
 import Banners from './pages/Banners';
 import Coupons from './pages/Coupons';
-
-
+import Signin from './mobile/pages/Signin';
+import Signup from './mobile/pages/Register';
 
 const routes = [
   {
@@ -53,6 +53,8 @@ const routes = [
     path: 'mobile',
     children: [
       { path: '/', element:<HomeMobile />},
+      { path: '/register', element:<Signup />},
+      { path: '/signin', element:<Signin />},
     ]
   }
 ];

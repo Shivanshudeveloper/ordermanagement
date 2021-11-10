@@ -90,9 +90,9 @@ const Coupons = () => {
           backgroundColor: "white",
           height: "200px",
           py: 3,
-          ml: 50,
+          ml: 40,
           mt: 10,
-          width: "50%",
+          width: "60%",
         }}
       >
         <Container maxWidth={false}>
