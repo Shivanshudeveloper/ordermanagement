@@ -5,6 +5,8 @@ const MenuRouter=require("../routes/Menu/MenuRouter");
 const UserRouter=require("../routes/User/UserRouter");
 const BannersRouter=require("../routes/Banners/BannersRouter");
 const CouponsRouter=require("../routes/Coupons/CouponsRouter");
+const AuthRouter=require("../routes/Auth/AuthRouter");
+const CustomerRouter=require("../routes/Customers/CustomersRouter");
 const { v4: uuidv4 } = require("uuid");
 // Getting Module
 const Products_Model = require("../models/Products");
@@ -99,4 +101,6 @@ router.use('/menu',MenuRouter);
 router.use('/user',UserRouter)
 router.use('/banners',BannersRouter);
 router.use('/coupons',CouponsRouter);
+router.use('/auth',AuthRouter);
+router.use('/customer',CustomerRouter);
 module.exports = router;

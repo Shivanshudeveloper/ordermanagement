@@ -43,11 +43,27 @@ const StyledBadge = withStyles((theme) => ({
     padding: "0 4px",
   },
 }))(Badge);
-export default function ButtonAppBar({ cart, user,showCartHandler }) {
+export default function ButtonAppBar({ cart, user,showCartHandler,customer,setCustomerHandler }) {
   const classes = useStyles();
   const navigate = useNavigate();
  const [showDrawer,setShowDrawer]=useState(false);
- 
+ const logouthandle = () => {
+  fetch("http://localhost:5000/api/v1/main/auth/logout", {
+    method: "POST",
+    credentials: 'include', 
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json()).then(res=>{
+      console.log(res);
+      setCustomerHandler(null)
+      navigate('/mobile',{replace:true})
+    }).catch(err=>console.log(err));
+
+};
+
   return (
     <div className={classes.root}>
       <AppBar
@@ -73,14 +89,19 @@ export default function ButtonAppBar({ cart, user,showCartHandler }) {
             onOpen={()=>setShowDrawer(true)}
           >
              <List sx={{width:"70vw"}}>
-        {['Register','Sign In'].map((text, index) => (
+        {customer===null?['Register','Sign In'].map((text, index) => (
           <ListItem button key={text} onClick={()=>{text==="Register"?navigate('/mobile/register'):navigate('/mobile/signin')}}>
             <ListItemIcon>
               {index % 2 === 0 ? <AssignmentIcon /> : <LoginIcon />}
             </ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
-        ))}
+        )):  <ListItem button key="Sign Out" onClick={()=>{logouthandle()}}>
+        <ListItemIcon>
+           <LoginIcon />
+        </ListItemIcon>
+        <ListItemText primary="Sign Out" />
+      </ListItem>}
       </List>
           </SwipeableDrawer>
           {user?.logo === "" ? (

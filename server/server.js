@@ -3,9 +3,10 @@ const path = require('path');
 const mongoose = require('mongoose');
 const colors = require('colors');
 const cors = require('cors');
-
+var cookies = require("cookie-parser");
 // Route Files
 const main = require('./routes/main');
+
 
 
 // DB Connection
@@ -18,8 +19,13 @@ mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true ,useFindA
 
 
 const app = express();
-
-app.use(cors());
+var corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials:  true
+  }
+  
+  app.use(cors(corsOptions))
+  app.use(cookies());
 app.use(express.json());
 
 // Routing for API Service

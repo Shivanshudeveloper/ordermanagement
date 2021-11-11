@@ -22,6 +22,7 @@ import Categories from "./components/Categories";
 import getUser from "../Firebase/getUser";
 import { useEffect, useState } from "react";
 import Cart from "./cart/Cart";
+import {  useNavigate } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
@@ -64,9 +65,10 @@ const Item = ({ item }) => {
 
 const Home = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [User, setUser] = useState(null);
   const [user, setuser] = useState(null);
-
+  const [customer,setCustomer]=useState(null);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState();
   const [menuList, setMenuList] = useState([]);
@@ -92,6 +94,9 @@ const Home = () => {
     setOpen(false);
   };
   const addToCart = () => {
+    if(customer===null){
+      navigate('/mobile/signin',{replace:true});
+    }
     let cartTemp = cart;
     let index = cart.findIndex(
       (item) => item.selectedItem._id === selectedItem._id
@@ -198,7 +203,42 @@ const Home = () => {
     );
     setCart(cartTemp);
   };
+useEffect(()=>{
+  const getCustomer=async(id)=>{
+    try {
+      const rawResponse = await fetch(
+        `http://localhost:5000/api/v1/main/customer/getcustomer?id=${id}`,{
+          method: "GET"
+        }
+      );
+      const content = await rawResponse.json();
+      console.log(content);
+      setCustomer(content);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  const verify = async () => {
+    try {
+      const rawResponse = await fetch(
+        `http://localhost:5000/api/v1/main/auth/verify`,{
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      const content = await rawResponse.json();
+      if(content.id!==null)
+      getCustomer(content.id)
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
+  verify();
+},[])
+const setCustomerHandler=(val)=>{
+  setCustomer(val);
+}
   return (
     <>
       <Dialog
@@ -243,9 +283,10 @@ const Home = () => {
           decreaseQuantity={decreaseQuantity}
           showCartHandler={showCartHandler}
           cart={cart}
+          customer={customer} 
         />
       ) : null}
-      <Header cart={cart} user={user} showCartHandler={showCartHandler} />
+      <Header cart={cart} user={user} showCartHandler={showCartHandler} customer={customer} setCustomerHandler={setCustomerHandler} />
       <Snackbar
         open={showSnackbar}
         autoHideDuration={6000}

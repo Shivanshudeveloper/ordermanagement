@@ -13,6 +13,7 @@ import {
   Divider,
   TextField,
 } from "@material-ui/core";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { makeStyles, styled } from "@material-ui/styles";
 import { green } from "@mui/material/colors";
@@ -43,6 +44,7 @@ const Cart = ({
   handleDelete,
   increaseQuantity,
   decreaseQuantity,
+  customer
 }) => {
   const [open, setOpen] = useState(true);
 
@@ -57,6 +59,7 @@ const Cart = ({
   const [showCouponInput, setShowCouponInput] = useState(false);
   const [couponApplied, setCouponApplied] = useState(false);
   const [coupons, setCoupons] = useState([]);
+  const navigate = useNavigate();
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -107,7 +110,9 @@ const Cart = ({
     };
     get();
   }, []);
-
+const checkout=()=>{
+ 
+}
   return (
     <div>
       <Dialog
@@ -252,7 +257,7 @@ const Cart = ({
         <label style={{color:"white"}}>Total:    </label>
           <label style={{color:"white",fontSize:"1.3em"}} >RM {total}</label>
         </Box>
-          <label style={{color:"white",fontSize:"1.3em"}} >Continue Checkout</label>
+          <label style={{color:"white",fontSize:"1em"}} onClick={checkout} >Continue Checkout</label>
         </ColorButton>
         <DialogActions>
           <Button onClick={() => showCartHandler(false)}>Close</Button>

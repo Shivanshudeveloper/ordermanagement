@@ -10,30 +10,50 @@ import {
   FormHelperText,
   Link,
   TextField,
-  Typography,
+  Typography,Alert,Snackbar
 } from "@material-ui/core";
-import { auth } from "../../Firebase/index";
+
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {useState} from "react";
 const Register = () => {
   const navigate = useNavigate();
-
+ const [showSnackBar,setShowSnackBar]=useState({show:false,error:false,message:''});
   const register = (values, { setErrors, setSubmitting }) => {
+
     const { firstName, lastName, password, email } = values;
-    const name = `${firstName} ${lastName}`;
-    fetch("http://localhost:5000/api/v1/main/user/register", {
+    fetch("http://localhost:5000/api/v1/main/auth/register", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: name,
-        email: email
+        firstName,
+        lastName,
+        email,
+        password
       }),
     })
       .then((res) => res.json())
-      .then((res) => console.log(res) );
-      setSubmitting(false);
+      .then((res) => {
+        console.log(res);
+        if(res.code===11000){
+          setSubmitting(false);
+          setShowSnackBar({show:true,error:true,message:"Email Already Exists"});
+        }else{
+          setShowSnackBar({show:true,error:false,message:"Successfully Registered"}); 
+          setTimeout(()=>{
+            navigate("/mobile/signin",{replace:true});
+           },2300);
+        }
+    }).catch(err=>{
+     
+   setSubmitting(false);
+        console.log(err);
+        setShowSnackBar({show:true,error:true,message:"Error !"});
+      });
+
+      
   };
   return (
     <>
@@ -93,7 +113,7 @@ const Register = () => {
                     gutterBottom
                     variant="body2"
                   >
-                    Use your email to create new account
+                    Use your email to create account
                   </Typography>
                 </Box>
                 <TextField
@@ -167,6 +187,14 @@ const Register = () => {
               </form>
             )}
           </Formik>
+          <Snackbar open={showSnackBar.show} autoHideDuration={6000} onClose={()=>setShowSnackBar(false)}>
+      
+         <Alert onClose={()=>setShowSnackBar({show:false,error:false,message:''})} severity={showSnackBar.error?"error":"success"} sx={{ width: '100%' }}>
+         {showSnackBar.message}
+         </Alert>
+     
+      </Snackbar>
+
         </Container>
       </Box>
     </>

@@ -10,18 +10,49 @@ import {
   Container,
   Link,
   TextField,
-  Typography
+  Typography,Snackbar,Alert
 } from '@material-ui/core';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 const Signin = () => {
   const navigate = useNavigate();
   const [showPopper, setShowPopper] = useState(false);
+  const [showSnackBar,setShowSnackBar]=useState({show:false,error:false,message:''});
   const login = (values, { setErrors, setSubmitting }) => {
-    const { password, email } = values;
-setSubmitting(false);
   
+    const { password, email } = values;
+    fetch("http://localhost:5000/api/v1/main/auth/signin", {
+      method: "POST",
+      credentials: 'include', 
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        
+        if(!res.success){
+          setSubmitting(false);
+          setShowSnackBar({show:true,error:true,message:res.message});
+        }else{
+         
+          setShowSnackBar({show:true,error:false,message:res.message}); 
+          setTimeout(()=>{
+            navigate("/mobile",{replace:true});
+           },1500);
+        }
+   
+          
+    }).catch(err=>{
+     
+        console.log(err);
+        setShowSnackBar({show:true,error:true,message:"Error !"});
+      });
   };
-
   return (
     <>
       <Helmet>
@@ -153,7 +184,13 @@ setSubmitting(false);
             )}
 
           </Formik>
-
+          <Snackbar open={showSnackBar.show} autoHideDuration={6000} onClose={()=>setShowSnackBar(false)}>
+      
+      <Alert onClose={()=>setShowSnackBar({show:false,error:false,message:''})} severity={showSnackBar.error?"error":"success"} sx={{ width: '100%' }}>
+      {showSnackBar.message}
+      </Alert>
+  
+   </Snackbar>
         </Container>
       </Box>
     </>
