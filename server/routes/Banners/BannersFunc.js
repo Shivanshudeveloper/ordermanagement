@@ -1,12 +1,14 @@
 const Banners_Model = require("../../models/Banners");
 
 module.exports.addbanner = async (req, res) => {
-  const { banner, email,name } = req.body;
+  const { banner, email,name,coupon,TandC} = req.body;
   try {
     const Banner = new Banners_Model({
       email,
       banner,
-      name
+      name,
+      coupon,
+      TandC
     });
 
     await Banner.save();

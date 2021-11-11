@@ -13,12 +13,29 @@ import {
   DialogActions,
   ImageListItem,
   ImageListItemBar,
+  Slide,
   CircularProgress,
+  AppBar,
+  Toolbar,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Select,
+  MenuItem,
+  TextField,
 } from "@material-ui/core";
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import firebase from "../Firebase/index";
 import getUser from "../Firebase/getUser";
 import DeleteIcon from "@material-ui/icons/Delete";
+import CloseIcon from "@material-ui/icons/Close";
+import { TextareaAutosize } from "@mui/core";
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const Banners = () => {
   const [image, setImage] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -26,14 +43,33 @@ const Banners = () => {
   const [loading, setLoading] = useState(false);
   const [User, setUser] = useState({ displayName: "", email: "" });
   const [banners, setBanners] = useState([]);
-  const [deleteBanner,setDeleteBanner]=useState(null);
-const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
+  const [deleteBanner, setDeleteBanner] = useState(null);
+  const [showBannerDetails, setShowBannerDetails] = useState(false);
+  const [coupons, setCoupons] = useState([]);
+  const [selectedCoupon, setSelectedCoupon] = useState({});
+  const [openDeleteBannerPrompt, setOpenDeleteBannerPrompt] = useState(false);
+  const [TandC, setTandC] = useState("");
+  const [bannersDetails,setBannersDetails]=useState(null);
   useEffect(() => {
     const get = async () => {
       setUser(await getUser());
     };
     get();
   }, []);
+  useEffect(() => {
+    const getCoupons = async () => {
+      try {
+        const rawResponse = await fetch(
+          `http://localhost:5000/api/v1/main/coupons/getcoupons/${User.email}`
+        );
+        const content = await rawResponse.json();
+       
+        setCoupons(content);
+      } catch (err) {}
+    };
+
+    getCoupons();
+  }, [User]);
   const uploadBanner = async (ul) => {
     try {
       const rawResponse = await fetch(
@@ -48,6 +84,8 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
             banner: ul,
             email: User.email,
             name: image.name,
+            TandC,
+            coupon: selectedCoupon,
           }),
         }
       );
@@ -66,6 +104,10 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
     }
   };
   const handleUpdateItemImage = () => {
+
+
+
+ 
     const storage = firebase.storage();
     setLoading(true);
     const uploadTask = storage.ref(`banners/${image.name}`).put(image);
@@ -94,7 +136,7 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
           `http://localhost:5000/api/v1/main/banners/getbanners/${User.email}`
         );
         const content = await rawResponse.json();
-
+         console.log(content);
         setBanners(content);
       } catch (err) {}
     };
@@ -102,8 +144,7 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
     getBanners();
   }, [User]);
   const handleDeleteBanner = async () => {
-    if(deleteBanner===null)
-    {
+    if (deleteBanner === null) {
       setOpenDeleteBannerPrompt(false);
       return;
     }
@@ -122,7 +163,6 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
       setBanners(newBan);
       setOpenDeleteBannerPrompt(false);
       setDeleteBanner(null);
-
     } catch (err) {
       setOpenDeleteBannerPrompt(false);
       console.log(err);
@@ -136,8 +176,7 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
     setImageUrl(URL.createObjectURL(e.target.files[0]));
   };
   const addBanner = () => {
-    if(image!=="")
-    handleUpdateItemImage();
+    if (image !== "") handleUpdateItemImage();
   };
   const closeBanner = () => {
     setImageUrl("");
@@ -181,12 +220,17 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
             <ImageListItem
               key={item._id}
               sx={{ m: 5, boxShadow: "1px 1px  10px 1px lightgrey" }}
+             
             >
               <img
                 src={`${item.banner}`}
                 srcSet={`${item.banner}`}
                 alt={item.name}
                 loading="lazy"
+                onClick={() => {
+                  setBannersDetails(item);
+                  setShowBannerDetails(true);
+                }}
               />
               <ImageListItemBar title={item.name} position="below" />
 
@@ -200,7 +244,10 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
               >
                 <Button
                   varient="contained"
-                  onClick={() => {setDeleteBanner(item); setOpenDeleteBannerPrompt(true)}}
+                  onClick={() => {
+                    setDeleteBanner(item);
+                    setOpenDeleteBannerPrompt(true);
+                  }}
                   style={{ color: "red", width: "50%" }}
                 >
                   delete <DeleteIcon style={{ color: "red" }} />
@@ -210,7 +257,48 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
           ))}
         </ImageList>
       </Box>
+      <Dialog
+        fullScreen
+        open={showBannerDetails}
+        onClose={() => setShowBannerDetails(false)}
+        TransitionComponent={Transition}
+      >
+        <Toolbar>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            Offer Details
+          </Typography>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => setShowBannerDetails(false)}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Toolbar>
 
+        <List>
+          <ListItem button>
+            <ListItemText primary="Coupon Name" secondary={bannersDetails?.couponCode} />
+          </ListItem>
+          <Divider />
+
+          <ListItem button>
+            <ListItemText
+              primary={"Terms & Conditions"}
+              secondary={bannersDetails?.TandC}
+           
+                  // 1. Minum order of RM 20
+            
+                  // 2. Applicable on Dine-In.Delivery.Pick Up. Orders
+                
+                  // 3. Applicable on QR scanned orders only
+            
+              
+            />
+          </ListItem>
+        </List>
+      </Dialog>
       <Dialog open={open} fullWidth onClose={() => {}}>
         <DialogTitle>Banner</DialogTitle>
         <DialogContent>
@@ -230,21 +318,66 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
 
               <Box
                 sx={{
-                  alignItems: "center",
                   display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  mb: 4,
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  m: 1,
                 }}
               >
-                <Button variant="contained" component="label">
-                  Choose
+                <Button variant="contained" component="label" sx={{ mb: 3 }}>
+                  Choose Banner
                   <input
                     type="file"
                     hidden
                     onChange={(e) => imageChangeHandler(e)}
                   />
                 </Button>
+                <Typography
+                  align="left"
+                  color="textPrimary"
+                  variant="subtitle1"
+                >
+                  Select Coupon Name
+                </Typography>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  fullWidth
+                  label="Category"
+                  value={selectedCoupon.couponCode}
+                  sx={{ mb: 3 }}
+                  onChange={(e) => {
+                    setSelectedCoupon(coupons.find((ele)=>ele.couponCode===e.target.value));
+                  }}
+                >
+                  {coupons?.map((cat) => {
+                    return (
+                      <MenuItem
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                        value={cat.couponCode}
+                        key={cat}
+                      >
+                        <label> {cat.couponCode}</label>
+                        <label> {cat.discount}</label>
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+                <Typography
+                  align="left"
+                  color="textPrimary"
+                  variant="subtitle1"
+                >
+                  Write Terms and Condition
+                </Typography>
+                <textarea
+                  value={TandC}
+                  style={{minHeight:"100px",fontSize:"1.3em"}}
+                  onChange={(e) => setTandC(e.target.value)}
+                />
               </Box>
             </Card>
           </Box>
@@ -268,24 +401,29 @@ const [openDeleteBannerPrompt,setOpenDeleteBannerPrompt]=useState(false);
         </DialogActions>
       </Dialog>
       <Dialog
-                    open={openDeleteBannerPrompt}
-                    onClose={()=>{setOpenDeleteBannerPrompt(false)}}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">
-                      {"Do you want to delete?"}
-                    </DialogTitle>
-                    <DialogActions>
-                      <Button onClick={()=>{setOpenDeleteBannerPrompt(false)}}>NO</Button>
-                      <Button
-                        onClick={() => handleDeleteBanner()}
-                        autoFocus
-                      >
-                        Yes
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
+        open={openDeleteBannerPrompt}
+        onClose={() => {
+          setOpenDeleteBannerPrompt(false);
+        }}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Do you want to delete?"}
+        </DialogTitle>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenDeleteBannerPrompt(false);
+            }}
+          >
+            NO
+          </Button>
+          <Button onClick={() => handleDeleteBanner()} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

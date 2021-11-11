@@ -12,6 +12,12 @@ const BannerSchema = new mongoose.Schema({
     },
    banner:{
            type:String
+   },
+   coupon:{
+       type:Object
+   },
+   TandC:{
+       type:String
    }
   
 })
