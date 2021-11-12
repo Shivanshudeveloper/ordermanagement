@@ -184,7 +184,7 @@ const Signin = () => {
             )}
 
           </Formik>
-          <Snackbar open={showSnackBar.show} autoHideDuration={6000} onClose={()=>setShowSnackBar(false)}>
+          <Snackbar open={showSnackBar.show} autoHideDuration={6000} onClose={()=>setShowSnackBar({show:false,error:false,message:''})}>
       
       <Alert onClose={()=>setShowSnackBar({show:false,error:false,message:''})} severity={showSnackBar.error?"error":"success"} sx={{ width: '100%' }}>
       {showSnackBar.message}

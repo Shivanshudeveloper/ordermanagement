@@ -94,6 +94,8 @@ const Banners = () => {
       setBanners((old) => [...old, content]);
       setImageUrl("");
       setImage("");
+      setTandC("");
+      setSelectedCoupon({});
       setOpen(false);
       setLoading(false);
     } catch (err) {
@@ -177,11 +179,14 @@ const Banners = () => {
   };
   const addBanner = () => {
     if (image !== "") handleUpdateItemImage();
+    
   };
   const closeBanner = () => {
     setImageUrl("");
     setImage("");
     setOpen(false);
+    setTandC("");
+    setSelectedCoupon({});
   };
 
   return (
@@ -198,7 +203,6 @@ const Banners = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           m: 10,
-
           mb: 0,
         }}
       >
@@ -214,22 +218,28 @@ const Banners = () => {
           Add Banner
         </Button>
       </Box>
-      <Box sx={{ ml: 5, mr: 5 }}>
-        <ImageList>
+      <Box sx={{mt:2, ml: 5, mr: 5,backgroundColor:"white",border:"1px solid white",borderRadius:"10px",height:"70vh",overflow:"scroll",overflowX:"hidden"}}>
+        <ImageList sx={{display:"flex"}}>
           {banners.map((item) => (
             <ImageListItem
               key={item._id}
-              sx={{ m: 5, boxShadow: "1px 1px  10px 1px lightgrey" }}
-             
+              sx={{ m: 5, boxShadow: "1px 1px  10px 1px lightgrey",width:"300px",cursor:"pointer"}}
+
             >
               <img
                 src={`${item.banner}`}
                 srcSet={`${item.banner}`}
                 alt={item.name}
                 loading="lazy"
+                width="100px"
+                height="100px"
                 onClick={() => {
-                  setBannersDetails(item);
-                  setShowBannerDetails(true);
+     
+                  if(item.TandC!==""){
+                    setBannersDetails(item);
+                    setShowBannerDetails(true);
+                  }
+                
                 }}
               />
               <ImageListItemBar title={item.name} position="below" />
@@ -237,7 +247,7 @@ const Banners = () => {
               <Box
                 sx={{
                   display: "flex",
-                  ml: 25,
+                  ml: 15,
                   flexDirection: "column",
                   justifyContent: "center",
                 }}
@@ -279,7 +289,7 @@ const Banners = () => {
 
         <List>
           <ListItem button>
-            <ListItemText primary="Coupon Name" secondary={bannersDetails?.couponCode} />
+            <ListItemText primary="Coupon Name" secondary={bannersDetails?.coupon.couponCode+" "+bannersDetails?.coupon.discount} />
           </ListItem>
           <Divider />
 
@@ -288,13 +298,6 @@ const Banners = () => {
               primary={"Terms & Conditions"}
               secondary={bannersDetails?.TandC}
            
-                  // 1. Minum order of RM 20
-            
-                  // 2. Applicable on Dine-In.Delivery.Pick Up. Orders
-                
-                  // 3. Applicable on QR scanned orders only
-            
-              
             />
           </ListItem>
         </List>

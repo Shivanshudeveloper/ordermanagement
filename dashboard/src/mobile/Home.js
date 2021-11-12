@@ -16,12 +16,13 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import Slide from "@material-ui/core/Slide";
-import { Snackbar, Alert } from "@material-ui/core";
+import { Snackbar, Alert,Toolbar,ListItem,ListItemText,Divider} from "@material-ui/core";
 import List from "./components/List";
 import Categories from "./components/Categories";
 import getUser from "../Firebase/getUser";
 import { useEffect, useState } from "react";
 import Cart from "./cart/Cart";
+import CloseIcon from "@material-ui/icons/Close";
 import {  useNavigate } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,7 +81,9 @@ const Home = () => {
   const [cart, setCart] = useState([]);
   const [selectedCategory, setSlectedCategory] = useState("viewAll");
   const [showCart, setShowCart] = useState(false);
-
+  const [showBannerDetails, setShowBannerDetails] = useState(false);
+  const [bannersDetails,setBannersDetails]=useState(null);
+  const [showSnack,setShowSnack]=useState(false);
   const showCartHandler = (val) => {
     setShowCart(val);
   };
@@ -119,6 +122,7 @@ const Home = () => {
     };
     if (User === null) get();
   }, []);
+  
   useEffect(() => {
     const get = async () => {
       try {
@@ -152,7 +156,7 @@ const Home = () => {
           `http://localhost:5000/api/v1/main/banners/getbanners/${User.email}`
         );
         const content = await rawResponse.json();
-
+        console.log("Banners",content);
         setBanners(content);
       } catch (err) {}
     };
@@ -241,6 +245,54 @@ const setCustomerHandler=(val)=>{
 }
   return (
     <>
+     <Dialog
+        fullScreen
+        sx={{mt:"50vh",height:"50vh"}}
+        open={showBannerDetails}
+        onClose={() => setShowBannerDetails(false)}
+        TransitionComponent={Transition}
+      >
+        <Toolbar>
+
+          <Typography sx={{ ml: 2, flex: 1,fontWeight:"800"}} variant="h5" component="div">
+            Offer Details
+           
+          </Typography>
+         
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => setShowBannerDetails(false)}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Toolbar>
+        <Typography variant="subtitle2" sx={{ ml: 4,mb:1,fontWeight:"300"}}>Apply Coupons to get instant Discount</Typography>
+        <Divider />
+   
+          <ListItem >
+            <ListItemText primary="Coupon Name" secondary={<div><Box sx={{backgroundColor:"#e3fbe3",borderTop:"5px dashed lightgreen",borderBottom:"5px dashed lightgreen",fontWeight:"800",p:0.5,fontSize:"1.2em",textAlign:"center"}}>{bannersDetails?.coupon.couponCode}</Box><Box sx={{fontSize:"1.3em",fontWeight:"800"}} >Get {bannersDetails?.coupon.discount} OFF</Box></div>} />
+            <Typography onClick={()=>{navigator.clipboard.writeText(bannersDetails?.coupon.couponCode); setShowSnack(true)}} variant="h5" sx={{ ml: 4,mb:1,fontWeight:"800",color:"orange",textDecoration:"underline"}}>TAP TO COPY CODE</Typography>
+          </ListItem>
+         
+
+          <ListItem >
+            <ListItemText
+              primary={"Terms & Conditions"}
+              secondary={bannersDetails?.TandC}
+           
+            />
+          </ListItem>
+      
+      </Dialog>
+      <Snackbar open={showSnack} autoHideDuration={6000} onClose={()=>setShowSnack(false)}>
+      
+      <Alert onClose={()=>setShowSnack(false)} severity={"success"} sx={{ width: '100%' }}>
+      Copied
+      </Alert>
+  
+   </Snackbar>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -276,6 +328,7 @@ const setCustomerHandler=(val)=>{
           </Button>
         </DialogActions>
       </Dialog>
+     
       {showCart ? (
         <Cart
           handleDelete={handleDelete}
@@ -302,8 +355,15 @@ const setCustomerHandler=(val)=>{
       </Snackbar>
       <Container>
         <Carousel>
-          {banners.map((banner, i) => (
-            <Item key={i} item={banner} />
+          {banners.map((item) => (
+               <Box onClick={()=>{
+                if(item.TandC!==""){
+                  setBannersDetails(item);
+                  setShowBannerDetails(true);
+                }
+               }} sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+               <img alt="" width="80%" height="210px" src={item.banner} />
+             </Box>
           ))}
         </Carousel>
       </Container>
