@@ -31,7 +31,7 @@ import firebase from "../Firebase/index";
 import getUser from "../Firebase/getUser";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
-import { TextareaAutosize } from "@mui/core";
+
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });

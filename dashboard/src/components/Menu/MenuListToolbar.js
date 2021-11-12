@@ -15,13 +15,14 @@ import {
   InputBase,
   CardContent,
   Card,
-  Avatar,  CircularProgress,
+  Avatar,
+  CircularProgress,
 } from "@material-ui/core";
 
 import PropTypes from "prop-types";
 
 import SearchIcon from "@material-ui/icons/Search";
-import firebase from "../../Firebase/index"
+import firebase from "../../Firebase/index";
 
 import { useState, useEffect } from "react";
 const MenuListToolbar = (props) => {
@@ -31,28 +32,30 @@ const MenuListToolbar = (props) => {
     setMenuListHandler,
     open,
     User,
-    restaurantName,searchHandler
+    restaurantName,
+    searchHandler,
   } = props;
   const [menu, setMenu] = useState({
     item: "",
     price: null,
     discount: "",
     category: "",
-    description:"",
-    image:""
+    description: "",
+    image: "",
   });
   const [categories, setCategories] = useState([]);
-  const [imageUrl,setImageUrl]=useState(null);
-  const [itemImage,setItemImage]=useState(null);
-  const [loading,setloading]=useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [itemImage, setItemImage] = useState(null);
+  const [loading, setloading] = useState(false);
   const handleChange = (e) => {
     setMenu({ ...menu, category: e.target.value });
   };
   const handleUpdateItemImage = () => {
-  
     const storage = firebase.storage();
     console.log(storage);
-    const uploadTask = storage.ref(`itemImage/${itemImage.name}`).put(itemImage);
+    const uploadTask = storage
+      .ref(`itemImage/${itemImage.name}`)
+      .put(itemImage);
     uploadTask.on(
       "state_changed",
       () => {},
@@ -71,15 +74,14 @@ const MenuListToolbar = (props) => {
               email: User.email,
               restaurantName: restaurantName,
               userID: User.uid,
-              image:ul
-
+              image: ul,
             });
             handleClose({
               ...menu,
               email: User.email,
               restaurantName: restaurantName,
               userID: User.uid,
-              image:ul
+              image: ul,
             });
             setloading(false);
           });
@@ -103,15 +105,15 @@ const MenuListToolbar = (props) => {
 
     getCategories();
   }, [User]);
-const searchValueHandle=(e)=>{
-  searchHandler(e.target.value);
-}
-const imageChangeHandler=(e)=>{
-  e.preventDefault();
-  setItemImage(e.target.files[0]);
+  const searchValueHandle = (e) => {
+    searchHandler(e.target.value);
+  };
+  const imageChangeHandler = (e) => {
+    e.preventDefault();
+    setItemImage(e.target.files[0]);
 
-  setImageUrl(URL.createObjectURL(e.target.files[0]));
-}
+    setImageUrl(URL.createObjectURL(e.target.files[0]));
+  };
 
   return (
     <>
@@ -135,8 +137,7 @@ const imageChangeHandler=(e)=>{
             sx={{ ml: 1, flex: 1 }}
             placeholder="Search Items"
             inputProps={{ "aria-label": "search items" }}
-            onChange={(e)=>searchValueHandle(e)}
-            
+            onChange={(e) => searchValueHandle(e)}
           />
           <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
             <SearchIcon />
@@ -148,15 +149,17 @@ const imageChangeHandler=(e)=>{
             color="primary"
             variant="contained"
             sx={{ mb: 5 }}
-            onClick={()=>{setImageUrl(null);handleClickOpen();}}
+            onClick={() => {
+              setImageUrl(null);
+              handleClickOpen();
+            }}
           >
             Add Menu
           </Button>
         </Box>
         <Dialog open={open} fullWidth onClose={() => handleClose(null)}>
           <DialogTitle>Enter Details</DialogTitle>
-          <DialogContent >
-          
+          <DialogContent>
             <TextField
               autoFocus
               margin="dense"
@@ -194,7 +197,9 @@ const imageChangeHandler=(e)=>{
               multiline
               minRows={3}
               variant="standard"
-              onChange={(e) => setMenu({ ...menu, description: e.target.value })}
+              onChange={(e) =>
+                setMenu({ ...menu, description: e.target.value })
+              }
             />
             <Box sx={{ mt: 3 }}>
               <InputLabel id="demo-simple-select-label">
@@ -216,48 +221,43 @@ const imageChangeHandler=(e)=>{
                     </MenuItem>
                   );
                 })}
-              </Select> 
-  
-              <Card sx={{marginTop:"20px"}}>
-          <CardContent sx={{ height: "200px" }}>
-            <Box
-              sx={{
-                alignItems: "center",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Avatar
-                variant="rounded"
-                src={imageUrl ? imageUrl : itemImage}
-                sx={{
-                  height: 100,
-                  width: 100,
-                }}
-              />
+              </Select>
 
-              
-            </Box>
-          </CardContent>
-      
+              <Card sx={{ marginTop: "20px" }}>
+                <CardContent sx={{ height: "200px" }}>
+                  <Box
+                    sx={{
+                      alignItems: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Avatar
+                      variant="rounded"
+                      src={imageUrl ? imageUrl : itemImage}
+                      sx={{
+                        height: 100,
+                        width: 100,
+                      }}
+                    />
+                  </Box>
+                </CardContent>
 
-          <Box
-            sx={{
-              alignItems: "center",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              mb:4
-            }}
-          >
-        
-              <Button variant="contained" component="label">
-                Choose Item Image
-                <input type="file" hidden onChange={imageChangeHandler} />
-              </Button>
-          
-          </Box>
-        </Card>
+                <Box
+                  sx={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    mb: 4,
+                  }}
+                >
+                  <Button variant="contained" component="label">
+                    Choose Item Image
+                    <input type="file" hidden onChange={imageChangeHandler} />
+                  </Button>
+                </Box>
+              </Card>
             </Box>
           </DialogContent>
 
@@ -269,8 +269,8 @@ const imageChangeHandler=(e)=>{
                   price: null,
                   discount: "",
                   category: "",
-                  description:"",
-                  image:""
+                  description: "",
+                  image: "",
                 });
                 handleClose(null);
               }}
@@ -281,31 +281,28 @@ const imageChangeHandler=(e)=>{
               onClick={() => {
                 setloading(true);
                 handleUpdateItemImage();
-                if(itemImage===null){
+                if (itemImage === null) {
                   setMenuListHandler({
                     ...menu,
                     email: User.email,
                     restaurantName: restaurantName,
                     userID: User.uid,
-                    image:imageUrl
-  
+                    image: imageUrl,
                   });
                   handleClose({
                     ...menu,
                     email: User.email,
                     restaurantName: restaurantName,
                     userID: User.uid,
-                    image:imageUrl
+                    image: imageUrl,
                   });
                 }
               }}
             >
-              Add         {loading && <CircularProgress/>}
+              Add {loading && <CircularProgress />}
             </Button>
-           
           </DialogActions>
         </Dialog>
-
       </Box>
     </>
   );
@@ -318,6 +315,6 @@ MenuListToolbar.propTypes = {
   categories: PropTypes.array,
   User: PropTypes.object,
   restaurantName: PropTypes.any,
-  searchHandler:PropTypes.func
+  searchHandler: PropTypes.func,
 };
 export default MenuListToolbar;

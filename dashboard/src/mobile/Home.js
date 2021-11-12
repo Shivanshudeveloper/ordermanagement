@@ -172,6 +172,7 @@ const Home = () => {
     let filteredList = menuList.filter((menu) =>
       menu.item.toLowerCase().includes(value.toLowerCase())
     );
+    console.log(filteredList);
     setFilteredMenuList(filteredList);
   };
   const changeCategoryHandler = (cat) => {
@@ -392,28 +393,44 @@ const setCustomerHandler=(val)=>{
           {filteredMenuList.length > 0 ? (
             filteredMenuList.map((menu) => {
               return (
-                <Grid
+              <Grid
                   key={menu._id}
                   item
                   xs={user === null ? 6 : user.layout ? 6 : 12}
                 >
-                  <Paper
-                    sx={{ m: 0 }}
-                    onClick={() => handleClickOpen(menu)}
-                    className={classes.paper}
-                  >
-                    <center>
-                      <img
-                        alt=""
-                        src={menu.image}
-                        width="100px"
-                        height="100px"
-                      />
-                    </center>
-                    <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+                  {menu?.category === selectedCategory ? (
+                    <Paper
+                      onClick={() => handleClickOpen(menu)}
+                      className={classes.paper}
+                    >
+                      <center>
+                        <img
+                          alt=""
+                          src={menu.image}
+                          width="100px"
+                          height="100px"
+                        />
+                      </center>
+                      <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
 
-                    <h5 style={{ color: "red" }}>RM {menu.price}</h5>
-                  </Paper>
+                      <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                    </Paper>
+                  ) :   selectedCategory === "viewAll"?    (<Paper
+                  onClick={() => handleClickOpen(menu)}
+                  className={classes.paper}
+                >
+                  <center>
+                    <img
+                      alt=""
+                      src={menu.image}
+                      width="100px"
+                      height="100px"
+                    />
+                  </center>
+                  <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+
+                  <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                </Paper>):null }
                 </Grid>
               );
             })

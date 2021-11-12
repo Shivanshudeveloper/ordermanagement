@@ -44,14 +44,15 @@ const CategoryList = (props) => {
       <CardHeader title="Categories" />
       <Divider />
       <PerfectScrollbar>
-        <Box>
-          <Table sx={{overflow:'scroll'}}>
+        <Box sx={{overflowY:'scroll',maxHeight:"65vh"}} >
+          <Table >
             <TableHead>
               <TableRow>
                 <TableCell>Category</TableCell>
                 <TableCell>Icon</TableCell>
               </TableRow>
             </TableHead>
+            
             <TableBody>
               {categories.map((category) => (
                 <>

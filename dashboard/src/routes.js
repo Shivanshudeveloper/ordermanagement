@@ -19,6 +19,7 @@ import Banners from './pages/Banners';
 import Coupons from './pages/Coupons';
 import Signin from './mobile/pages/Signin';
 import Signup from './mobile/pages/Register';
+import QRcode from './pages/QRcode';
 
 const routes = [
   {
@@ -35,6 +36,7 @@ const routes = [
       { path: 'categories', element: <Categories /> },
       { path: 'Banners', element: <Banners /> },
       { path: 'Coupons', element: <Coupons /> },
+      { path: 'ORcodeGenerate', element: <QRcode /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   },

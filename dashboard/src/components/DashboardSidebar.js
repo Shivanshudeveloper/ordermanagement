@@ -16,7 +16,7 @@ import ShowChartIcon from '@material-ui/icons/ShowChart';
 import CategoryIcon from '@material-ui/icons/Category';
 import ViewCarouselIcon from '@material-ui/icons/ViewCarousel';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
-
+import QrCodeIcon from '@material-ui/icons/QrCode';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
 import {
   AlertCircle as AlertCircleIcon,
@@ -88,6 +88,11 @@ const items = [
     icon: FolderOpenIcon,
     title: 'Coupons'
   },
+  {
+    href: '/app/ORcodeGenerate',
+    icon: QrCodeIcon,
+    title: 'QR Code Generate'
+  }
 ];
 
 const DashboardSidebar = ({ onMobileClose, openMobile }) => {

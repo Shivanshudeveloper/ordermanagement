@@ -7,6 +7,7 @@ const BannersRouter=require("../routes/Banners/BannersRouter");
 const CouponsRouter=require("../routes/Coupons/CouponsRouter");
 const AuthRouter=require("../routes/Auth/AuthRouter");
 const CustomerRouter=require("../routes/Customers/CustomersRouter");
+const QRCodeRouter=require("../routes/QRCodes/QRCodesRouter");
 const { v4: uuidv4 } = require("uuid");
 // Getting Module
 const Products_Model = require("../models/Products");
@@ -103,4 +104,5 @@ router.use('/banners',BannersRouter);
 router.use('/coupons',CouponsRouter);
 router.use('/auth',AuthRouter);
 router.use('/customer',CustomerRouter);
+router.use('/qr',QRCodeRouter);
 module.exports = router;
