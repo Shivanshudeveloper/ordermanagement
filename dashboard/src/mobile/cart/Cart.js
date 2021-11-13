@@ -21,6 +21,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import getUser from "../../Firebase/getUser";
+import { API_SERVICE } from '../../URI';
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(1),
@@ -86,7 +88,7 @@ const Cart = ({
     const getCoupons = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/coupons/getcoupons/${User.email}`
+          `${API_SERVICE}/api/v1/main/coupons/getcoupons/${User.email}`
         );
         const content = await rawResponse.json();
         console.log(content);

@@ -15,6 +15,8 @@ import { withStyles } from "@material-ui/styles";
 import { Box } from "@material-ui/core";
 import LoginIcon from '@mui/icons-material/Login';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { API_SERVICE } from '../../URI';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -48,7 +50,7 @@ export default function ButtonAppBar({ cart, user,showCartHandler,customer,setCu
   const navigate = useNavigate();
  const [showDrawer,setShowDrawer]=useState(false);
  const logouthandle = () => {
-  fetch("http://localhost:5000/api/v1/main/auth/logout", {
+  fetch(`${API_SERVICE}/api/v1/main/auth/logout`, {
     method: "POST",
     credentials: 'include', 
     headers: {

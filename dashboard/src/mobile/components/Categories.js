@@ -1,6 +1,9 @@
 import { Box, Container, Typography, Button } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/styles";
+import { API_SERVICE } from '../../URI';
+
+
 const viewAllIcon=`${process.env.PUBLIC_URL}/static/images/categoryIcons/all.png`;
 const useStyles = makeStyles((theme) => ({
         button:{
@@ -21,7 +24,7 @@ const Categories = ({ User, changeCategoryHandler }) => {
     const getCategories = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/getcategories/${User.email}`
+          `${API_SERVICE}/api/v1/main/getcategories/${User.email}`
         );
         const content = await rawResponse.json();
         console.log(content, "categopry");

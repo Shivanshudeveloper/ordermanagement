@@ -15,13 +15,15 @@ import {
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {useState} from "react";
+import { API_SERVICE } from '../../URI';
+
 const Register = () => {
   const navigate = useNavigate();
  const [showSnackBar,setShowSnackBar]=useState({show:false,error:false,message:''});
   const register = (values, { setErrors, setSubmitting }) => {
 
     const { firstName, lastName, password, email } = values;
-    fetch("http://localhost:5000/api/v1/main/auth/register", {
+    fetch(`${API_SERVICE}/api/v1/main/auth/register`, {
       method: "POST",
       headers: {
         Accept: "application/json",

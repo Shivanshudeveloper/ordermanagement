@@ -25,6 +25,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import firebase from "../../Firebase/index";
 
 import { useState, useEffect } from "react";
+import { API_SERVICE } from '../../URI';
+
 const MenuListToolbar = (props) => {
   const {
     handleClickOpen,
@@ -93,7 +95,7 @@ const MenuListToolbar = (props) => {
       if (categories.length !== 0) return;
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/getcategories/${User.email}`
+          `${API_SERVICE}/api/v1/main/getcategories/${User.email}`
         );
         const content = await rawResponse.json();
 

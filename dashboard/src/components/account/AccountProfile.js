@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import firebase from "../../Firebase/index";
+import { API_SERVICE } from '../../URI';
+
 
 const AccountProfile = (props) => {
   const { user } = props;
@@ -89,7 +91,7 @@ const AccountProfile = (props) => {
   const updateLogoUrl = async (ul) => {
     try {
       const rawres = await fetch(
-        `http://localhost:5000/api/v1/main/user/updatelogo`,
+        `${API_SERVICE}/api/v1/main/user/updatelogo`,
         {
           method: "PATCH",
           headers: {
@@ -148,7 +150,7 @@ const AccountProfile = (props) => {
     const get = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/user/getuser/${user.email}`
+          `${API_SERVICE}/api/v1/main/user/getuser/${user.email}`
         );
         const content = await rawResponse.json();
 

@@ -13,6 +13,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { auth } from "../Firebase/index";
+import { API_SERVICE } from '../URI';
+
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ const Register = () => {
   const register = (values, { setErrors, setSubmitting }) => {
     const { firstName, lastName, password, email, restaurantName } = values;
     const name = `${firstName} ${lastName}`;
-    fetch("http://localhost:5000/api/v1/main/user/register", {
+    fetch(`${API_SERVICE}/api/v1/main/user/register`, {
       method: "POST",
       headers: {
         Accept: "application/json",

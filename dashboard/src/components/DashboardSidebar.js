@@ -31,6 +31,8 @@ import {
 import NavItem from './NavItem';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import { API_SERVICE } from '../URI';
+
 const user = {
   avatar: '',
   jobTitle: '',
@@ -115,7 +117,7 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
     const get = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+          `${API_SERVICE}/api/v1/main/user/getuser/${User.email}`
         );
         const content = await rawResponse.json();
        console.log(content);

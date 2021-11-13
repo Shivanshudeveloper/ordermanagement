@@ -31,6 +31,8 @@ import firebase from "../Firebase/index";
 import getUser from "../Firebase/getUser";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
+import { API_SERVICE } from '../URI';
+
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -60,7 +62,7 @@ const Banners = () => {
     const getCoupons = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/coupons/getcoupons/${User.email}`
+          `${API_SERVICE}/api/v1/main/coupons/getcoupons/${User.email}`
         );
         const content = await rawResponse.json();
        
@@ -73,7 +75,7 @@ const Banners = () => {
   const uploadBanner = async (ul) => {
     try {
       const rawResponse = await fetch(
-        "http://localhost:5000/api/v1/main/banners/addbanner",
+        `${API_SERVICE}/api/v1/main/banners/addbanner`,
         {
           method: "POST",
           headers: {
@@ -135,7 +137,7 @@ const Banners = () => {
     const getBanners = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/banners/getbanners/${User.email}`
+          `${API_SERVICE}/api/v1/main/banners/getbanners/${User.email}`
         );
         const content = await rawResponse.json();
          console.log(content);
@@ -152,7 +154,7 @@ const Banners = () => {
     }
     try {
       const rawResponse = await fetch(
-        `http://localhost:5000/api/v1/main/banners/removebanner/${deleteBanner._id}`,
+        `${API_SERVICE}/api/v1/main/banners/removebanner/${deleteBanner._id}`,
         {
           method: "delete",
         }

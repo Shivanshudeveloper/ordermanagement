@@ -4,6 +4,8 @@ import MenuListToolbar from "../components/Menu/MenuListToolbar";
 import { useState, useEffect } from "react";
 import MenuList from "../components/Menu/MenuList";
 import getUser from "../Firebase/getUser";
+import { API_SERVICE } from '../URI';
+
 const Menu = () => {
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(null);
@@ -35,7 +37,7 @@ const Menu = () => {
       const addMenuFunction = async () => {
         try {
           const rawResponse = await fetch(
-            "http://localhost:5000/api/v1/main/menu/addmenu",
+            `${API_SERVICE}/api/v1/main/menu/addmenu`,
             {
               method: "POST",
               headers: {
@@ -69,7 +71,7 @@ const Menu = () => {
     const updateMenuList = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/menu/updatemenu/${menu._id}`,
+          `${API_SERVICE}/api/v1/main/menu/updatemenu/${menu._id}`,
           {
             method: "PATCH",
             headers: {
@@ -96,7 +98,7 @@ const Menu = () => {
     const getmenu = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/menu/getmenu/${User.email}`
+          `${API_SERVICE}/api/v1/main/menu/getmenu/${User.email}`
         );
         const content = await rawResponse.json();
         console.log(content);
@@ -110,7 +112,7 @@ const Menu = () => {
     const get = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+          `${API_SERVICE}/api/v1/main/user/getuser/${User.email}`
         );
         const content = await rawResponse.json();
 
@@ -130,7 +132,7 @@ const Menu = () => {
 
     try {
       const rawResponse = await fetch(
-        `http://localhost:5000/api/v1/main/menu/removemenu/${id}`,
+        `${API_SERVICE}/api/v1/main/menu/removemenu/${id}`,
         {
           method: "delete",
         }

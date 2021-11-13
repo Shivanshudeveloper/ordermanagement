@@ -21,6 +21,8 @@ import {
   getAuth, updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider,onAuthStateChanged
 } from 'firebase/auth';
 import { useNavigate } from 'react-router';
+import { API_SERVICE } from '../../URI';
+
 
 const AccountProfileDetails = (props) => {
   const { user } = props;
@@ -49,7 +51,7 @@ const AccountProfileDetails = (props) => {
   const updaterestaurantName=async(restaurantName)=>{
     try{
       const rawres=await fetch(
-       `http://localhost:5000/api/v1/main/user/updaterestaurantName`,    {
+       `${API_SERVICE}/api/v1/main/user/updaterestaurantName`,    {
          method: "PATCH",
          headers: {
            Accept: "application/json",
@@ -71,7 +73,7 @@ const AccountProfileDetails = (props) => {
     const get = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+          `${API_SERVICE}/api/v1/main/user/getuser/${User.email}`
         );
         const content = await rawResponse.json();
        console.log(content);

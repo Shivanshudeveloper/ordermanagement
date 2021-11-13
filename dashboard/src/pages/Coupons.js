@@ -3,6 +3,8 @@ import { Helmet } from "react-helmet";
 import { useState,useEffect } from "react";
 import getUser from "../Firebase/getUser";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { API_SERVICE } from '../URI';
+
 const Coupons = () => {
         const [coupons,setCoupons]=useState([]);
         const [coupon,setCoupon]=useState({couponCode:"",discount:""});
@@ -11,7 +13,7 @@ const Coupons = () => {
      
        try {
         const rawResponse = await fetch(
-          "http://localhost:5000/api/v1/main/coupons/addcoupon",
+          `${API_SERVICE}/api/v1/main/coupons/addcoupon`,
           {
             method: "POST",
             headers: {
@@ -39,7 +41,7 @@ const Coupons = () => {
  const deleteCoupon=async(cop)=>{
         try {
                 const rawResponse = await fetch(
-                  `http://localhost:5000/api/v1/main/coupons/removecoupon/${cop._id}`,
+                  `${API_SERVICE}/api/v1/main/coupons/removecoupon/${cop._id}`,
                   {
                     method: "delete",
                   }
@@ -63,7 +65,7 @@ const Coupons = () => {
         const getCoupons = async () => {
           try {
             const rawResponse = await fetch(
-              `http://localhost:5000/api/v1/main/coupons/getcoupons/${User.email}`
+              `${API_SERVICE}/api/v1/main/coupons/getcoupons/${User.email}`
             );
             const content = await rawResponse.json();
             console.log(content)

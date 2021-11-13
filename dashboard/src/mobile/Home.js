@@ -24,6 +24,8 @@ import { useEffect, useState } from "react";
 import Cart from "./cart/Cart";
 import CloseIcon from "@material-ui/icons/Close";
 import {  useNavigate } from 'react-router-dom';
+import { API_SERVICE } from '../URI';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
@@ -127,7 +129,7 @@ const Home = () => {
     const get = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+          `${API_SERVICE}/api/v1/main/user/getuser/${User.email}`
         );
         const content = await rawResponse.json();
 
@@ -140,7 +142,7 @@ const Home = () => {
     const getmenu = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/menu/getmenu/${User.email}`
+          `${API_SERVICE}/api/v1/main/menu/getmenu/${User.email}`
         );
         const content = await rawResponse.json();
 
@@ -153,7 +155,7 @@ const Home = () => {
     const getBanners = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/banners/getbanners/${User.email}`
+          `${API_SERVICE}/api/v1/main/banners/getbanners/${User.email}`
         );
         const content = await rawResponse.json();
         console.log("Banners",content);
@@ -212,7 +214,7 @@ useEffect(()=>{
   const getCustomer=async(id)=>{
     try {
       const rawResponse = await fetch(
-        `http://localhost:5000/api/v1/main/customer/getcustomer?id=${id}`,{
+        `${API_SERVICE}/api/v1/main/customer/getcustomer?id=${id}`,{
           method: "GET"
         }
       );
@@ -226,7 +228,7 @@ useEffect(()=>{
   const verify = async () => {
     try {
       const rawResponse = await fetch(
-        `http://localhost:5000/api/v1/main/auth/verify`,{
+        `${API_SERVICE}/api/v1/main/auth/verify`,{
           method: "GET",
           credentials: "include",
         }

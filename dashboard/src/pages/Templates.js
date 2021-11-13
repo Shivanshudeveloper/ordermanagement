@@ -13,6 +13,8 @@ import {
 
 import { useState, useEffect } from "react";
 import getUser from "../Firebase/getUser";
+import { API_SERVICE } from '../URI';
+
 const Templates = () => {
   const [layout, setLayout] = useState("Tabular Layout");
   const [dbUser, setsetdbUser] = useState(null);
@@ -21,7 +23,7 @@ const Templates = () => {
   const setlayoutfunction = async (grid) => {
     try {
       const rawres = await fetch(
-        `http://localhost:5000/api/v1/main/user/setlayout`,
+        `${API_SERVICE}/api/v1/main/user/setlayout`,
         {
           method: "PATCH",
           headers: {
@@ -62,7 +64,7 @@ const Templates = () => {
     const get = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+          `${API_SERVICE}/api/v1/main/user/getuser/${User.email}`
         );
         const content = await rawResponse.json();
 

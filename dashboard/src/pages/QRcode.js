@@ -24,6 +24,8 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import DeleteIcon from "@material-ui/icons/Delete";
 import getUser from "../Firebase/getUser";
 import CloseIcon from "@material-ui/icons/Close";
+import { API_SERVICE } from '../URI';
+
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -43,7 +45,7 @@ const QRcode = () => {
     const get = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+          `${API_SERVICE}/api/v1/main/user/getuser/${User.email}`
         );
         const content = await rawResponse.json();
 
@@ -64,7 +66,7 @@ const QRcode = () => {
   const setQRCodeHandler = async () => {
     try {
       const rawResponse = await fetch(
-        "http://localhost:5000/api/v1/main/qr/addQRcode",
+        `${API_SERVICE}/api/v1/main/qr/addQRcode`,
         {
           method: "POST",
           headers: {
@@ -96,7 +98,7 @@ const QRcode = () => {
     const getQRCodes = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/qr/getQRCodes/${User.email}`
+          `${API_SERVICE}/api/v1/main/qr/getQRCodes/${User.email}`
         );
         const content = await rawResponse.json();
 
@@ -119,7 +121,7 @@ const QRcode = () => {
   const deleteQRcode = async (c) => {
     try {
       const rawResponse = await fetch(
-        `http://localhost:5000/api/v1/main/qr/removeQRCode/${c._id}`,
+        `${API_SERVICE}/api/v1/main/qr/removeQRCode/${c._id}`,
         {
           method: "delete",
         }

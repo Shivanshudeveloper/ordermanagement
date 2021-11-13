@@ -13,6 +13,8 @@ import {
   Typography,Snackbar,Alert
 } from '@material-ui/core';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { API_SERVICE } from '../../URI';
+
 const Signin = () => {
   const navigate = useNavigate();
   const [showPopper, setShowPopper] = useState(false);
@@ -20,7 +22,7 @@ const Signin = () => {
   const login = (values, { setErrors, setSubmitting }) => {
   
     const { password, email } = values;
-    fetch("http://localhost:5000/api/v1/main/auth/signin", {
+    fetch(`${API_SERVICE}/api/v1/main/auth/signin`, {
       method: "POST",
       credentials: 'include', 
       headers: {

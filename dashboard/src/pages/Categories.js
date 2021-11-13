@@ -4,6 +4,8 @@ import CategoryListToolbar from "../components/Category/CategoryListToolbar";
 import CategoryList from "../components/Category/CategoryList";
 import { useEffect, useState } from "react";
 import getUser from "../Firebase/getUser";
+import { API_SERVICE } from '../URI';
+
 const Categories = () => {
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState("");
@@ -25,7 +27,7 @@ const Categories = () => {
     const get = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/user/getuser/${User.email}`
+          `${API_SERVICE}/api/v1/main/user/getuser/${User.email}`
         );
         const content = await rawResponse.json();
 
@@ -45,7 +47,7 @@ const Categories = () => {
       const addCategoryFunction = async () => {
         try {
           const rawResponse = await fetch(
-            "http://localhost:5000/api/v1/main/addcategory",
+            `${API_SERVICE}/api/v1/main/addcategory`,
             {
               method: "POST",
               headers: {
@@ -83,7 +85,7 @@ const Categories = () => {
     const getCategories = async () => {
       try {
         const rawResponse = await fetch(
-          `http://localhost:5000/api/v1/main/getcategories/${User.email}`
+          `${API_SERVICE}/api/v1/main/getcategories/${User.email}`
         );
         const content = await rawResponse.json();
          console.log(content,"categopry")
@@ -100,7 +102,7 @@ const Categories = () => {
   const handleDeleteCategory = async (id) => {
     try {
       const rawResponse = await fetch(
-        `http://localhost:5000/api/v1/main/removecategory/${id}`,
+        `${API_SERVICE}/api/v1/main/removecategory/${id}`,
         {
           method: "delete",
         }
