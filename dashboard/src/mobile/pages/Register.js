@@ -14,12 +14,13 @@ import {
 } from "@material-ui/core";
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {useState} from "react";
+import {useState,useEffect} from "react";
 import { API_SERVICE } from '../../URI';
 
 const Register = () => {
   const navigate = useNavigate();
  const [showSnackBar,setShowSnackBar]=useState({show:false,error:false,message:''});
+ const [Query,setQuery]=useState("");
   const register = (values, { setErrors, setSubmitting }) => {
 
     const { firstName, lastName, password, email } = values;
@@ -45,7 +46,7 @@ const Register = () => {
         }else{
           setShowSnackBar({show:true,error:false,message:"Successfully Registered"}); 
           setTimeout(()=>{
-            navigate("/mobile/signin",{replace:true});
+            navigate(`/mobile/signin/?${Query}`);
            },2300);
         }
     }).catch(err=>{
@@ -57,12 +58,16 @@ const Register = () => {
 
       
   };
+  useEffect(()=>{
+    let query = window.location.search.substring(1);
+    setQuery(query);
+  },[])
   return (
     <>
       <Helmet>
         <title>Register </title>
       </Helmet>
-      <Button sx={{m:0,p:0}} onClick={()=>navigate("/mobile",{replace:true})}><ArrowBackIcon sx={{fontSize:"2.2em"}}  /></Button>
+      <Button sx={{m:0,p:0}} onClick={()=>navigate(`/mobile/signin/?${Query}`)}><ArrowBackIcon sx={{fontSize:"2.2em"}}  /></Button>
       <Box
         sx={{
           backgroundColor: "background.default",

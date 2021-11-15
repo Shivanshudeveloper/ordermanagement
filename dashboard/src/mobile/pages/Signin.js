@@ -19,6 +19,7 @@ const Signin = () => {
   const navigate = useNavigate();
   const [showPopper, setShowPopper] = useState(false);
   const [showSnackBar,setShowSnackBar]=useState({show:false,error:false,message:''});
+  const [Query,setQuery]=useState("");
   const login = (values, { setErrors, setSubmitting }) => {
   
     const { password, email } = values;
@@ -44,7 +45,7 @@ const Signin = () => {
          
           setShowSnackBar({show:true,error:false,message:res.message}); 
           setTimeout(()=>{
-            navigate("/mobile",{replace:true});
+            navigate(`/mobile/?${Query}`,{replace:true});
            },1500);
         }
    
@@ -55,12 +56,16 @@ const Signin = () => {
         setShowSnackBar({show:true,error:true,message:"Error !"});
       });
   };
+  useEffect(()=>{
+    let query = window.location.search.substring(1);
+    setQuery(query);
+  },[])
   return (
     <>
       <Helmet>
         <title>Login | Material Kit</title>
       </Helmet>
-      <Button sx={{m:0,p:0}} onClick={()=>navigate("/mobile",{replace:true})}><ArrowBackIcon sx={{fontSize:"2.2em"}}  /></Button>
+    
       <Box
         sx={{
           backgroundColor: 'background.default',
@@ -160,7 +165,7 @@ const Signin = () => {
                 >
                   Don&apos;t have an account?
                   {' '}
-                  <Link component={RouterLink} to="/mobile/register" variant="h6" underline="hover">
+                  <Link component={RouterLink} to={`/mobile/register/?${Query}`} variant="h6" underline="hover">
                     Register
                   </Link>
                 </Typography>

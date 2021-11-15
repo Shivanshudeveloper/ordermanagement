@@ -61,7 +61,7 @@ export default function ButtonAppBar({ cart, user,showCartHandler,customer,setCu
     .then((res) => res.json()).then(res=>{
       console.log(res);
       setCustomerHandler(null)
-      navigate('/mobile',{replace:true})
+      navigate('/mobile/signin',{replace:true})
     }).catch(err=>console.log(err));
 
 };

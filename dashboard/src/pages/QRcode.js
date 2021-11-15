@@ -24,8 +24,8 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import DeleteIcon from "@material-ui/icons/Delete";
 import getUser from "../Firebase/getUser";
 import CloseIcon from "@material-ui/icons/Close";
-import { API_SERVICE } from '../URI';
-
+import { API_SERVICE,APP_URL } from '../URI';
+import QRCode from "qrcode.react";
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -64,6 +64,8 @@ const QRcode = () => {
     get();
   }, []);
   const setQRCodeHandler = async () => {
+    const Url=`${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+  
     try {
       const rawResponse = await fetch(
         `${API_SERVICE}/api/v1/main/qr/addQRcode`,
@@ -76,9 +78,7 @@ const QRcode = () => {
           body: JSON.stringify({
             email: User.email,
             tableName,
-            qrCode: `http://api.qrserver.com/v1/create-qr-code/?data=${
-              tableName + userID
-            }!&size=${size}x${size}&bgcolor=ffffff`,
+            qrCode:Url
           }),
         }
       );
@@ -110,11 +110,12 @@ const QRcode = () => {
   }, [User]);
   const generateQRCode = () => {
     if (tableName !== "")
-      setQRCode(
-        `http://api.qrserver.com/v1/create-qr-code/?data=${
-          tableName + userID
-        }!&size=${size}x${size}&bgcolor=ffffff`
-      );
+    {
+      const Url=`${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+   
+      setQRCode(Url);
+      setOpen(false);
+      }
     setQRCodeHandler();
   };
  
@@ -237,8 +238,9 @@ const QRcode = () => {
           </Button>
           <Button
             onClick={() => {
-              setOpen(false);
               generateQRCode();
+              
+              
             }}
             autoFocus
           >
@@ -251,14 +253,15 @@ const QRcode = () => {
           sx={{
             ml: 60,
             backgroundColor: "white",
-            width: "400px",
+            width: "600px",
             boxShadow: "1px 1px 40px 1px grey",
           }}
         >
-          <img src={qrCode} alt="" />
+      <QRCode value={qrCode} />
         </Box>
       ) : null}
       <Dialog
+      fullWidth
         open={showView}
         onClose={() => setShowView(false)}
         TransitionComponent={Transition}
@@ -275,9 +278,10 @@ const QRcode = () => {
           >
             <CloseIcon />
           </IconButton>
+       
         </Toolbar>
-
-        <img alt="" src={selectedQR?.qrCode} />
+   <QRCode value={selectedQR?.qrCode} />
+    
       </Dialog>
     </>
   );

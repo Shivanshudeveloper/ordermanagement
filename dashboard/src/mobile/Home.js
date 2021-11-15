@@ -86,6 +86,7 @@ const Home = () => {
   const [showBannerDetails, setShowBannerDetails] = useState(false);
   const [bannersDetails,setBannersDetails]=useState(null);
   const [showSnack,setShowSnack]=useState(false);
+  const [Query,setQuery]=useState("");
   const showCartHandler = (val) => {
     setShowCart(val);
   };
@@ -119,10 +120,17 @@ const Home = () => {
     handleClose();
   };
   useEffect(() => {
-    const get = async () => {
-      setUser(await getUser());
-    };
-    if (User === null) get();
+    let query = window.location.search.substring(1);
+    setQuery(query);
+    console.log(query)
+    let vars = query.split("&");
+  
+   
+                let Email = vars[0].split("=")[1];
+                let id= vars[1].split("=")[1];
+                setUser({email:Email,id:id});
+        
+
   }, []);
   
   useEffect(() => {
@@ -236,13 +244,17 @@ useEffect(()=>{
       const content = await rawResponse.json();
       if(content.id!==null)
       getCustomer(content.id)
+      else{
+        console.log(Query);
+        navigate(`/mobile/signin/?${Query}`);
+      }
     } catch (err) {
       console.log(err);
     }
   };
 
   verify();
-},[])
+},[Query])
 const setCustomerHandler=(val)=>{
   setCustomer(val);
 }
