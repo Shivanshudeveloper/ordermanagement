@@ -35,6 +35,7 @@ const Payment = () => {
   const [paysubmit, setPaySubmit] = useState(false);
   const [open, setOpen] = useState(false);
   const [openR, setOpenR] = useState(false);
+  const [paymentDone,setPaymentDone]=useState(false);
   const stripe = useStripe();
   const elements = useElements();
   const login = (values, { setErrors, setSubmitting }) => {
@@ -70,13 +71,15 @@ const Payment = () => {
         },
       },
     });
-
     handleClick();
-    let query = window.location.search.substring(1);
+    setAmount(0);
+    setPaymentDone(true);
+  
+    
 
-   setTimeout(()=>{
-        navigate(`/mobile/?${query}`, { replace: true });
-   },2000);
+
+       
+
   };
   const handleClick = () => {
     setOpen(true);
@@ -123,11 +126,44 @@ const Payment = () => {
   }, []);
   if (loading) {
     return <div>Loading</div>;
+  }else if(paymentDone){
+    let query = window.location.search.substring(1);
+    return (
+      <>
+      <Helmet>
+        <title>Pyamnt Succesfully Done</title>
+      </Helmet>
+      <Box sx={{display:"flex",flexDirection:"column",backgroundColor:"white",height:"100vh",alignItems:"center"}}>
+      <Typography sx={{mt:10}} variant='h3'color="green" >
+        Payment Successfully Done
+          </Typography>
+        <img src="https://res.cloudinary.com/dx9dnqzaj/image/upload/v1637056151/ordermanagement/f0ca90dd6924e009d86f4421cf2032b5_b3aokt.gif" alt="" width="100%" height="50%"/>
+     
+      
+        <Typography variant='h4' >
+        Order is Preparing
+          </Typography>
+       
+        <Link
+        sx={{mt:10}}
+  component="button"
+  variant="h4"
+  onClick={() => {
+    navigate(`/mobile/?${query}`, { replace: true });
+  }}
+>
+Home
+</Link>
+    
+      </Box>
+
+      </>
+    )
   }
   return (
     <>
       <Helmet>
-        <title>Login | Material Kit</title>
+        <title>Payment </title>
       </Helmet>
 
       <Box
@@ -256,20 +292,7 @@ const Payment = () => {
                   >
                     {paysubmit ? "Confirming Payment" : "Pay"}
                   </Button>
-                  <Snackbar
-                    open={open}
-                    autoHideDuration={6000}
-                    onClose={handleClose}
-                  >
-                    <Alert
-                      onClose={handleClose}
-                      severity="success"
-                      elevation={6}
-                      variant="filled"
-                    >
-                      Payment Successfull!
-                    </Alert>
-                  </Snackbar>
+                
                 </Box>
 
                 <Typography color="textSecondary" variant="body1"></Typography>
