@@ -8,6 +8,7 @@ const CouponsRouter=require("../routes/Coupons/CouponsRouter");
 const AuthRouter=require("../routes/Auth/AuthRouter");
 const CustomerRouter=require("../routes/Customers/CustomersRouter");
 const QRCodeRouter=require("../routes/QRCodes/QRCodesRouter");
+const OrderRouter=require("../routes/Order/OrderRouter");
 const { v4: uuidv4 } = require("uuid");
 // Getting Module
 const Products_Model = require("../models/Products");
@@ -15,7 +16,7 @@ const MainStore_Model = require("../models/MainStore");
 
 
 const stripe = require("stripe")(
-  "sk_test_51IdwfeH8KzFo5uc9YHKzp2HOPkZJvH0ij0qhWeg0wQ17G73o5fVJYjMkWOfAmWUgjVZe0DesJvrQKbmAPSacXsVP00qMXnEqFr"
+  "sk_test_51JHsVhHTwp1a1ssg6tNelx0wUKQoKhxbr1S6yajKtX1ppZUpv0sNQAJ4A0Yb9yGNMwm2tZ1efaarIykDm21zNWWd00lNcFUkc3"
 );
 
 function isNumeric(str) {
@@ -35,21 +36,89 @@ router.get("/test", (req, res) => {
 
 router.post("/charges", async (req, res) => {
   const { email, amount } = req.body;
+  console.log(req.body);
   const paymentIntent = await stripe.paymentIntents.create({
     amount: amount * 100,
-    currency: "eur",
+    currency: "usd",
     // Verify your integration in this guide by including this parameter
     metadata: { integration_check: "accept_a_payment" },
     receipt_email: email,
   });
-
-  res.json({ client_secret: paymentIntent["client_secret"] });
+console.log(paymentIntent["client_secret"]);
+  res.send({cc:paymentIntent["client_secret"]} );
 });
+router.post("/secret", async (req, res) => {
+  // const {email, amount} = req.body;
 
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: 1929,
+    currency: "eur",
+    payment_method_types: ["ideal"],
+  });
+
+  res.json({ client_secret: paymentIntent.client_secret });
+});
 // Database CRUD Operations
 // @POST Request to GET the People
 // GET
-
+router.post("/paymentsuccessfull", (req, res) => {
+  const {
+    transactionId,
+    email,
+    fullName,
+    phoneno,
+    address,
+    zipcode,
+    userId,
+    amount,
+    note,
+  } = req.body;
+  res.setHeader("Content-Type", "application/json");
+  Payment_Model.countDocuments({ transactionId })
+    .then((count) => {
+      if (count === 0) {
+        const newSuccessfullPayment = new Payment_Model({
+          transactionId,
+          email,
+          fullName,
+          phoneno,
+          address,
+          zipcode,
+          amount,
+          note,
+          userId,
+          completed: false,
+        });
+        newSuccessfullPayment
+          .save()
+          .then(() => {
+            Cart_Model.updateMany(
+              { userId },
+              { payment: true },
+              { useFindAndModify: false }
+            )
+              .then(() => {
+                const newStatus = new Status_Model({
+                  userId,
+                  payment: "Completed",
+                  status: "Order Received",
+                });
+                newStatus
+                  .save()
+                  .then((data) => {
+                    res.status(200).json("Users Update");
+                  })
+                  .catch((err) => console.log(err));
+              })
+              .catch((err) => console.log(err));
+          })
+          .catch((err) => res.status(500).json(`Server Error is ${err}`));
+      } else {
+        res.status(200).json("Added");
+      }
+    })
+    .catch((err) => res.status(500).json("Server Error"));
+});
 router.get("/getallproductapi", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   Products_Model.find({})
@@ -104,5 +173,6 @@ router.use('/banners',BannersRouter);
 router.use('/coupons',CouponsRouter);
 router.use('/auth',AuthRouter);
 router.use('/customer',CustomerRouter);
+router.use('/order',OrderRouter);
 router.use('/qr',QRCodeRouter);
 module.exports = router;

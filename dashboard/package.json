@@ -38,6 +38,8 @@
     "@mui/icons-material": "^5.0.5",
     "@mui/material": "^5.0.6",
     "@mui/styles": "^5.0.2",
+    "@stripe/react-stripe-js": "^1.6.0",
+    "@stripe/stripe-js": "^1.21.1",
     "chart.js": "^3.5.1",
     "firebase": "^9.2.0",
     "formik": "^2.1.5",

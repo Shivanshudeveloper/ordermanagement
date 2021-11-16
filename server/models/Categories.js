@@ -8,7 +8,7 @@ const CategoriesSchema = new mongoose.Schema({
     userID:{
         type:String,
         required:false,
-        unique:true
+    
     },
     email:{
         type:String,

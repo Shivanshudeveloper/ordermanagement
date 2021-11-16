@@ -8,9 +8,40 @@ import TasksProgress from '../components/dashboard/TasksProgress';
 import TotalCustomers from '../components/dashboard/TotalCustomers';
 import TotalProfit from '../components/dashboard/TotalProfit';
 import TrafficByDevice from '../components/dashboard/TrafficByDevice';
+import { useState ,useEffect} from 'react';
+import getUser from '../Firebase/getUser';
+import { API_SERVICE } from '../URI';
 
-const Orders = () => (
-  <>
+const Orders = () =>
+{
+  const [User, setUser] = useState(null);
+  const [customers,setCustomers]=useState(null);
+
+  useEffect(() => {
+    const get = async () => {
+      const us = await getUser();
+      setUser(us);
+    };
+    if (User === null) get();
+  }, []);
+  useEffect(()=>{
+    const get = async () => {
+      try {
+        const rawResponse = await fetch(
+          `${API_SERVICE}/api/v1/main/order/getorders/${User.email}`
+        );
+        const content = await rawResponse.json();
+
+        setCustomers(content);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+   get();
+  },[User]);
+
+return ( 
+<>
     <Helmet>
       <title>Dashboard | Material Kit</title>
     </Helmet>
@@ -33,12 +64,12 @@ const Orders = () => (
             xl={12}
             xs={12}
           >
-            <LatestOrders />
+            <LatestOrders customers={customers} />
           </Grid>
         </Grid>
       </Container>
     </Box>
   </>
 );
-
+    };
 export default Orders;

@@ -14,5 +14,11 @@ module.exports.getcustomer = async (req, res) => {
 
 };
 
+module.exports.getallcustomers=async(req,res)=>{
+  const customers=await Customers_Model.find({});
+  res.send(customers);
+}
+
+
 
 

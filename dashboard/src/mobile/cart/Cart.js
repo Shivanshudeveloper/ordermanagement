@@ -21,7 +21,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import getUser from "../../Firebase/getUser";
-import { API_SERVICE } from '../../URI';
+import { API_SERVICE } from "../../URI";
+import { validate } from "uuid";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -37,8 +38,7 @@ const ColorButton = styled(Button)(({ theme }) => ({
     backgroundColor: green[800],
   },
   width: "95%",
-  left:"2.5%"
- 
+  left: "2.5%",
 }));
 const Cart = ({
   cart,
@@ -46,7 +46,7 @@ const Cart = ({
   handleDelete,
   increaseQuantity,
   decreaseQuantity,
-  customer
+  customer,
 }) => {
   const [open, setOpen] = useState(true);
 
@@ -84,6 +84,7 @@ const Cart = ({
   const handleClose = () => {
     setOpen(false);
   };
+
   useEffect(() => {
     const getCoupons = async () => {
       try {
@@ -112,9 +113,41 @@ const Cart = ({
     };
     get();
   }, []);
-const checkout=()=>{
- 
-}
+  const checkout = () => {
+    let query = window.location.search.substring(1);
+
+    let vars = query.split("&");
+    let Email = vars[0].split("=")[1];
+
+    let tablename = vars[2].split("=")[1];
+    fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tablename: tablename,
+        orders: cart,
+        firstName:customer.firstName,
+        lastName:customer.lastName,
+        email:Email
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        navigate(`/mobile/payment/?${query}&amount=${total}`, { replace: true });
+        
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    if (total === 0) return;
+
+  
+  };
+
   return (
     <div>
       <Dialog
@@ -169,21 +202,25 @@ const checkout=()=>{
 
                   <h5 style={{ color: "red" }}>RM {menu.selectedItem.price}</h5>
                   <h4>{menu.count}</h4>
-                  {!couponApplied?<Box sx={{ mr: 4, p: 0, width: "0px" }}>
-                    {" "}
-                    <ArrowDropUpIcon
-                      onClick={() => increaseQuantity(menu)}
-                      sx={{ fontSize: "2.5em" }}
-                    />
-                    <ArrowDropDownIcon
-                      onClick={() => decreaseQuantity(menu)}
-                      sx={{ fontSize: "2.5em" }}
-                    />
-                  </Box>:null}
-                  {!couponApplied?<Button onClick={() => handleDelete(menu)}>
-                    {" "}
-                    <DeleteIcon sx={{ color: "red", fontSize: "2.5em" }} />
-                  </Button>:null}
+                  {!couponApplied ? (
+                    <Box sx={{ mr: 4, p: 0, width: "0px" }}>
+                      {" "}
+                      <ArrowDropUpIcon
+                        onClick={() => increaseQuantity(menu)}
+                        sx={{ fontSize: "2.5em" }}
+                      />
+                      <ArrowDropDownIcon
+                        onClick={() => decreaseQuantity(menu)}
+                        sx={{ fontSize: "2.5em" }}
+                      />
+                    </Box>
+                  ) : null}
+                  {!couponApplied ? (
+                    <Button onClick={() => handleDelete(menu)}>
+                      {" "}
+                      <DeleteIcon sx={{ color: "red", fontSize: "2.5em" }} />
+                    </Button>
+                  ) : null}
                 </Paper>{" "}
               </Grid>
             );
@@ -255,11 +292,15 @@ const checkout=()=>{
           variant="contained"
         >
           {" "}
-        <Box   sx={{ justifyContent: "space-evenly", m: 1 }} >
-        <label style={{color:"white"}}>Total:    </label>
-          <label style={{color:"white",fontSize:"1.3em"}} >RM {total}</label>
-        </Box>
-          <label style={{color:"white",fontSize:"1em"}} onClick={checkout} >Continue Checkout</label>
+          <Box onClick={checkout} sx={{ justifyContent: "space-evenly", m: 1 }}>
+            <label style={{ color: "white" }}>Total: </label>
+            <label style={{ color: "white", fontSize: "1.3em" }}>
+              RM {total}
+            </label>
+          </Box>
+          <label style={{ color: "white", fontSize: "1em" }} onClick={checkout}>
+            Continue Checkout
+          </label>
         </ColorButton>
         <DialogActions>
           <Button onClick={() => showCartHandler(false)}>Close</Button>

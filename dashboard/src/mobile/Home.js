@@ -113,7 +113,7 @@ const Home = () => {
     } else {
       setCart((old) => [...old, { selectedItem: selectedItem, count: 1 }]);
     }
-
+    console.log(cart);
     setSelectedItem(null);
 
     setShowSnackbar(true);
@@ -206,7 +206,7 @@ const Home = () => {
     );
     if (cartTemp[index].count >= 1) {
       cartTemp[index].count += 1;
-
+    
       setCart(cartTemp);
     }
   };
@@ -227,7 +227,7 @@ useEffect(()=>{
         }
       );
       const content = await rawResponse.json();
-      console.log(content);
+     
       setCustomer(content);
     } catch (err) {
       console.log(err);
@@ -242,6 +242,7 @@ useEffect(()=>{
         }
       );
       const content = await rawResponse.json();
+      console.log(content.id);
       if(content.id!==null)
       getCustomer(content.id)
       else{
@@ -345,7 +346,8 @@ const setCustomerHandler=(val)=>{
       </Dialog>
      
       {showCart ? (
-        <Cart
+           
+             <Cart
           handleDelete={handleDelete}
           increaseQuantity={increaseQuantity}
           decreaseQuantity={decreaseQuantity}
@@ -353,6 +355,8 @@ const setCustomerHandler=(val)=>{
           cart={cart}
           customer={customer} 
         />
+            
+       
       ) : null}
       <Header cart={cart} user={user} showCartHandler={showCartHandler} customer={customer} setCustomerHandler={setCustomerHandler} />
       <Snackbar
