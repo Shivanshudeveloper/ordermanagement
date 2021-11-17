@@ -12,7 +12,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
+  TableRow,Select,MenuItem,
   TableSortLabel,Dialog,DialogTitle,CardContent,Avatar,DialogContent,DialogActions,
   Tooltip
 } from '@material-ui/core';
@@ -20,10 +20,12 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
 
 import { useState } from 'react';
-const LatestOrders = ({customers}) => {
+const LatestOrders = ({customers,setStatus}) => {
 
 const [orders,setOrders]=useState(null);
 const [showView,setShowView]=useState(false);
+
+
 return (
   <>
   <Card >
@@ -46,14 +48,17 @@ return (
               <TableCell>
                 Email
               </TableCell>
+              <TableCell>
+                Status
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers?.map((customer,id) => (
+            {customers?.map((customer) => (
              
                   <TableRow
                   hover
-                  key={id}
+                  key={customer._id}
                 >
                    <TableCell>
                     {customer.tablename}
@@ -67,7 +72,27 @@ return (
                   <TableCell>
                     {customer.email}
                   </TableCell>
-                  
+                  <TableCell>
+            
+              
+                  <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Category"
+                value={customer.status}
+                sx={(customer.status==="Order Delivered")?{color:"white",fontWeight:"900",backgroundColor:"green"}:{color:"white",backgroundColor:"orange",fontWeight:"900"}}
+                onChange={(e)=>{setStatus(e.target.value,customer._id)}}
+              >
+                {["Order Preparing","Order Delivered"]?.map((it,id) => {
+                  return (
+                    <MenuItem  value={it} key={id}>
+                   
+                      <label>{it}</label>
+                    </MenuItem>
+                  );
+                })}
+              </Select> 
+              </TableCell>
                   <TableCell>
                       <Button
                         variant="contained"

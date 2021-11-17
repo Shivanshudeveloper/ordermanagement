@@ -1,6 +1,4 @@
 const mongoose=require('mongoose');
-
-
 const OrderSchema=new mongoose.Schema({
     email:{
         type:String,
@@ -19,6 +17,9 @@ const OrderSchema=new mongoose.Schema({
     },
     tablename:{
             type:String
+    },
+    status:{
+        type:String
     },
     createdAt:
     {

@@ -133,7 +133,8 @@ const Cart = ({
         firstName:customer.firstName,
         lastName:customer.lastName,
         email:customer.email,
-        adminEmail:adminEmail
+        adminEmail:adminEmail,
+        status:"Pending"
       }),
     })
       .then((res) => res.json())

@@ -39,7 +39,39 @@ const Orders = () =>
     };
    get();
   },[User]);
+  const setStatus=async(status,id)=>{
+    let cust=[...customers];
 
+    cust=cust.map((customer)=>{
+      if(customer._id===id){
+        customer.status=status;
+      }
+      return customer;
+    });
+    const updateCustomer = async () => {
+      try {
+        const rawResponse = await fetch(
+          `${API_SERVICE}/api/v1/main/order/updateorder?id=${id}&status=${status}`,
+          {
+            method: "PATCH",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const content = await rawResponse.json();
+       console.log(content);
+       
+      } catch (err) {
+      console.log(err);
+   
+      }
+    };
+
+    updateCustomer();
+    setCustomers(cust);
+  }
 return ( 
 <>
     <Helmet>
@@ -64,7 +96,7 @@ return (
             xl={12}
             xs={12}
           >
-            <LatestOrders customers={customers} />
+            <LatestOrders setStatus={setStatus} customers={customers} />
           </Grid>
         </Grid>
       </Container>

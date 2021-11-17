@@ -1,4 +1,4 @@
-import { Box, Container, TextField, Button,Table,TableRow,TableHead,TableCell,TableBody,Chip} from "@material-ui/core";
+import { Box, Container, TextField, Button,Table,TableRow,Dialog,DialogActions,Typography,TableHead,TableCell,TableBody,Chip} from "@material-ui/core";
 import { Helmet } from "react-helmet";
 import { useState,useEffect } from "react";
 import getUser from "../Firebase/getUser";
@@ -9,6 +9,7 @@ const Coupons = () => {
         const [coupons,setCoupons]=useState([]);
         const [coupon,setCoupon]=useState({couponCode:"",discount:""});
         const [User, setUser] = useState({ displayName: "", email: "" });
+        const [open,setOpen]=useState(false);
  const setCouponHandler=async()=>{
      
        try {
@@ -36,6 +37,7 @@ const Coupons = () => {
         console.log(err);
         setCoupon({couponCode:"",discount:""});
       }
+      setOpen(false);
 
  }
  const deleteCoupon=async(cop)=>{
@@ -89,15 +91,38 @@ const Coupons = () => {
 
       <Box
         sx={{
-          backgroundColor: "white",
-          height: "200px",
-          py: 3,
-          ml: 40,
-          mt: 10,
-          width: "60%",
+          backgroundColor: "background.default",
+
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          m: 10,
+          mb: 0,
         }}
       >
-        <Container maxWidth={false}>
+        <Typography color="textPrimary" variant="h2" sx={{ mb: 3 }}>
+        Coupons
+        </Typography>
+
+        <Button
+          variant="contained"
+          component="label"
+          onClick={() => setOpen(true)}
+        >
+          Add Coupon
+        </Button>
+      </Box>
+    
+      <Dialog
+       
+        open={open}
+        onClose={() => setOpen(false)}
+
+      >
+          <Box
+       
+      >
+       
           <TextField
             autoFocus
             value={coupon.couponCode}
@@ -105,7 +130,7 @@ const Coupons = () => {
             id="name"
             label="Coupon Code"
             type="text"
-            variant="filled"
+        
             sx={{ m: 5 }}
             onChange={(e) => setCoupon((prev)=>({...prev,couponCode:e.target.value}))}
           />
@@ -117,30 +142,45 @@ const Coupons = () => {
             label="Discount"
             type="text"
             sx={{ m: 5 }}
-            variant="filled"
+           
             onChange={(e) => setCoupon((prev)=>({...prev,discount:e.target.value}))}
           />
 
-          <Button disabled={(coupon.discount===""|| coupon.couponCode==="")} onClick={setCouponHandler}  sx={{ m: 5 }}  variant="contained" component="label">
+          <Button disabled={(coupon.discount===""|| coupon.couponCode==="")} onClick={setCouponHandler}  sx={{ ml: 5 }}  variant="contained" component="label">
             Add
           </Button>
-        </Container>
+        
+      
       </Box>
+      <DialogActions>
+          <Button
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+
       <Box
         sx={{
           backgroundColor: "white",
           minHeight: "200px",
           maxHeight:"400px",
           py: 3,
-          ml: 50,
-          mt: 10,
-          width: "50%",
+          mt:5,
+          ml: 10,
+          mr: 10,
+        
           overflow:"scroll",
           overflowX:"hidden"
         }}
       >
      
-        <Table sx={{overflow:'scroll'}}>
+        <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Coupon Code</TableCell>
