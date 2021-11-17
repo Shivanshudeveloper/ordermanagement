@@ -219,15 +219,14 @@ const Home = () => {
     setCart(cartTemp);
   };
 useEffect(()=>{
-  const getCustomer=async(id)=>{
+  const getCustomer=async(c)=>{
     try {
       const rawResponse = await fetch(
-        `${API_SERVICE}/api/v1/main/customer/getcustomer?id=${id}`,{
+        `${API_SERVICE}/api/v1/main/customer/getcustomer/${c.id}`,{
           method: "GET"
         }
       );
       const content = await rawResponse.json();
-     
       setCustomer(content);
     } catch (err) {
       console.log(err);
@@ -242,9 +241,9 @@ useEffect(()=>{
         }
       );
       const content = await rawResponse.json();
-      console.log(content.id);
-      if(content.id!==null)
-      getCustomer(content.id)
+        console.log(content);
+      if(content!==null)
+      getCustomer(content)
       else{
         console.log(Query);
         navigate(`/mobile/signin/?${Query}`);

@@ -5,6 +5,9 @@ const OrderSchema=new mongoose.Schema({
     email:{
         type:String,
     },
+     adminEmail:{
+        type:String
+    },
     orders:{
         type:Array
     },

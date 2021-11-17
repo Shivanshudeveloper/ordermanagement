@@ -13,7 +13,7 @@ import {
   Typography,
   Snackbar,
   Alert,
-  CardContent
+  CardContent,
 } from "@material-ui/core";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -35,11 +35,13 @@ const Payment = () => {
   const [paysubmit, setPaySubmit] = useState(false);
   const [open, setOpen] = useState(false);
   const [openR, setOpenR] = useState(false);
-  const [paymentDone,setPaymentDone]=useState(false);
+  const [uEmail, setUEmail] = useState("");
+  const [paymentDone, setPaymentDone] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
   const login = (values, { setErrors, setSubmitting }) => {
     const { email } = values;
+   
   };
   const confirmPayment = async () => {
     if (!stripe || !elements) {
@@ -49,37 +51,31 @@ const Payment = () => {
     setPaySubmit(true);
 
     const raw = await fetch(`${API_SERVICE}/api/v1/main/charges`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email:user.email,
-          amount:amount
-        })
-      });
-    
-     const res=await raw.json();
-    let clientSecret=res.cc;
-  
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: uEmail,
+        amount: amount,
+      }),
+    });
+
+    const res = await raw.json();
+    let clientSecret = res.cc;
+
     const result = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements.getElement(CardElement),
         billing_details: {
-          email: user.email,
+          email: uEmail,
         },
       },
     });
     handleClick();
     setAmount(0);
     setPaymentDone(true);
-  
-    
-
-
-       
-
   };
   const handleClick = () => {
     setOpen(true);
@@ -113,52 +109,60 @@ const Payment = () => {
   }, [Query]);
   useEffect(() => {
     let query = window.location.search.substring(1);
-
-    console.log(query);
+    
     let vars = query.split("&");
-
     let Email = vars[0].split("=")[1];
-    let id = vars[1].split("=")[1];
+    let id=vars[1].split("=")[1];
     let amt=vars[3].split("=")[1];
+    let custEmail=vars[4].split("=")[1];
+    setUEmail(custEmail);
     setUser((old) => ({ ...old, email: Email }));
     setAmount(amt);
     setQuery(query);
   }, []);
   if (loading) {
     return <div>Loading</div>;
-  }else if(paymentDone){
+  } else if (paymentDone) {
     let query = window.location.search.substring(1);
     return (
       <>
-      <Helmet>
-        <title>Pyamnt Succesfully Done</title>
-      </Helmet>
-      <Box sx={{display:"flex",flexDirection:"column",backgroundColor:"white",height:"100vh",alignItems:"center"}}>
-      <Typography sx={{mt:10}} variant='h3'color="green" >
-        Payment Successfully Done
+        <Helmet>
+          <title>Pyamnt Succesfully Done</title>
+        </Helmet>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "white",
+            height: "100vh",
+            alignItems: "center",
+          }}
+        >
+          <Typography sx={{ mt: 10 }} variant="h3" color="green">
+            Payment Successfully Done
           </Typography>
-        <img src="https://res.cloudinary.com/dx9dnqzaj/image/upload/v1637056151/ordermanagement/f0ca90dd6924e009d86f4421cf2032b5_b3aokt.gif" alt="" width="100%" height="50%"/>
-     
-      
-        <Typography variant='h4' >
-        Order is Preparing
-          </Typography>
-       
-        <Link
-        sx={{mt:10}}
-  component="button"
-  variant="h4"
-  onClick={() => {
-    navigate(`/mobile/?${query}`, { replace: true });
-  }}
->
-Home
-</Link>
-    
-      </Box>
+          <img
+            src="https://res.cloudinary.com/dx9dnqzaj/image/upload/v1637056151/ordermanagement/f0ca90dd6924e009d86f4421cf2032b5_b3aokt.gif"
+            alt=""
+            width="100%"
+            height="50%"
+          />
 
+          <Typography variant="h4">Order is Preparing</Typography>
+
+          <Link
+            sx={{ mt: 10 }}
+            component="button"
+            variant="h4"
+            onClick={() => {
+              navigate(`/mobile/?${query}`, { replace: true });
+            }}
+          >
+            Home
+          </Link>
+        </Box>
       </>
-    )
+    );
   }
   return (
     <>
@@ -178,10 +182,10 @@ Home
         <Container maxWidth="sm">
           <Formik
             initialValues={{
-              email: user?.email,
+              email: uEmail,
               firstName: user?.username?.split(" ")[0],
               lastName: user?.username?.split(" ")[1],
-              amount:amount
+              amount: amount,
             }}
             validationSchema={Yup.object().shape({
               email: Yup.string()
@@ -258,7 +262,7 @@ Home
                   value={values.lastName}
                   variant="outlined"
                 />
-                 <TextField
+                <TextField
                   error={Boolean(touched.amount && errors.amount)}
                   fullWidth
                   helperText={touched.amount && errors.amount}
@@ -268,7 +272,7 @@ Home
                   disabled={true}
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.amount+" RM"}
+                  value={values.amount + " RM"}
                   variant="outlined"
                 />
                 <Box>
@@ -284,7 +288,7 @@ Home
                   <label>I Accept Terms And Condition</label>
                 </Box>
 
-                <Box sx={{ py: 2,display:"flex",flexDirection:"column"}}>
+                <Box sx={{ py: 2, display: "flex", flexDirection: "column" }}>
                   <Button
                     variant="contained"
                     onClick={confirmPayment}
@@ -292,7 +296,6 @@ Home
                   >
                     {paysubmit ? "Confirming Payment" : "Pay"}
                   </Button>
-                
                 </Box>
 
                 <Typography color="textSecondary" variant="body1"></Typography>

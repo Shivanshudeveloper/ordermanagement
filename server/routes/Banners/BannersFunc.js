@@ -18,7 +18,22 @@ module.exports.addbanner = async (req, res) => {
     console.log(err);
   }
 };
+module.exports.updatebanner = async (req, res) => {
+   const {id}=req.params;
+   
+   try{
+    const doc = await Banners_Model.findOneAndUpdate({_id:id});
 
+    if(req.body?.TandC){
+      doc.TandC=req.body?.TandC;
+    }
+    
+
+      res.send(doc);
+   }catch(err){
+     res.send(err);
+   }
+};
 module.exports.getbanners = async (req, res) => {
   try {
     const data = await Banners_Model.find({ email: req.params.email });
@@ -28,6 +43,8 @@ module.exports.getbanners = async (req, res) => {
     res.status(400).json(`Error: ${err}`);
   }
 };
+
+
 
 module.exports.removebanner = (req, res) => {
   Banners_Model.deleteOne({ _id: req.params.id }, (err, docs) => {

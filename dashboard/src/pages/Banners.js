@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet";
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -31,14 +32,14 @@ import firebase from "../Firebase/index";
 import getUser from "../Firebase/getUser";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
-import { API_SERVICE } from '../URI';
-
+import { API_SERVICE } from "../URI";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const Banners = () => {
+  const navigate = useNavigate();
   const [image, setImage] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [open, setOpen] = useState(false);
@@ -51,7 +52,8 @@ const Banners = () => {
   const [selectedCoupon, setSelectedCoupon] = useState({});
   const [openDeleteBannerPrompt, setOpenDeleteBannerPrompt] = useState(false);
   const [TandC, setTandC] = useState("");
-  const [bannersDetails,setBannersDetails]=useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [bannersDetails, setBannersDetails] = useState(null);
   useEffect(() => {
     const get = async () => {
       setUser(await getUser());
@@ -65,7 +67,7 @@ const Banners = () => {
           `${API_SERVICE}/api/v1/main/coupons/getcoupons/${User.email}`
         );
         const content = await rawResponse.json();
-       
+
         setCoupons(content);
       } catch (err) {}
     };
@@ -107,11 +109,50 @@ const Banners = () => {
       setOpen(false);
     }
   };
+  const updateBanner = async (ul) => {
+    console.log(bannersDetails);
+    try {
+      const rawResponse = await fetch(
+        `${API_SERVICE}/api/v1/main/banners/updatebanner/${bannersDetails?._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            banner: ul,
+            email: User.email,
+            TandC,
+            coupon: selectedCoupon
+          }),
+        }
+      );
+      const content = await rawResponse.json();
+      console.log(content);
+      window.location.reload();
+   
+      setTimeout(()=>{
+        setOpenEdit(false);
+        setBanners((old) => [...old, content]);
+        setImageUrl("");
+        setImage("");
+        setTandC("");
+        setSelectedCoupon({});
+        setBannersDetails(null);
+        setLoading(false);
+      },2000)
+     
+   
+
+    } catch (err) {
+      console.log(err);
+      setImageUrl("");
+      setImage("");
+      setOpenEdit(false);
+    }
+  };
   const handleUpdateItemImage = () => {
-
-
-
- 
     const storage = firebase.storage();
     setLoading(true);
     const uploadTask = storage.ref(`banners/${image.name}`).put(image);
@@ -133,6 +174,32 @@ const Banners = () => {
       }
     );
   };
+  const handleUpdateItemImageUpdate = () => {
+    const storage = firebase.storage();
+    setLoading(true);
+    if(image===""){
+      updateBanner(bannersDetails?.banner);
+      return;
+    }
+    const uploadTask = storage.ref(`banners/${image.name}`).put(image);
+    uploadTask.on(
+      "state_changed",
+      () => {},
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        storage
+          .ref("banners")
+          .child(image.name)
+          .getDownloadURL()
+          .then((ul) => {
+            setImageUrl(ul);
+            updateBanner(ul);
+          });
+      }
+    );
+  };
   useEffect(() => {
     const getBanners = async () => {
       try {
@@ -140,7 +207,7 @@ const Banners = () => {
           `${API_SERVICE}/api/v1/main/banners/getbanners/${User.email}`
         );
         const content = await rawResponse.json();
-         console.log(content);
+        console.log(content);
         setBanners(content);
       } catch (err) {}
     };
@@ -181,7 +248,10 @@ const Banners = () => {
   };
   const addBanner = () => {
     if (image !== "") handleUpdateItemImage();
-    
+  };
+  const updateBannerHandler = () => {
+
+    handleUpdateItemImageUpdate();
   };
   const closeBanner = () => {
     setImageUrl("");
@@ -189,8 +259,18 @@ const Banners = () => {
     setOpen(false);
     setTandC("");
     setSelectedCoupon({});
+    setOpenEdit(false);
   };
-
+useEffect(()=>{
+ if(openEdit){
+  if(!selectedCoupon.couponCode){
+    setSelectedCoupon({couponCode:bannersDetails?.coupon.couponCode,discount:bannersDetails?.coupon.discount});
+  }
+  if(!TandC){
+    setTandC(bannersDetails?.TandC);
+  }
+ }
+},[openEdit])
   return (
     <>
       <Helmet>
@@ -220,13 +300,29 @@ const Banners = () => {
           Add Banner
         </Button>
       </Box>
-      <Box sx={{mt:2, ml: 5, mr: 5,backgroundColor:"white",border:"1px solid white",borderRadius:"10px",height:"70vh",overflow:"scroll",overflowX:"hidden"}}>
-        <ImageList sx={{display:"flex"}}>
+      <Box
+        sx={{
+          mt: 2,
+          ml: 5,
+          mr: 5,
+          backgroundColor: "white",
+          border: "1px solid white",
+          borderRadius: "10px",
+          height: "70vh",
+          overflow: "scroll",
+          overflowX: "hidden",
+        }}
+      >
+        <ImageList sx={{ display: "flex" }}>
           {banners.map((item) => (
             <ImageListItem
               key={item._id}
-              sx={{ m: 5, boxShadow: "1px 1px  10px 1px lightgrey",width:"300px",cursor:"pointer"}}
-
+              sx={{
+                m: 5,
+                boxShadow: "1px 1px  10px 1px lightgrey",
+                width: "300px",
+                cursor: "pointer",
+              }}
             >
               <img
                 src={`${item.banner}`}
@@ -236,16 +332,20 @@ const Banners = () => {
                 width="100px"
                 height="100px"
                 onClick={() => {
-     
-                  if(item.TandC!==""){
+                  if (item.TandC !== "") {
                     setBannersDetails(item);
                     setShowBannerDetails(true);
                   }
-                
                 }}
               />
               <ImageListItemBar title={item.name} position="below" />
-
+              <Button
+                variant="contained"
+                component="label"
+                onClick={() =>{          setBannersDetails(item); setOpenEdit(true)}}
+              >
+                Edit Banner
+              </Button>
               <Box
                 sx={{
                   display: "flex",
@@ -291,7 +391,14 @@ const Banners = () => {
 
         <List>
           <ListItem button>
-            <ListItemText primary="Coupon Name" secondary={bannersDetails?.coupon.couponCode+" "+bannersDetails?.coupon.discount} />
+            <ListItemText
+              primary="Coupon Name"
+              secondary={
+                bannersDetails?.coupon.couponCode +
+                " " +
+                bannersDetails?.coupon.discount
+              }
+            />
           </ListItem>
           <Divider />
 
@@ -299,7 +406,6 @@ const Banners = () => {
             <ListItemText
               primary={"Terms & Conditions"}
               secondary={bannersDetails?.TandC}
-           
             />
           </ListItem>
         </List>
@@ -352,7 +458,9 @@ const Banners = () => {
                   value={selectedCoupon.couponCode}
                   sx={{ mb: 3 }}
                   onChange={(e) => {
-                    setSelectedCoupon(coupons.find((ele)=>ele.couponCode===e.target.value));
+                    setSelectedCoupon(
+                      coupons.find((ele) => ele.couponCode === e.target.value)
+                    );
                   }}
                 >
                   {coupons?.map((cat) => {
@@ -380,7 +488,7 @@ const Banners = () => {
                 </Typography>
                 <textarea
                   value={TandC}
-                  style={{minHeight:"100px",fontSize:"1.3em"}}
+                  style={{ minHeight: "100px", fontSize: "1.3em" }}
                   onChange={(e) => setTandC(e.target.value)}
                 />
               </Box>
@@ -402,6 +510,114 @@ const Banners = () => {
             }}
           >
             Add {loading && <CircularProgress />}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openEdit} fullWidth onClose={() => {}}>
+        <DialogTitle>Banner</DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 3 }}>
+            <Card sx={{ marginTop: "20px" }}>
+              <CardContent>
+                <Box
+                  sx={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <img alt="" variant="rounded" src={imageUrl?imageUrl:bannersDetails?.banner} width="500px" />
+                </Box>
+              </CardContent>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  m: 1,
+                }}
+              >
+                <Button variant="contained" component="label" sx={{ mb: 3 }}>
+                  Change Banner
+                  <input
+                    type="file"
+                    hidden
+                    onChange={(e) => imageChangeHandler(e)}
+                  />
+                </Button>
+                <Typography
+                  align="left"
+                  color="textPrimary"
+                  variant="subtitle1"
+                >
+                  Select Coupon Name
+                </Typography>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  fullWidth
+                  label="Category"
+                  value={selectedCoupon.couponCode?selectedCoupon.couponCode:bannersDetails?.coupon.couponCode}
+                  sx={{ mb: 3 }}
+                  onChange={(e) => {
+                    setSelectedCoupon(
+                      coupons.find((ele) => ele.couponCode === e.target.value)
+                    );
+                  }}
+                >
+                 
+                  {coupons?.map((cat) => {
+                    return (
+                    
+                     
+      
+                      <MenuItem
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                        value={cat.couponCode}
+                        key={cat}
+                      >
+                        <label> {cat.couponCode}</label>
+                        <label> {cat.discount}</label>
+                      </MenuItem>
+                      
+                    );
+                  })}
+                </Select>
+                <Typography
+                  align="left"
+                  color="textPrimary"
+                  variant="subtitle1"
+                >
+                  Write Terms and Condition
+                </Typography>
+                <textarea
+                  value={TandC!==""?TandC:bannersDetails?.TandC}
+                  style={{ minHeight: "100px", fontSize: "1.3em" }}
+                  onChange={(e) => setTandC(e.target.value)}
+                />
+              </Box>
+            </Card>
+          </Box>
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={() => {
+              closeBanner();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              updateBannerHandler();
+            }}
+          >
+            Update {loading && <CircularProgress />}
           </Button>
         </DialogActions>
       </Dialog>

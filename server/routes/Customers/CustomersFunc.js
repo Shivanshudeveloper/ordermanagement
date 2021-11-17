@@ -1,6 +1,6 @@
 const Customers_Model=require("../../models/Customers");
 module.exports.getcustomer = async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
  
     try {
       const customer = await Customers_Model.findOne({ _id: id });
