@@ -45,6 +45,18 @@ module.exports.updaterestaurantName = (req, res) => {
   );
 };
 
+module.exports.updaterestaurantAddress = (req, res) => {
+  const { email, restaurantAddress } = req.body;
+  User_Model.findOneAndUpdate(
+    { email: email },
+    { restaurantAddress: restaurantAddress },
+    { runValidators: true },
+    function (err, doc) {
+      if (err) return res.send(500, { error: err });
+      return res.send(doc);
+    }
+  );
+};
 module.exports.updatelogo = async (req, res) => {
   const { email, logo } = req.body;
 

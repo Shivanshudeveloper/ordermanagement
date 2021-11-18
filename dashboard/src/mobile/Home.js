@@ -242,7 +242,7 @@ useEffect(()=>{
       );
       const content = await rawResponse.json();
         console.log(content);
-      if(content!==null)
+      if(content.id!==null)
       getCustomer(content)
       else{
         console.log(Query);

@@ -67,14 +67,22 @@ const Cart = ({
   };
   const findCoupon = () => {
     let index = coupons.findIndex((ele) => ele.couponCode === couponCode);
-    console.log(coupons[index].discount[coupons[index].discount.length - 2]);
+ 
     if (index >= 0) {
       let amt = total;
 
-      let disc =
-        (amt *
-          Number(coupons[index].discount[coupons[index].discount.length - 2])) /
-        100;
+      let disc = 0;
+      if (coupons[index].discount[coupons[index].discount.length - 1] === "%")
+        disc =
+          (amt *
+            Number(
+              coupons[index].discount.slice(0,coupons[index].discount.length-2)
+            )) /
+          100;
+      else
+        disc = Number(
+          coupons[index].discount.slice(0,coupons[index].discount.length-2)
+        );
       amt = amt - disc;
       setDiscount(disc);
       setTotal(amt);
@@ -87,7 +95,7 @@ const Cart = ({
 
   useEffect(() => {
     let query = window.location.search.substring(1);
-    
+
     let vars = query.split("&");
     let Email = vars[0].split("=")[1];
     setAdminEmail(Email);
@@ -115,10 +123,10 @@ const Cart = ({
 
   const checkout = () => {
     let query = window.location.search.substring(1);
-    
+
     let vars = query.split("&");
     let Email = vars[0].split("=")[1];
-    let id=vars[1].split("=")[1];
+    let id = vars[1].split("=")[1];
 
     let tablename = vars[2].split("=")[1];
     fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
@@ -130,25 +138,26 @@ const Cart = ({
       body: JSON.stringify({
         tablename: tablename,
         orders: cart,
-        firstName:customer.firstName,
-        lastName:customer.lastName,
-        email:customer.email,
-        adminEmail:adminEmail,
-        status:"Pending"
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        email: customer.email,
+        adminEmail: adminEmail,
+        totalamount:total,
+        status: "Order Preparing",
       }),
     })
       .then((res) => res.json())
       .then((res) => {
         console.log(res);
-        navigate(`/mobile/payment/?email=${Email}&id=${id}&tablename=${tablename}&amount=${total}&customeremail=${customer.email}`, { replace: true });
-        
+        navigate(
+          `/mobile/payment/?email=${Email}&id=${id}&tablename=${tablename}&amount=${total}&customeremail=${customer.email}`,
+          { replace: true }
+        );
       })
       .catch((err) => {
         console.log(err);
       });
     if (total === 0) return;
-
-  
   };
 
   return (

@@ -1,12 +1,12 @@
 import { Helmet } from 'react-helmet';
 import { Box, Container, Grid } from '@material-ui/core';
-import Budget from '../components/dashboard/Budget';
+
 import LatestOrders from '../components/dashboard/LatestOrders';
 import LatestProducts from '../components/dashboard/LatestProducts';
 import Sales from '../components/dashboard/Sales';
 import TasksProgress from '../components/dashboard/TasksProgress';
-import TotalCustomers from '../components/dashboard/TotalCustomers';
-import TotalProfit from '../components/dashboard/TotalProfit';
+import TotalCustomers from '../components/dashboard/TotalPending';
+import TotalProfit from '../components/dashboard/TotalRevenue';
 import TrafficByDevice from '../components/dashboard/TrafficByDevice';
 import { useState ,useEffect} from 'react';
 import getUser from '../Firebase/getUser';
@@ -96,7 +96,7 @@ return (
             xl={12}
             xs={12}
           >
-            <LatestOrders setStatus={setStatus} customers={customers} />
+            <LatestOrders  setStatus={setStatus} showStatus={true} customers={customers} />
           </Grid>
         </Grid>
       </Container>

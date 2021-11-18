@@ -24,7 +24,7 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import DeleteIcon from "@material-ui/icons/Delete";
 import getUser from "../Firebase/getUser";
 import CloseIcon from "@material-ui/icons/Close";
-import { API_SERVICE,APP_URL } from '../URI';
+import { API_SERVICE, APP_URL } from "../URI";
 import QRCode from "qrcode.react";
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -40,7 +40,8 @@ const QRcode = () => {
   const [qrCodes, setQRCodes] = useState([]);
   const [showView, setShowView] = useState(false);
   const [selectedQR, setSelectedQR] = useState(null);
-
+  const [selected, setSelected] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
   useEffect(() => {
     const get = async () => {
       try {
@@ -64,8 +65,8 @@ const QRcode = () => {
     get();
   }, []);
   const setQRCodeHandler = async () => {
-    const Url=`${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
-  
+    const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+
     try {
       const rawResponse = await fetch(
         `${API_SERVICE}/api/v1/main/qr/addQRcode`,
@@ -78,7 +79,7 @@ const QRcode = () => {
           body: JSON.stringify({
             email: User.email,
             tableName,
-            qrCode:Url
+            qrCode: Url,
           }),
         }
       );
@@ -108,17 +109,17 @@ const QRcode = () => {
 
     getQRCodes();
   }, [User]);
+
   const generateQRCode = () => {
-    if (tableName !== "")
-    {
-      const Url=`${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
-   
+    if (tableName !== "") {
+      const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+
       setQRCode(Url);
       setOpen(false);
-      }
+    }
     setQRCodeHandler();
   };
- 
+
   const deleteQRcode = async (c) => {
     try {
       const rawResponse = await fetch(
@@ -134,6 +135,54 @@ const QRcode = () => {
     } catch (err) {
       console.log(err);
     }
+  };
+  const updateQRCodeHandler = async () => {
+    const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+    let temp = [...qrCodes];
+    console.log(temp);
+    let index = temp.findIndex((ele) => ele._id === selected._id);
+    temp[index].tableName = tableName;
+    temp[index].qrCode = Url;
+    setQRCodes(temp);
+
+    try {
+      const rawResponse = await fetch(
+        `${API_SERVICE}/api/v1/main/qr/updateQRCode`,
+        {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: User.email,
+            tableName,
+            qrCode: Url,
+            id:selected._id
+          }),
+        }
+      );
+
+      const content = await rawResponse.json();
+
+      setTableName("");
+      setQRCode("");
+      setSelected(null);
+      setShowEdit(false);
+    } catch (err) {
+      console.log(err);
+      setTableName("");
+      setQRCode("");
+    }
+  };
+  const reGenerateQRCode = () => {
+    if (tableName !== "") {
+      const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+
+      setQRCode(Url);
+      setOpen(false);
+    }
+    updateQRCodeHandler();
   };
   return (
     <>
@@ -159,7 +208,7 @@ const QRcode = () => {
         <Button
           variant="contained"
           component="label"
-          onClick={() => setOpen(true)}
+          onClick={() => { setTableName(""); setOpen(true);}}
         >
           Generate QR
         </Button>
@@ -187,6 +236,19 @@ const QRcode = () => {
                         }}
                       >
                         QR code
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          setSelected(c);
+                          setTableName(c.tableName);
+
+                          setShowEdit(true);
+                        }}
+                      >
+                        Edit
                       </Button>
                     </TableCell>
                     <TableCell>
@@ -238,9 +300,49 @@ const QRcode = () => {
           </Button>
           <Button
             onClick={() => {
+              
               generateQRCode();
-              
-              
+            }}
+            autoFocus
+          >
+            Generate
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        fullWidth
+        open={showEdit}
+        onClose={() => {
+          setOpen(false);
+        }}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Enter Table Name"}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Table Name"
+            type="text"
+            fullWidth
+            value={tableName}
+            variant="standard"
+            onChange={(e) => setTableName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowEdit(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              reGenerateQRCode();
             }}
             autoFocus
           >
@@ -257,31 +359,38 @@ const QRcode = () => {
             boxShadow: "1px 1px 40px 1px grey",
           }}
         >
-      <QRCode value={qrCode} />
+          <QRCode value={qrCode} />
         </Box>
       ) : null}
       <Dialog
-      fullWidth
         open={showView}
         onClose={() => setShowView(false)}
         TransitionComponent={Transition}
       >
-        <Toolbar>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            QR code
-          </Typography>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={() => setShowView(false)}
-            aria-label="close"
-          >
-            <CloseIcon />
-          </IconButton>
-       
-        </Toolbar>
-   <QRCode value={selectedQR?.qrCode} />
-    
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItem: "center",
+          }}
+        >
+          <Toolbar>
+            <Typography sx={{ ml: 2, flex: 3 }} variant="h6" component="div">
+              QR code
+            </Typography>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={() => setShowView(false)}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Toolbar>
+
+          <QRCode size={500} includeMargin={true} value={selectedQR?.qrCode} />
+        </Box>
       </Dialog>
     </>
   );

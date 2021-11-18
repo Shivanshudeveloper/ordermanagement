@@ -26,6 +26,10 @@ const userDataSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  restaurantAddress:{
+      type:String,
+      default:""
+  },
   date: {
     type: Date,
     default: Date.now,
