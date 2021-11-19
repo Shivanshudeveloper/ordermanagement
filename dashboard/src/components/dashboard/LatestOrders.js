@@ -52,7 +52,6 @@ const LatestOrders = ({ customers, setStatus, showStatus }) => {
             >
               All
             </Button>
-
             <Button
               sx={{ mr: 5 }}
               variant={

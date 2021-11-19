@@ -18,6 +18,7 @@ import ViewCarouselIcon from '@material-ui/icons/ViewCarousel';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import QrCodeIcon from '@material-ui/icons/QrCode';
 import ChangeHistoryIcon from '@material-ui/icons/ChangeHistory';
+import ApiIcon from '@material-ui/icons/Api';
 import {
   AlertCircle as AlertCircleIcon,
   BarChart as BarChartIcon,
@@ -45,11 +46,11 @@ const items = [
     icon: BarChartIcon,
     title: 'Dashboard'
   },
-  {
-    href: '/app/reports',
-    icon: ShowChartIcon,
-    title: 'Reports'
-  },
+  // {
+  //   href: '/app/reports',
+  //   icon: ShowChartIcon,
+  //   title: 'Reports'
+  // },
   {
     href: '/app/customers',
     icon: UsersIcon,
@@ -94,6 +95,10 @@ const items = [
     href: '/app/ORcodeGenerate',
     icon: QrCodeIcon,
     title: 'QR Code Generate'
+  },{
+    href:'/app/api',
+    icon:ApiIcon,
+    title:'APIs'
   }
 ];
 

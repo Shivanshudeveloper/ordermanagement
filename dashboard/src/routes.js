@@ -23,6 +23,7 @@ import QRcode from './pages/QRcode';
 import Payment from './mobile/pages/Payment';
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import APIs from './pages/APIs';
 
 const stripePromise = loadStripe("pk_test_51JHsVhHTwp1a1ssgSKsY0MM2c51lL7qkbGLOghJe4SLwpbvZwSmJxjquqThrzP9LHQKkHdl2XGUoIT4o7u1rUi4I00U744HAUa");
 
@@ -42,6 +43,7 @@ const routes = [
       { path: 'Banners', element: <Banners /> },
       { path: 'Coupons', element: <Coupons /> },
       { path: 'ORcodeGenerate', element: <QRcode /> },
+      { path: '/api', element: <APIs /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   },

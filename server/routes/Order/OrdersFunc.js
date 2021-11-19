@@ -39,8 +39,28 @@ module.exports.getorders=async(req,res)=>{
 
   try{
         const orders=await Order_Model.find({adminEmail:email}).sort(({createdAt:-1})); 
-       
-        res.send(orders);
+        let ord=orders;
+        ord.map((ele)=>{
+          let k=ele.orders;
+          k.push({"totalamount":ele.totalamount});
+         return ele.orders=k;
+     
+        })
+        res.send(ord);
+  }catch(err){
+        res.send(err);
+  }
+}
+module.exports.getrevenue=async(req,res)=>{
+  const {email}=req.params;
+
+  try{
+        const orders=await Order_Model.find({adminEmail:email}).sort(({createdAt:-1})); 
+        let revenue=0;
+        orders.forEach((cust)=>{
+          revenue+=cust.totalamount;
+        })
+        res.send({totalRevenue:revenue});
   }catch(err){
         res.send(err);
   }

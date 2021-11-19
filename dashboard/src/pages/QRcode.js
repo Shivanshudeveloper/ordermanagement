@@ -214,7 +214,7 @@ const QRcode = () => {
         </Button>
       </Box>
       <PerfectScrollbar>
-        <Box sx={{ maxWidth: 600, ml: 40, backgroundColor: "white" }}>
+        <Box sx={{ minWidth: 600,ml:10,mr:10,mt:5, backgroundColor: "white" }}>
           <Table sx={{ overflow: "scroll" }}>
             <TableHead>
               <TableRow>
