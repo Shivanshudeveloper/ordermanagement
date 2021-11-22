@@ -1,12 +1,12 @@
 const Order_Model=require("../../models/Orders");
 
 module.exports.addorder=async(req,res)=>{
-  const {tablename,orders,email,firstName,lastName,adminEmail,status,totalamount}=req.body;
+  const {title,orders,email,firstName,lastName,adminEmail,status,totalamount}=req.body;
   try{  
 
         const order=await Order_Model.create({
                 email:email,
-                tablename:tablename,
+                title:title,
                 orders:orders,
                 firstName:firstName,
                 lastName:lastName,

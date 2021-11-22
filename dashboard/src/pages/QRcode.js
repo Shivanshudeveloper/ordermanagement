@@ -18,6 +18,8 @@ import {
   IconButton,
   Toolbar,
   List,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import { useState, useEffect, forwardRef } from "react";
 import PerfectScrollbar from "react-perfect-scrollbar";
@@ -32,7 +34,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 const QRcode = () => {
   const [open, setOpen] = useState(false);
-  const [tableName, setTableName] = useState("");
+  const [title, settitle] = useState("");
   const [User, setUser] = useState({ displayName: "", email: "" });
   const [size, setSize] = useState(400);
   const [userID, setUserID] = useState("");
@@ -42,6 +44,7 @@ const QRcode = () => {
   const [selectedQR, setSelectedQR] = useState(null);
   const [selected, setSelected] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
+  const [qrType, setQRType] = useState("");
   useEffect(() => {
     const get = async () => {
       try {
@@ -65,7 +68,7 @@ const QRcode = () => {
     get();
   }, []);
   const setQRCodeHandler = async () => {
-    const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+    const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&title=${title}&type=${qrType.split(" ").join("")}`;
 
     try {
       const rawResponse = await fetch(
@@ -78,8 +81,9 @@ const QRcode = () => {
           },
           body: JSON.stringify({
             email: User.email,
-            tableName,
+            title,
             qrCode: Url,
+            type:qrType
           }),
         }
       );
@@ -87,11 +91,11 @@ const QRcode = () => {
       const content = await rawResponse.json();
 
       setQRCodes((old) => [...old, content]);
-      setTableName("");
+      settitle("");
       setQRCode("");
     } catch (err) {
       console.log(err);
-      setTableName("");
+      settitle("");
       setQRCode("");
     }
   };
@@ -111,8 +115,8 @@ const QRcode = () => {
   }, [User]);
 
   const generateQRCode = () => {
-    if (tableName !== "") {
-      const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+    if (title !== "") {
+      const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&title=${title}&type=${qrType.split(" ").join("")}`;
 
       setQRCode(Url);
       setOpen(false);
@@ -137,12 +141,13 @@ const QRcode = () => {
     }
   };
   const updateQRCodeHandler = async () => {
-    const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+    const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&title=${title}&type=${qrType.split(" ").join("")}`;
     let temp = [...qrCodes];
     console.log(temp);
     let index = temp.findIndex((ele) => ele._id === selected._id);
-    temp[index].tableName = tableName;
+    temp[index].title = title;
     temp[index].qrCode = Url;
+    temp[index].type=qrType;
     setQRCodes(temp);
 
     try {
@@ -156,28 +161,31 @@ const QRcode = () => {
           },
           body: JSON.stringify({
             email: User.email,
-            tableName,
+            title,
             qrCode: Url,
-            id:selected._id
+            id: selected._id,
+            type: qrType,
           }),
         }
       );
 
       const content = await rawResponse.json();
 
-      setTableName("");
+      settitle("");
       setQRCode("");
+      
+     
       setSelected(null);
       setShowEdit(false);
     } catch (err) {
       console.log(err);
-      setTableName("");
+      settitle("");
       setQRCode("");
     }
   };
   const reGenerateQRCode = () => {
-    if (tableName !== "") {
-      const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&tablename=${tableName}`;
+    if (title !== "") {
+      const Url = `${APP_URL}/mobile?email=${User.email}&id=${userID}&title=${title}&type=${qrType.split(" ").join("")}`;
 
       setQRCode(Url);
       setOpen(false);
@@ -208,24 +216,39 @@ const QRcode = () => {
         <Button
           variant="contained"
           component="label"
-          onClick={() => { setTableName(""); setOpen(true);}}
+          onClick={() => {
+            settitle("");
+            setQRType("");
+            setOpen(true);
+          }}
         >
           Generate QR
         </Button>
       </Box>
       <PerfectScrollbar>
-        <Box sx={{ minWidth: 600,ml:10,mr:10,mt:5, backgroundColor: "white" }}>
+        <Box
+          sx={{
+            minWidth: 600,
+            ml: 10,
+            mr: 10,
+            mt: 5,
+            backgroundColor: "white",
+          }}
+        >
           <Table sx={{ overflow: "scroll" }}>
             <TableHead>
               <TableRow>
-                <TableCell>Table Name</TableCell>
+                <TableCell>Title</TableCell>
+
+                <TableCell>Type</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {qrCodes.map((c) => (
                 <>
                   <TableRow hover key={IDBCursor}>
-                    <TableCell>{c.tableName}</TableCell>
+                    <TableCell>{c.title}</TableCell>
+                    <TableCell>{c.type}</TableCell>
 
                     <TableCell>
                       <Button
@@ -243,8 +266,8 @@ const QRcode = () => {
                         variant="contained"
                         onClick={() => {
                           setSelected(c);
-                          setTableName(c.tableName);
-
+                          settitle(c.title);
+                           setQRType(c.type);
                           setShowEdit(true);
                         }}
                       >
@@ -276,19 +299,40 @@ const QRcode = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Enter Table Name"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"QR CODE"}</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Table Name"
-            type="text"
-            fullWidth
-            value={tableName}
-            variant="standard"
-            onChange={(e) => setTableName(e.target.value)}
-          />
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Title"
+              type="text"
+              fullWidth
+              sx={{ mb: 5 }}
+              value={title}
+              variant="standard"
+              onChange={(e) => settitle(e.target.value)}
+            />
+            <label style={{marginBottom:"10px"}}>Select Type</label>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              fullWidth
+              label="Select Type"
+              value={qrType}
+              onChange={(e) => setQRType(e.target.value)}
+            >
+             
+              {["Social Media Campaigns", "Dine In"]?.map((cat) => {
+                return (
+                  <MenuItem value={cat} key={cat}>
+                    {cat}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button
@@ -300,7 +344,6 @@ const QRcode = () => {
           </Button>
           <Button
             onClick={() => {
-              
               generateQRCode();
             }}
             autoFocus
@@ -318,19 +361,39 @@ const QRcode = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Enter Table Name"}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">{"QR CODE"}</DialogTitle>
         <DialogContent>
+          <Box sx={{ display: "flex", flexDirection: "column" }} >
+
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            label="Table Name"
-            type="text"
+            label="Title"
             fullWidth
-            value={tableName}
+            value={title}
             variant="standard"
-            onChange={(e) => setTableName(e.target.value)}
+            onChange={(e) => settitle(e.target.value)}
           />
+             <label style={{marginBottom:"10px",marginTop:"20px"}}>Select Type</label>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              fullWidth
+              label="Select Type"
+              value={qrType}
+              onChange={(e) => setQRType(e.target.value)}
+            >
+             
+              {["Social Media Campaigns", "Dine In"]?.map((cat) => {
+                return (
+                  <MenuItem value={cat} key={cat}>
+                    {cat}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+            </Box>
         </DialogContent>
         <DialogActions>
           <Button

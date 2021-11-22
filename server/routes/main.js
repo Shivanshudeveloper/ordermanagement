@@ -36,7 +36,7 @@ router.get("/test", (req, res) => {
 
 router.post("/charges", async (req, res) => {
   const { email, amount } = req.body;
-  console.log(req.body);
+
   const paymentIntent = await stripe.paymentIntents.create({
     amount: amount * 100,
     currency: "usd",
@@ -44,7 +44,7 @@ router.post("/charges", async (req, res) => {
     metadata: { integration_check: "accept_a_payment" },
     receipt_email: email,
   });
-console.log(paymentIntent["client_secret"]);
+
   res.send({cc:paymentIntent["client_secret"]} );
 });
 router.post("/secret", async (req, res) => {

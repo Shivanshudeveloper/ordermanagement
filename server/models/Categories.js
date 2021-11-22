@@ -13,7 +13,6 @@ const CategoriesSchema = new mongoose.Schema({
     email:{
         type:String,
         required:true,
-        unique:true
     },
     icon:{
 type:String

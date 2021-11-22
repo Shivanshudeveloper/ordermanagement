@@ -15,7 +15,7 @@ const OrderSchema=new mongoose.Schema({
     lastName:{
             type:String
     },
-    tablename:{
+    title:{
             type:String
     },
     status:{

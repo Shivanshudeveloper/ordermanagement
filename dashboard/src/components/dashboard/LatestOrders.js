@@ -82,7 +82,7 @@ const LatestOrders = ({ customers, setStatus, showStatus }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Table Name</TableCell>
+                  <TableCell>Title</TableCell>
                   <TableCell>First Name</TableCell>
                   <TableCell>Last Name</TableCell>
                   <TableCell>Email</TableCell>
@@ -98,7 +98,7 @@ const LatestOrders = ({ customers, setStatus, showStatus }) => {
                   )
                     return (
                       <TableRow hover key={customer._id}>
-                        <TableCell>{customer.tablename}</TableCell>
+                        <TableCell>{customer.title}</TableCell>
                         <TableCell>{customer.firstName}</TableCell>
                         <TableCell>{customer.lastName}</TableCell>
                         <TableCell>{customer.email}</TableCell>

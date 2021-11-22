@@ -123,11 +123,11 @@ const Home = () => {
     let query = window.location.search.substring(1);
     setQuery(query);
     console.log(query)
-    let vars = query.split("&");
+    let vars = query?.split("&");
   
    
-                let Email = vars[0].split("=")[1];
-                let id= vars[1].split("=")[1];
+                let Email = vars[0]?.split("=")[1];
+                let id= vars[1]?.split("=")[1];
                 setUser({email:Email,id:id});
         
 

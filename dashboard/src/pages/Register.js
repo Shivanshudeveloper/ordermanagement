@@ -35,22 +35,25 @@ const Register = () => {
       }),
     })
       .then((res) => res.json())
-      .then((res) => console.log(res));
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((results) => {
-        const { user } = results;
-
-        user.updateProfile({
-          displayName: name,
+      .then((res) =>{
+        auth
+        .createUserWithEmailAndPassword(email, password)
+        .then((results) => {
+          const { user } = results;
+  
+          user.updateProfile({
+            displayName: name,
+          });
+          console.log(user);
+          navigate("/login", { replace: true });
+        })
+        .catch((err) => {
+          setSubmitting(false);
+          setErrors({ password: err.message.replace("Firebase:", "") });
         });
-        console.log(user);
-        navigate("/login", { replace: true });
-      })
-      .catch((err) => {
-        setSubmitting(false);
-        setErrors({ password: err.message.replace("Firebase:", "") });
-      });
+      }
+      ).catch((err)=>console.log(err))
+
   };
   return (
     <>

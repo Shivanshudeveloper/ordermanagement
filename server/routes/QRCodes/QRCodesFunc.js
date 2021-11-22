@@ -1,12 +1,13 @@
 const QRCodes_Model = require("../../models/QRCodes");
 
 module.exports.addQRCode = async (req, res) => {
-  const { qrCode, email, tableName } = req.body;
+  const { qrCode, email, title,type } = req.body;
   try {
     const QRCode = new QRCodes_Model({
       email,
-      tableName,
+      title,
       qrCode,
+      type
     });
 
     await QRCode.save();
@@ -17,11 +18,11 @@ module.exports.addQRCode = async (req, res) => {
   }
 };
 module.exports.updateQRCode = async (req, res) => {
-  const { qrCode, email, tableName, id } = req.body;
+  const { qrCode, email, title, id,type } = req.body;
 
   QRCodes_Model.findOneAndUpdate(
     { _id: id },
-    { tableName: tableName, qrCode: qrCode },
+    { title: title, qrCode: qrCode,type:type },
     { runValidators: true },
     function (err, doc) {
       if (err) return res.send(500, { error: err });

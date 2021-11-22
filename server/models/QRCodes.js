@@ -7,9 +7,12 @@ const QRCodeSchema = new mongoose.Schema({
         required:true,
   
     },
-    tableName:{
+    title:{
         type:String,
-        unique:true
+
+    },
+    type:{
+        type:String
     },
    qrCode:{
            type:String

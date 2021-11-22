@@ -128,7 +128,7 @@ const Cart = ({
     let Email = vars[0].split("=")[1];
     let id = vars[1].split("=")[1];
 
-    let tablename = vars[2].split("=")[1];
+    let title = vars[2].split("=")[1];
     fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
       method: "POST",
       headers: {
@@ -136,7 +136,7 @@ const Cart = ({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        tablename: tablename,
+        title: title,
         orders: cart,
         firstName: customer.firstName,
         lastName: customer.lastName,
@@ -150,7 +150,7 @@ const Cart = ({
       .then((res) => {
         console.log(res);
         navigate(
-          `/mobile/payment/?email=${Email}&id=${id}&tablename=${tablename}&amount=${total}&customeremail=${customer.email}`,
+          `/mobile/payment/?email=${Email}&id=${id}&title=${title}&amount=${total}&customeremail=${customer.email}`,
           { replace: true }
         );
       })
