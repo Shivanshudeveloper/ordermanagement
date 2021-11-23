@@ -22,7 +22,7 @@ import {
   Avatar,
   CardContent,
   Typography,
-  CircularProgress,
+  CircularProgress,Snackbar,Alert
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
@@ -48,6 +48,8 @@ const MenuList = (props) => {
   const [itemImage, setItemImage] = useState(null);
   const [showView, setShowView] = useState(false);
   const [loading, setloading] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [error, setError] = useState({ error: false, message: "" });
   const [menu, setMenu] = useState({
     item: "",
     price: null,
@@ -135,6 +137,27 @@ const MenuList = (props) => {
 
     setImageUrl(URL.createObjectURL(e.target.files[0]));
   };
+  const check=()=>{
+    if (
+      menu.item === "" ||
+      menu.price === null ||
+      menu.discount === "" ||
+      menu.category === "" ||
+      menu.description === "" 
+    ) {
+      setError({error:true,message:"Field Can't be Empty"});
+      setShowSnackbar(true);
+      setloading(false);
+      return;
+    }
+    if (itemImage === null) {
+      updateMenu(menu);
+      setloading(false);
+      handleCloseEditMenu(null);
+    } else {
+      handleUpdateItemImage();
+    }
+  }
   return (
     <Card {...props}>
       <CardHeader title="Menu" />
@@ -230,6 +253,8 @@ const MenuList = (props) => {
             type="text"
             fullWidth
             value={menu.item}
+            error={menu.item === "" }
+            helperText={menu.item === ""?'Empty field!' : ' '}
             variant="standard"
             onChange={(e) => setMenu({ ...menu, item: e.target.value })}
           />
@@ -239,6 +264,8 @@ const MenuList = (props) => {
             label="Price of Item"
             type="text"
             value={menu.price}
+            error={menu.price === null}
+            helperText={menu.price === null? 'Empty field!' : ' '}
             fullWidth
             variant="standard"
             onChange={(e) => setMenu({ ...menu, price: e.target.value })}
@@ -250,6 +277,8 @@ const MenuList = (props) => {
             type="text"
             fullWidth
             value={menu.discount}
+              error={menu.discount === ""}
+              helperText={menu.discount === ""? 'Empty field!' : ' '}
             variant="standard"
             onChange={(e) => setMenu({ ...menu, discount: e.target.value })}
           />
@@ -262,6 +291,8 @@ const MenuList = (props) => {
             multiline
             minRows={3}
             value={menu.description}
+            error={menu.description === ""}
+            helperText={menu.description === ""? 'Empty field!' : ' '}
             variant="standard"
             onChange={(e) => setMenu({ ...menu, description: e.target.value })}
           />
@@ -336,14 +367,7 @@ const MenuList = (props) => {
           <Button
             onClick={() => {
               setloading(true);
-
-              if (itemImage === null) {
-                updateMenu(menu);
-                setloading(false);
-                handleCloseEditMenu(null);
-              } else {
-                handleUpdateItemImage();
-              }
+              check();
             }}
           >
             Save Changes {loading && <CircularProgress />}
@@ -409,6 +433,20 @@ const MenuList = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        sx={{ml:30}}
+        onClose={() => setShowSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setShowSnackbar(false)}
+          severity={error.error?"warning":"success"}
+          sx={{ width: "100%" }}
+        >
+          {error.message}
+        </Alert>
+      </Snackbar>
     </Card>
   );
 };

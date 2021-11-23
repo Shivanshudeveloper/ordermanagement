@@ -113,8 +113,8 @@ const Payment = () => {
     let vars = query.split("&");
     let Email = vars[0].split("=")[1];
     let id=vars[1].split("=")[1];
-    let amt=vars[3].split("=")[1];
-    let custEmail=vars[4].split("=")[1];
+    let amt=vars[4].split("=")[1];
+    let custEmail=vars[5].split("=")[1];
     setUEmail(custEmail);
     setUser((old) => ({ ...old, email: Email }));
     setAmount(amt);
@@ -155,7 +155,13 @@ const Payment = () => {
             component="button"
             variant="h4"
             onClick={() => {
-              navigate(`/mobile/?${query}`, { replace: true });
+              let vars = query.split("&");
+              let Email = vars[0].split("=")[1];
+              let id = vars[1].split("=")[1];
+        
+              let type=vars[3].split("=")[1];
+              let title = vars[2].split("=")[1];
+              navigate(`/mobile/?email=${Email}&id=${id}&title=${title}&type=${type}`, { replace: true });
             }}
           >
             Home

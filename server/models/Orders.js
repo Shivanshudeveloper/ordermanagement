@@ -24,6 +24,9 @@ const OrderSchema=new mongoose.Schema({
     totalamount:{
         type:Number
     },
+    type:{
+        type:String
+    },
     createdAt:
     {
         type:Date,

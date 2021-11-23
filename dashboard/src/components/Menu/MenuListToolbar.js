@@ -17,6 +17,8 @@ import {
   Card,
   Avatar,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@material-ui/core";
 
 import PropTypes from "prop-types";
@@ -25,7 +27,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import firebase from "../../Firebase/index";
 
 import { useState, useEffect } from "react";
-import { API_SERVICE } from '../../URI';
+import { API_SERVICE } from "../../URI";
 
 const MenuListToolbar = (props) => {
   const {
@@ -49,6 +51,8 @@ const MenuListToolbar = (props) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [itemImage, setItemImage] = useState(null);
   const [loading, setloading] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [error, setError] = useState({ error: false, message: "" });
   const handleChange = (e) => {
     setMenu({ ...menu, category: e.target.value });
   };
@@ -62,6 +66,8 @@ const MenuListToolbar = (props) => {
       "state_changed",
       () => {},
       (error) => {
+        setError({ error: true, message: error.message });
+        setShowSnackbar(true);
         console.log(error);
       },
       () => {
@@ -71,6 +77,8 @@ const MenuListToolbar = (props) => {
           .getDownloadURL()
           .then((ul) => {
             setImageUrl(ul);
+            
+      setError({ error: false, message: "" });
             setMenuListHandler({
               ...menu,
               email: User.email,
@@ -86,6 +94,11 @@ const MenuListToolbar = (props) => {
               image: ul,
             });
             setloading(false);
+          })
+          .catch((err) => {
+            setError({ error: true, message: error.message });
+            setShowSnackbar(true);
+            console.log(err);
           });
       }
     );
@@ -101,7 +114,8 @@ const MenuListToolbar = (props) => {
 
         setCategories(content);
       } catch (err) {
-        console.log(err);
+        setError({ error: true, message: error.message });
+        setShowSnackbar(true);
       }
     };
 
@@ -113,9 +127,60 @@ const MenuListToolbar = (props) => {
   const imageChangeHandler = (e) => {
     e.preventDefault();
     setItemImage(e.target.files[0]);
-
     setImageUrl(URL.createObjectURL(e.target.files[0]));
   };
+  const check = () => {
+    if (
+      menu.item === "" ||
+      menu.price === null ||
+      menu.discount === "" ||
+      menu.category === "" ||
+      menu.description === "" ||
+      imageUrl === null
+    ) {
+      if(imageUrl===null){
+        setError({error:true,message:"Please Choose Image"});
+        setShowSnackbar(true);
+        setloading(false);
+        return;
+      }
+      setError({error:true,message:"Field can't be Empty"});
+      setShowSnackbar(true);
+      setloading(false);
+      return;
+    }
+    setError({ error: false, message: "" });
+    handleUpdateItemImage();
+    if (itemImage === null) {
+    
+      let m=menu;
+      setMenu({
+        item: "",
+        price: null,
+        discount: "",
+        category: "",
+        description: "",
+        image: "",
+      });
+      setMenuListHandler({
+        ...m,
+        email: User.email,
+        restaurantName: restaurantName,
+        userID: User.uid,
+        image: imageUrl,
+      });
+      handleClose({
+        ...m,
+        email: User.email,
+        restaurantName: restaurantName,
+        userID: User.uid,
+        image: imageUrl,
+      });
+    }
+  };
+  useEffect(()=>{
+    setError({error:false,message:""});
+  },[])
 
   return (
     <>
@@ -169,6 +234,9 @@ const MenuListToolbar = (props) => {
               label="Menu Item"
               type="text"
               fullWidth
+              value={menu.item}
+              error={menu.item === "" && error.error}
+              helperText={menu.item === "" && error.error ? 'Empty field!' : ' '}
               variant="standard"
               onChange={(e) => setMenu({ ...menu, item: e.target.value })}
             />
@@ -178,6 +246,9 @@ const MenuListToolbar = (props) => {
               label="Price of Item"
               type="text"
               fullWidth
+              value={menu.price}
+              error={menu.price === null && error.error}
+              helperText={menu.price === null && error.error ? 'Empty field!' : ' '}
               variant="standard"
               onChange={(e) => setMenu({ ...menu, price: e.target.value })}
             />
@@ -188,6 +259,9 @@ const MenuListToolbar = (props) => {
               type="text"
               fullWidth
               variant="standard"
+              value={menu.discount}
+              error={menu.discount === "" && error.error}
+              helperText={menu.discount === "" && error.error ? 'Empty field!' : ' '}
               onChange={(e) => setMenu({ ...menu, discount: e.target.value })}
             />
             <TextField
@@ -198,6 +272,9 @@ const MenuListToolbar = (props) => {
               fullWidth
               multiline
               minRows={3}
+              value={menu.description}
+              error={menu.description === "" && error.error}
+              helperText={menu.description === "" && error.error ? 'Empty field!' : ' '}
               variant="standard"
               onChange={(e) =>
                 setMenu({ ...menu, description: e.target.value })
@@ -266,6 +343,7 @@ const MenuListToolbar = (props) => {
           <DialogActions>
             <Button
               onClick={() => {
+                setError({error:false,message:""})
                 setMenu({
                   item: "",
                   price: null,
@@ -274,6 +352,7 @@ const MenuListToolbar = (props) => {
                   description: "",
                   image: "",
                 });
+                setloading(false);
                 handleClose(null);
               }}
             >
@@ -282,23 +361,7 @@ const MenuListToolbar = (props) => {
             <Button
               onClick={() => {
                 setloading(true);
-                handleUpdateItemImage();
-                if (itemImage === null) {
-                  setMenuListHandler({
-                    ...menu,
-                    email: User.email,
-                    restaurantName: restaurantName,
-                    userID: User.uid,
-                    image: imageUrl,
-                  });
-                  handleClose({
-                    ...menu,
-                    email: User.email,
-                    restaurantName: restaurantName,
-                    userID: User.uid,
-                    image: imageUrl,
-                  });
-                }
+                check();
               }}
             >
               Add {loading && <CircularProgress />}
@@ -306,6 +369,20 @@ const MenuListToolbar = (props) => {
           </DialogActions>
         </Dialog>
       </Box>
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        sx={{ml:30}}
+        onClose={() => setShowSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setShowSnackbar(false)}
+          severity={error.error?"warning":"success"}
+          sx={{ width: "100%" }}
+        >
+          {error.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

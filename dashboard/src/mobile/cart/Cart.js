@@ -12,6 +12,11 @@ import {
   Container,
   Divider,
   TextField,
+  Radio,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
 } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -61,13 +66,15 @@ const Cart = ({
   const [showCouponInput, setShowCouponInput] = useState(false);
   const [couponApplied, setCouponApplied] = useState(false);
   const [coupons, setCoupons] = useState([]);
+
+  const [type, setType] = useState("Dine In");
   const navigate = useNavigate();
   const handleClickOpen = () => {
     setOpen(true);
   };
   const findCoupon = () => {
     let index = coupons.findIndex((ele) => ele.couponCode === couponCode);
- 
+
     if (index >= 0) {
       let amt = total;
 
@@ -76,12 +83,15 @@ const Cart = ({
         disc =
           (amt *
             Number(
-              coupons[index].discount.slice(0,coupons[index].discount.length-2)
+              coupons[index].discount.slice(
+                0,
+                coupons[index].discount.length - 2
+              )
             )) /
           100;
       else
         disc = Number(
-          coupons[index].discount.slice(0,coupons[index].discount.length-2)
+          coupons[index].discount.slice(0, coupons[index].discount.length - 2)
         );
       amt = amt - disc;
       setDiscount(disc);
@@ -95,9 +105,11 @@ const Cart = ({
 
   useEffect(() => {
     let query = window.location.search.substring(1);
-
     let vars = query.split("&");
     let Email = vars[0].split("=")[1];
+    let Type = vars[3].split("=")[1];
+    if (Type === "SocialMediaCampaigns") setType("Pickup");
+
     setAdminEmail(Email);
     const getCoupons = async () => {
       try {
@@ -142,15 +154,16 @@ const Cart = ({
         lastName: customer.lastName,
         email: customer.email,
         adminEmail: adminEmail,
-        totalamount:total,
+        totalamount: total,
         status: "Order Preparing",
+        type:type
       }),
     })
       .then((res) => res.json())
       .then((res) => {
         console.log(res);
         navigate(
-          `/mobile/payment/?email=${Email}&id=${id}&title=${title}&amount=${total}&customeremail=${customer.email}`,
+          `/mobile/payment/?email=${Email}&id=${id}&title=${title}&type=${type}&amount=${total}&customeremail=${customer.email}`,
           { replace: true }
         );
       })
@@ -173,7 +186,7 @@ const Cart = ({
         <Typography
           color="textPrimary"
           variant="h4"
-          sx={{ textAlign: "center", mt: 5 }}
+          sx={{ textAlign: "center", mt: 1 }}
         >
           CART
         </Typography>
@@ -182,7 +195,7 @@ const Cart = ({
             height: "400px",
             overflow: "scroll",
             overflowX: "hidden",
-            mt: 3,
+            mt: 0,
           }}
         >
           {cart?.map((menu) => {
@@ -238,6 +251,7 @@ const Cart = ({
             );
           })}
         </Container>
+     
         {!showCouponInput ? (
           <Button onClick={() => setShowCouponInput(true)} variant="outlined">
             APPLY COUPON
@@ -272,6 +286,34 @@ const Cart = ({
             value={"Coupon Applied"}
           />
         )}
+           {type === "Pickup" || type === "Delivery" ? (
+          
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Type</FormLabel>
+            
+            <RadioGroup
+              aria-label="Type"
+              name="controlled-radio-buttons-group"
+              value={type}
+              onChange={(e) => {setType(e.target.value)}}
+            >
+          <Box sx={{display:"flex",justifyContent:"center"}}>
+           <FormControlLabel
+                value="Pickup"
+                control={<Radio />}
+                label="Pickup"
+              />
+              <FormControlLabel
+                value="Delivery"
+                control={<Radio />}
+                label="Delivery"
+              />
+             </Box>
+            </RadioGroup>
+        
+          </FormControl>
+           
+        ) : null}
         <Container>
           <Typography
             color="textPrimary"

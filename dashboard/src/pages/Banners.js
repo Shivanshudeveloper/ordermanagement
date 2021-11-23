@@ -248,6 +248,7 @@ const Banners = () => {
   };
   const addBanner = () => {
     if (image !== "") handleUpdateItemImage();
+   
   };
   const updateBannerHandler = () => {
 
@@ -505,6 +506,7 @@ useEffect(()=>{
             Cancel
           </Button>
           <Button
+               disabled={image===""}
             onClick={() => {
               addBanner();
             }}
@@ -606,6 +608,7 @@ useEffect(()=>{
 
         <DialogActions>
           <Button
+     
             onClick={() => {
               closeBanner();
             }}
@@ -613,6 +616,7 @@ useEffect(()=>{
             Cancel
           </Button>
           <Button
+
             onClick={() => {
               updateBannerHandler();
             }}

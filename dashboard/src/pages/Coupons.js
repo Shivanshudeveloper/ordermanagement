@@ -11,7 +11,7 @@ import {
   TableHead,
   TableCell,
   TableBody,
-  Chip,
+  Chip,Snackbar,Alert
 } from "@material-ui/core";
 import { Helmet } from "react-helmet";
 import { useState, useEffect } from "react";
@@ -25,7 +25,14 @@ const Coupons = () => {
   const [User, setUser] = useState({ displayName: "", email: "" });
   const [open, setOpen] = useState(false);
   const [percent,setPercent]=useState(true);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [error, setError] = useState({ error: false, message: "" });
   const setCouponHandler = async () => {
+    if(coupon.couponCode==="" || coupon.discount===""){
+      setError({error:true,message:"Field can't be Empty"});
+      setShowSnackbar(true);
+      return;
+    }
     try {
       const rawResponse = await fetch(
         `${API_SERVICE}/api/v1/main/coupons/addcoupon`,
@@ -47,6 +54,7 @@ const Coupons = () => {
       console.log(content);
       setCoupons((old) => [...old, content]);
       setCoupon({ couponCode: "", discount: "" });
+      setError({error:false,message:""});
     } catch (err) {
       console.log(err);
       setCoupon({ couponCode: "", discount: "" });
@@ -125,6 +133,10 @@ const Coupons = () => {
           <TextField
             autoFocus
             value={coupon.couponCode}
+           
+         
+            error={coupon.couponCode === "" && error.error }
+            helperText={coupon.couponCode=== "" && error.error?'Empty field!' : ' '}
             margin="dense"
             id="name"
             label="Coupon Code"
@@ -152,8 +164,11 @@ const Coupons = () => {
               $
             </Button>
             <TextField
-            autoFocus
+   
             value={coupon.discount}
+         
+            error={coupon.discount === "" && error.error }
+            helperText={coupon.discount=== "" && error.error?'Empty field!' : ' '}
             margin="dense"
             id="name"
             label={percent?"Discount in %":"Discount in $"}
@@ -185,8 +200,22 @@ const Coupons = () => {
             Close
           </Button>
         </DialogActions>
+        
       </Dialog>
-
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        sx={{ml:30}}
+        onClose={() => setShowSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setShowSnackbar(false)}
+          severity={error.error?"warning":"success"}
+          sx={{ width: "100%" }}
+        >
+          {error.message}
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           backgroundColor: "white",
@@ -228,6 +257,7 @@ const Coupons = () => {
             ))}
           </TableBody>
         </Table>
+
       </Box>
     </>
   );

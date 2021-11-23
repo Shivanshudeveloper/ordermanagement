@@ -12,7 +12,7 @@ import {
   MenuItem,
   Avatar,
   CircularProgress,
-  Container,
+  Container,Snackbar,Alert
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { useState } from "react";
@@ -39,10 +39,25 @@ const CustomerListToolbar = (props) => {
   const [itemImage, setItemImage] = useState(null);
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log(selectedIcon);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [error, setError] = useState({ error: false, message: "" });
+ 
   const handleUpdateItemImage = (file) => {
     const storage = firebase.storage();
     let File = file === null ? itemImage : file;
+    if(File===null){
+
+      setLoading(false);
+      setError({error:true,message:"Please Choose Icon"});
+      setShowSnackbar(true);
+      return;
+    }
+    if(category.category===""){
+  
+     setError({error:true,message:"Filed can't be Empty"});
+      setLoading(false);
+      return;
+    } 
     const uploadTask = storage.ref(`categoryIcon/${File.name}`).put(File);
     uploadTask.on(
       "state_changed",
@@ -57,11 +72,14 @@ const CustomerListToolbar = (props) => {
           .getDownloadURL()
           .then((ul) => {
             setCategory((prev) => ({ ...prev, icon: ul }));
+        
             handleClose({ category: category.category, icon: ul });
             setSelectedIcon("");
             setItemImage(null);
             setImage(null);
+            setCategory({ category: "", icon: "" });
             setLoading(false);
+            setError({ error: false, message: "" });
           });
       }
     );
@@ -92,6 +110,13 @@ const CustomerListToolbar = (props) => {
   const handleUp = () => {
     setLoading(true);
     if (itemImage === null) {
+      if(selectedIcon===""){
+
+        setLoading(false);
+        setError({error:true,message:"Please Choose Icon"});
+        setShowSnackbar(true);
+        return;
+      }
       createFile();
       return;
     }
@@ -118,6 +143,9 @@ const CustomerListToolbar = (props) => {
               label="Category"
               type="text"
               fullWidth
+              value={category.category}
+              error={category.category === "" && error.error }
+              helperText={category.category === ""  && error.error ?'Empty field!' : ' '}
               variant="standard"
               onChange={(e) =>
                 setCategory((prev) => ({ ...prev, category: e.target.value }))
@@ -204,7 +232,9 @@ const CustomerListToolbar = (props) => {
                 setSelectedIcon("");
                 setItemImage(null);
                 setImage(null);
+                setError({ error: false, message: "" });
                 handleClose(null);
+              
               }}
             >
               Cancel
@@ -221,6 +251,20 @@ const CustomerListToolbar = (props) => {
           </DialogActions>
         </Dialog>
       </Box>
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        sx={{ml:30}}
+        onClose={() => setShowSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setShowSnackbar(false)}
+          severity={error.error?"warning":"success"}
+          sx={{ width: "100%" }}
+        >
+          {error.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

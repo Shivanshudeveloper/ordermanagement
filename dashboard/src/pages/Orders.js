@@ -72,6 +72,29 @@ const Orders = () =>
     updateCustomer();
     setCustomers(cust);
   }
+  const handleDelete=async(id)=>{
+    let cust=customers;
+    cust=cust.filter((ele)=>ele._id!==id);
+    try {
+      const rawResponse = await fetch(
+        `${API_SERVICE}/api/v1/main/order/deleteorder?id=${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const content = await rawResponse.json();
+
+     setCustomers(cust);
+     
+    } catch (err) {
+    console.log(err);
+ 
+    }
+  }
 return ( 
 <>
     <Helmet>
@@ -96,7 +119,7 @@ return (
             xl={12}
             xs={12}
           >
-            <LatestOrders  setStatus={setStatus} showStatus={true} customers={customers} />
+            <LatestOrders  setStatus={setStatus} handleDelete={handleDelete} showStatus={true} customers={customers} />
           </Grid>
         </Grid>
       </Container>

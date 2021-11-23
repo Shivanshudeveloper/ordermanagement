@@ -23,58 +23,64 @@ import {
   DialogContent,
   DialogActions,
   Tooltip,
+  Typography,
 } from "@material-ui/core";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-
+import DeleteIcon from "@material-ui/icons/Delete";
 import { useState } from "react";
-const LatestOrders = ({ customers, setStatus, showStatus }) => {
+const LatestOrders = ({ customers, setStatus, showStatus,handleDelete }) => {
   const [orders, setOrders] = useState(null);
   const [showView, setShowView] = useState(false);
   const [filterStatus, setFilterStatus] = useState("All");
+  const [showEdit, setShowEdit] = useState(false);
+  const [selectedCustomer, setSlectedCustomer] = useState(null);
+ const [openDeleteOrderPrompt,setOpenDeleteOrderPrompt]=useState(false);
   return (
     <>
       <Card>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <CardHeader title="Latest Orders" />
-         {showStatus? <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Button
-              sx={{ mr: 5 }}
-              variant={filterStatus !== "All" ? "outlined" : "contained"}
-              onClick={() => {
-                setFilterStatus("All");
+          {showStatus ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              All
-            </Button>
-            <Button
-              sx={{ mr: 5 }}
-              variant={
-                filterStatus !== "Order Preparing" ? "outlined" : "contained"
-              }
-              onClick={() => {
-                setFilterStatus("Order Preparing");
-              }}
-            >
-              Order Preparing
-            </Button>
-            <Button
-              sx={{ mr: 5 }}
-              variant={
-                filterStatus !== "Order Delivered" ? "outlined" : "contained"
-              }
-              onClick={() => {
-                setFilterStatus("Order Delivered");
-              }}
-            >
-              Order Delivered
-            </Button>
-          </Box>:null}
+              <Button
+                sx={{ mr: 5 }}
+                variant={filterStatus !== "All" ? "outlined" : "contained"}
+                onClick={() => {
+                  setFilterStatus("All");
+                }}
+              >
+                All
+              </Button>
+              <Button
+                sx={{ mr: 5 }}
+                variant={
+                  filterStatus !== "Order Preparing" ? "outlined" : "contained"
+                }
+                onClick={() => {
+                  setFilterStatus("Order Preparing");
+                }}
+              >
+                Order Preparing
+              </Button>
+              <Button
+                sx={{ mr: 5 }}
+                variant={
+                  filterStatus !== "Order Delivered" ? "outlined" : "contained"
+                }
+                onClick={() => {
+                  setFilterStatus("Order Delivered");
+                }}
+              >
+                Order Delivered
+              </Button>
+            </Box>
+          ) : null}
         </Box>
         <Divider />
         <PerfectScrollbar>
@@ -83,10 +89,11 @@ const LatestOrders = ({ customers, setStatus, showStatus }) => {
               <TableHead>
                 <TableRow>
                   <TableCell>Title</TableCell>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Last Name</TableCell>
+
                   <TableCell>Email</TableCell>
+
                   <TableCell>Type</TableCell>
+                  <TableCell>Total Amount</TableCell>
                   {showStatus ? <TableCell>Status</TableCell> : null}
                 </TableRow>
               </TableHead>
@@ -99,57 +106,71 @@ const LatestOrders = ({ customers, setStatus, showStatus }) => {
                     return (
                       <TableRow hover key={customer._id}>
                         <TableCell>{customer.title}</TableCell>
-                        <TableCell>{customer.firstName}</TableCell>
-                        <TableCell>{customer.lastName}</TableCell>
+
                         <TableCell>{customer.email}</TableCell>
-                        <TableCell>Dine In / Delivery</TableCell>
+
+                        <TableCell>{customer.type}</TableCell>
+                        <TableCell>{customer.totalamount}</TableCell>
                         {showStatus ? (
-                          <TableCell>
-                            <Select
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              label="Category"
-                              value={customer.status}
-                              sx={
-                                customer.status === "Order Delivered"
-                                  ? {
-                                      color: "white",
-                                      fontWeight: "900",
-                                      backgroundColor: "green",
-                                    }
-                                  : {
-                                      color: "white",
-                                      backgroundColor: "orange",
-                                      fontWeight: "900",
-                                    }
-                              }
-                              onChange={(e) => {
-                                setStatus(e.target.value, customer._id);
-                              }}
-                            >
-                              {["Order Preparing", "Order Delivered"]?.map(
-                                (it, id) => {
-                                  return (
-                                    <MenuItem value={it} key={id}>
-                                      <label>{it}</label>
-                                    </MenuItem>
-                                  );
-                                }
-                              )}
-                            </Select>
-                          </TableCell>
+                          <TableCell>{customer.status}</TableCell>
                         ) : null}
+
                         <TableCell>
                           <Button
                             variant="contained"
                             onClick={() => {
-                              setOrders(customer.orders);
+                              setOrders(customer);
                               setShowView(true);
                             }}
                           >
                             View Order
                           </Button>
                         </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outlined"
+                            onClick={() => {
+                              setSlectedCustomer(customer);
+                              setShowEdit(true);
+                            }}
+                          >
+                            Edit Order
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                      <Chip
+                        label="delete"
+                        onClick={() => setOpenDeleteOrderPrompt(true)}
+                  
+                        deleteIcon={<DeleteIcon style={{ color: "red" }} />}
+
+                        style={{ color: "red" }}
+                      />
+                         <Dialog
+        open={openDeleteOrderPrompt}
+        onClose={() => {
+          setOpenDeleteOrderPrompt(false);
+        }}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Do you want to delete?"}
+        </DialogTitle>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenDeleteOrderPrompt(false);
+            }}
+          >
+            NO
+          </Button>
+          <Button onClick={() =>{       setOpenDeleteOrderPrompt(false); handleDelete(customer._id);}} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+                    </TableCell>
                       </TableRow>
                     );
                   else return null;
@@ -175,32 +196,75 @@ const LatestOrders = ({ customers, setStatus, showStatus }) => {
           </Button>
         </Box>
       </Card>
-      <Dialog open={showView} fullWidth onClose={() => setShowView(false)}>
-        <DialogTitle>Orders</DialogTitle>
+
+      <Dialog open={showView} onClose={() => setShowView(false)}>
+        <DialogTitle>
+          {" "}
+          <Typography variant="h4" component="h4">
+            Orders
+          </Typography>
+        </DialogTitle>
 
         <DialogContent
-          sx={{ display: "flex", justifyContent: "space-between" }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
         >
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell>category</TableCell>
-                <TableCell>Quantity</TableCell>
+                <TableCell>First Name</TableCell>
+                <TableCell>Last Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Time and Date</TableCell>
+
+                <TableCell>Total Amount</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders?.map((order, id) => (
-                <TableRow hover key={id}>
-                  <TableCell>{order.selectedItem.item}</TableCell>
-                  <TableCell>{order.selectedItem.price}</TableCell>
-                  <TableCell>{order.selectedItem.category}</TableCell>
-                  <TableCell>{order.count}</TableCell>
-                </TableRow>
-              ))}
+              <TableRow hover>
+                <TableCell>{orders?.firstName}</TableCell>
+                <TableCell>{orders?.lastName}</TableCell>
+                <TableCell>{orders?.email}</TableCell>
+                <TableCell>
+                  {new Date(orders?.createdAt).toLocaleTimeString() +
+                    " " +
+                    new Date(orders?.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>{orders?.totalamount}</TableCell>
+              </TableRow>
             </TableBody>
           </Table>
+          <Box sx={{ mt: 5, backgroundColor: "grey" }}>
+            <Typography variant="h5" component="h5">
+              Menu Items
+            </Typography>
+
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Item</TableCell>
+                  <TableCell>Category</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell>discount</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {orders?.orders.map((order, id) => {
+                  return (
+                    <TableRow hover key={id}>
+                      <TableCell>{order?.selectedItem?.item}</TableCell>
+                      <TableCell>{order?.selectedItem?.category}</TableCell>
+                      <TableCell>{order?.selectedItem?.price}</TableCell>
+                      <TableCell>{order?.selectedItem?.discount}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button
@@ -212,6 +276,52 @@ const LatestOrders = ({ customers, setStatus, showStatus }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={showEdit} onClose={() => setShowEdit(false)}>
+        <DialogTitle>
+          {" "}
+          <Typography variant="h4" component="h4">
+           Change Status
+          </Typography>
+        </DialogTitle>
+
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+      
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            label="Status"
+            value={selectedCustomer?.status}
+            onChange={(e) => {
+              setStatus(e.target.value, selectedCustomer?._id);
+            }}
+          >
+            {["Order Preparing", "Order Delivered"]?.map((it, id) => {
+              return (
+                <MenuItem value={it} key={id}>
+                  <label>{it}</label>
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setSlectedCustomer(null);
+              setShowEdit(false);
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+   
     </>
   );
 };
