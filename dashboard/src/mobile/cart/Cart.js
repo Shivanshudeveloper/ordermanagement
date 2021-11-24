@@ -18,7 +18,7 @@ import {
   RadioGroup,
   FormControlLabel,
 } from "@material-ui/core";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { makeStyles, styled } from "@material-ui/styles";
 import { green } from "@mui/material/colors";
@@ -138,7 +138,7 @@ const Cart = ({
   const checkout = () => {
     if (total === 0) return;
 
-    setShowPaymentHandler(true,total,type);
+    setShowPaymentHandler(true,type,total);
     return;
 
 
@@ -315,7 +315,31 @@ const Cart = ({
           </Box>
         </Container>
 
-        <ColorButton
+        {customer.email==="dummy@gmail.com" && type==="Pickup"?
+        
+       
+       <Link  to={`/mobile/register/?${window.location.search.substring(1)}`} state={{cart:cart,type:type,total:total}} >
+          <ColorButton
+        sx={{ display: "flex", justifyContent: "space-between", m: 0 }}
+        variant="contained"
+      >
+        {" "}
+        <Box  sx={{ justifyContent: "space-evenly", m: 1 }}>
+          <label style={{ color: "white" }}>Total: </label>
+          <label style={{ color: "white", fontSize: "1.3em" }}>
+            RM {total}
+          </label>
+        </Box>
+        <label style={{ color: "white", fontSize: "1em" }}>
+          Continue Checkout
+        </label>
+      </ColorButton>
+       </Link>
+        
+        
+        
+        
+        : <ColorButton
           sx={{ display: "flex", justifyContent: "space-between", m: 0 }}
           variant="contained"
         >
@@ -329,7 +353,7 @@ const Cart = ({
           <label style={{ color: "white", fontSize: "1em" }} onClick={checkout}>
             Continue Checkout
           </label>
-        </ColorButton>
+        </ColorButton>}
         <DialogActions>
           <Button onClick={() => showCartHandler(false)}>Close</Button>
         </DialogActions>

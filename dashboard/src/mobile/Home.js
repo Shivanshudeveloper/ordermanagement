@@ -22,7 +22,7 @@ import {
   Toolbar,
   ListItem,
   ListItemText,
-  Divider,
+  Divider,Link,SwipeableDrawer,Skeleton
 } from "@material-ui/core";
 import List from "./components/List";
 import Categories from "./components/Categories";
@@ -35,11 +35,24 @@ import { API_SERVICE } from "../URI";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Payment from "./Payment/Payment";
-
+import { styled } from '@mui/material/styles';
+import { grey } from '@mui/material/colors';
 const stripePromise = loadStripe(
   "pk_test_51JHsVhHTwp1a1ssgSKsY0MM2c51lL7qkbGLOghJe4SLwpbvZwSmJxjquqThrzP9LHQKkHdl2XGUoIT4o7u1rUi4I00U744HAUa"
 );
+const StyledBox = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'light' ? '#fff' : grey[800],
+}));
 
+const Puller = styled(Box)(({ theme }) => ({
+  width: 30,
+  height: 6,
+  backgroundColor: theme.palette.mode === 'light' ? grey[300] : grey[900],
+  borderRadius: 3,
+  position: 'absolute',
+  top: 8,
+  left: 'calc(50% - 15px)',
+}));
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "2px 4px",
@@ -104,6 +117,8 @@ const Home = () => {
   const [total, setTotal] = useState(0);
   const [type, setType] = useState("");
   const [Query, setQuery] = useState("");
+  const [orderDone,setOrderDone]=useState(false);
+  const [paymentPending,setPaymentPending]=useState(false);
   const showCartHandler = (val) => {
     setShowCart(val);
   };
@@ -227,6 +242,9 @@ const Home = () => {
     );
     setCart(cartTemp);
   };
+  const setPaymentPendingHandler=(val)=>{
+    setPaymentPending(val)
+  }
   useEffect(() => {
     const getCustomer = async (c) => {
       try {
@@ -238,6 +256,13 @@ const Home = () => {
         );
         const content = await rawResponse.json();
         setCustomer(content);
+        const RAWRES=  await fetch(`${API_SERVICE}/api/v1/main/order/getpendingorder/${content.email}`);
+        const Orders=await RAWRES.json();
+         if(Orders.length!==0 && Orders[0].payment==="Pending"){
+          setType(Orders[0].type);
+          setTotal(Orders[0].totalamount);
+          setPaymentPending(true);
+         }
       } catch (err) {
         console.log(err);
       }
@@ -276,22 +301,100 @@ const Home = () => {
   const setCustomerHandler = (val) => {
     setCustomer(val);
   };
-  const setShowPaymentHandler = (val, total, type) => {
-    setShowPayment(val);
+  const setShowPaymentHandler = async(val, type, total) => {
+
     setType(type);
     setTotal(total);
-    if (val === false && total===null) {
+    if(type==="Pickup")
+    {
+      let query = window.location.search.substring(1);
+
+      let vars = query.split("&");
+      let Email = vars[0].split("=")[1];
+  
+      let title = vars[2].split("=")[1];
+      await fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: title,
+          orders: cart,
+          firstName: customer.firstName,
+          lastName: customer.lastName,
+          email: customer.email,
+          adminEmail: Email,
+          totalamount: total,
+          status: "Order Preparing",
+          type: type,
+          payment:"Pending"
+        }),
+      });
+      setType(null);
+      setOrderDone(true);
+      setPaymentPending(true);
+    }
+    else
+       setShowPayment(val);
+    if (val === false && type===null) {
       setShowCart(false);
       setCart([]);
-    }else if(val===false && total!==null){
+    }else if(val===false && type!==null){
       
     }
   };
+  if(orderDone){
+    return(    <>
+ 
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          backgroundColor: "white",
+          height: "100vh",
+          alignItems: "center",
+          justifyContent:"center"
+        }}
+      >
+        <Typography sx={{ mt: 0 }} variant="h3" color="green">
+          Thank you! 
+        </Typography>
+        
+        <Typography sx={{textAlign:"center"}} variant="h3" color="green">
+          Your order was successfully submitted!
+        </Typography>
+        <img
+          src="https://res.cloudinary.com/dx9dnqzaj/image/upload/v1637056151/ordermanagement/f0ca90dd6924e009d86f4421cf2032b5_b3aokt.gif"
+          alt=""
+          width="100%"
+          height="50%"
+        />
+
+        <Typography variant="h4">Order is Preparing</Typography>
+
+        <Link
+          sx={{ mt: 10 }}
+          component="button"
+          variant="h4"
+          onClick={() => {
+            setOrderDone(false);
+            setShowCart(false);
+            setCart([]);
+        }}
+        >
+          Home
+        </Link>
+      </Box>
+    </>)
+  }
   if (showPayment) {
     return (
       <Elements stripe={stripePromise}>
         <Payment
           total={total}
+          setPaymentPendingHandler={setPaymentPendingHandler}
           type={type}
           setShowPaymentHandler={setShowPaymentHandler}
           customer={customer}
@@ -444,6 +547,41 @@ const Home = () => {
           customer={customer}
         />
       ) : null}
+    
+         <SwipeableDrawer
+
+        anchor="bottom"
+        open={paymentPending}
+   
+        disableSwipeToOpen={false}
+        ModalProps={{
+          keepMounted: true,
+        }}
+      >
+        <StyledBox
+          sx={{
+            position: 'absolute',
+           
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+            visibility: 'visible',
+            right: 0,
+            left: 0,
+          }}
+        >
+      
+        </StyledBox>
+        <StyledBox
+          sx={{
+            p:0.5,
+            height: '100%',
+            overflow: 'auto',
+          }}
+        >
+          <Skeleton variant="rectangular" height="100%" />
+        </StyledBox>
+        <Button variant="contained" onClick={()=>setShowPayment(true)}>Payment Pending</Button>
+      </SwipeableDrawer>
       <Header
         cart={cart}
         user={user}

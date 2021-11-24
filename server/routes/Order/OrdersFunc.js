@@ -89,3 +89,27 @@ module.exports.getrevenue = async (req, res) => {
     res.send(err);
   }
 };
+
+module.exports.getpendingorder=async(req,res)=>{
+  const { email } = req.params;
+
+  try {
+    const orders = await Order_Model.find({ email: email,payment:"Pending"});
+    
+    res.send(orders);
+  } catch (err) {
+    res.send(err);
+  }
+}
+module.exports.updatependingorder = async (req, res) => {
+  const { id } = req.query;
+
+  try {
+    const order = await Order_Model.findOne({ _id: id });
+    order.payment = "Done";
+    await order.save();
+    res.send(order);
+  } catch (err) {
+    res.send(err);
+  }
+};

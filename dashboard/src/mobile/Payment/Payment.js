@@ -20,7 +20,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { API_SERVICE } from "../../URI";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import CardInput from "../components/CardInput";
-const Payment = ({ customer, cart, type, total, setShowPaymentHandler }) => {
+const Payment = ({ customer, cart, type, total, setShowPaymentHandler,setPaymentPendingHandler }) => {
   const navigate = useNavigate();
   const [showPopper, setShowPopper] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState({
@@ -31,11 +31,10 @@ const Payment = ({ customer, cart, type, total, setShowPaymentHandler }) => {
   const [Query, setQuery] = useState("");
   const [user, setUser] = useState({ email: "", username: "" });
   const [loading, setLoading] = useState(true);
-  const [amount, setAmount] = useState(0);
+
   const [paysubmit, setPaySubmit] = useState(false);
   const [open, setOpen] = useState(false);
-  const [openR, setOpenR] = useState(false);
-  const [uEmail, setUEmail] = useState("");
+
   const [paymentDone, setPaymentDone] = useState(false);
   const [guest, setGuest] = useState(false);
   const stripe = useStripe();
@@ -58,55 +57,79 @@ const Payment = ({ customer, cart, type, total, setShowPaymentHandler }) => {
     let Email = vars[0].split("=")[1];
 
     let title = vars[2].split("=")[1];
-    await fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: title,
-        orders: cart,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        adminEmail: Email,
-        totalamount: total,
-        status: "Order Preparing",
-        type: type,
-        payment:"Pending"
-      }),
-    });
-
-    const raw = await fetch(`${API_SERVICE}/api/v1/main/charges`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        amount: total,
-      }),
-    });
-
-    const res = await raw.json();
-    let clientSecret = res.cc;
+    const RAWRES=  await fetch(`${API_SERVICE}/api/v1/main/order/getpendingorder/${email}`);
+    const Orders=await RAWRES.json();
+    if(Orders.length===0)
+    {
+      try {
+        await fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: title,
+            orders: cart,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            adminEmail: Email,
+            totalamount: total,
+            status: "Order Preparing",
+            type: type,
+            payment: "Done",
+          }),
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }else{
+      try {
+        await fetch(`${API_SERVICE}/api/v1/main/order/updatependingorder/?id=${Orders[0]._id}`, {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          }
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }
 
     try {
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-          billing_details: {
-            email: email,
-          },
+      const raw = await fetch(`${API_SERVICE}/api/v1/main/charges`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          email,
+          amount: total,
+        }),
       });
+
+      const res = await raw.json();
+      let clientSecret = res.cc;
+
+      try {
+        const result = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: elements.getElement(CardElement),
+            billing_details: {
+              email: email,
+            },
+          },
+        });
+      } catch (err) {
+        console.log(err);
+      }
     } catch (err) {
       console.log(err);
     }
     handleClick();
-    setAmount(0);
 
     setPaySubmit(false);
     setPaymentDone(true);
@@ -151,7 +174,7 @@ const Payment = ({ customer, cart, type, total, setShowPaymentHandler }) => {
     return (
       <>
         <Helmet>
-          <title>Pyamnt Succesfully Done</title>
+          <title>payment Succesfully Done</title>
         </Helmet>
         <Box
           sx={{
@@ -179,6 +202,7 @@ const Payment = ({ customer, cart, type, total, setShowPaymentHandler }) => {
             component="button"
             variant="h4"
             onClick={() => {
+              setPaymentPendingHandler(false);
               setShowPaymentHandler(false, null, null);
             }}
           >
@@ -193,7 +217,12 @@ const Payment = ({ customer, cart, type, total, setShowPaymentHandler }) => {
       <Helmet>
         <title>Payment </title>
       </Helmet>
-      <Button sx={{m:0,mt:1,p:0}} onClick={()=>   setShowPaymentHandler(false, type, total  )}><ArrowBackIcon sx={{fontSize:"2.2em"}}  /></Button>
+      <Button
+        sx={{ m: 0, mt: 1, p: 0 }}
+        onClick={() => setShowPaymentHandler(false, null, null)}
+      >
+        <ArrowBackIcon sx={{ fontSize: "2.2em" }} />
+      </Button>
       <Box
         sx={{
           backgroundColor: "background.default",
@@ -203,7 +232,6 @@ const Payment = ({ customer, cart, type, total, setShowPaymentHandler }) => {
           justifyContent: "center",
         }}
       >
-          
         <Container maxWidth="sm">
           <Formik
             initialValues={{

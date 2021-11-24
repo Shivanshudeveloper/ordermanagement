@@ -1,4 +1,4 @@
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate,useLocation} from "react-router-dom";
 import { Helmet } from "react-helmet";
 import * as Yup from "yup";
 import { Formik } from "formik";
@@ -8,7 +8,7 @@ import {
   Checkbox,
   Container,
   FormHelperText,
-  Link,
+
   TextField,
   Typography,Alert,Snackbar
 } from "@material-ui/core";
@@ -17,12 +17,15 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {useState,useEffect} from "react";
 import { API_SERVICE } from '../../URI';
 
-const Register = () => {
+const Register = (props) => {
+  const location=useLocation();
   const navigate = useNavigate();
  const [showSnackBar,setShowSnackBar]=useState({show:false,error:false,message:''});
  const [Query,setQuery]=useState("");
+ const [orderDone,setOrderDone]=useState(false);
+ console.log("hii",location);
   const register = (values, { setErrors, setSubmitting }) => {
-
+ 
     const { firstName, lastName, password, email } = values;
     fetch(`${API_SERVICE}/api/v1/main/auth/register`, {
       method: "POST",
@@ -38,8 +41,35 @@ const Register = () => {
       }),
     })
       .then((res) => res.json())
-      .then((res) => {
+      .then(async(res) => {
         console.log(res);
+        let vars = Query.split("&");
+        let Email = vars[0].split("=")[1];
+    
+        let title = vars[2].split("=")[1];
+        if(location.state!==null){
+          await fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: title,
+              orders: location.state.cart,
+              firstName: firstName,
+              lastName: lastName,
+              email: email,
+              adminEmail: Email,
+              totalamount: location.state.total,
+              status: "Order Preparing",
+              type: location.state.type,
+              payment:"Pending"
+            }),
+          });
+          setOrderDone(true);
+        }
+
         if(res.code===11000){
           setSubmitting(false);
           setShowSnackBar({show:true,error:true,message:"Email Already Exists"});
@@ -62,6 +92,37 @@ const Register = () => {
     let query = window.location.search.substring(1);
     setQuery(query);
   },[])
+
+if(orderDone){
+  return(    <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      backgroundColor: "white",
+      height: "100vh",
+      alignItems: "center",
+      justifyContent:"center"
+    }}
+  >
+    <Typography sx={{ mt: 0 }} variant="h3" color="green">
+      Thank you! 
+    </Typography>
+    
+    <Typography sx={{textAlign:"center"}} variant="h3" color="green">
+      Your order was successfully submitted!
+    </Typography>
+    <img
+      src="https://res.cloudinary.com/dx9dnqzaj/image/upload/v1637056151/ordermanagement/f0ca90dd6924e009d86f4421cf2032b5_b3aokt.gif"
+      alt=""
+      width="100%"
+      height="50%"
+    />
+
+    <Typography variant="h4">Order is Preparing</Typography>
+
+  
+  </Box>)
+}
   return (
     <>
       <Helmet>

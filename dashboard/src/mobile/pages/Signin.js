@@ -80,10 +80,8 @@ const Signin = () => {
           
           
         } else {
-         
-          setTimeout(() => {
             navigate(`/mobile/?${Query}`, { replace: true });
-          }, 1500);
+   
         }
       })
       .catch((err) => {
