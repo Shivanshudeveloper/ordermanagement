@@ -28,6 +28,7 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import getUser from "../../Firebase/getUser";
 import { API_SERVICE } from "../../URI";
 import { validate } from "uuid";
+import Payment from "../Payment/Payment";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -52,6 +53,7 @@ const Cart = ({
   increaseQuantity,
   decreaseQuantity,
   customer,
+  setShowPaymentHandler
 }) => {
   const [open, setOpen] = useState(true);
 
@@ -134,43 +136,12 @@ const Cart = ({
   }, [cart]);
 
   const checkout = () => {
-    let query = window.location.search.substring(1);
-
-    let vars = query.split("&");
-    let Email = vars[0].split("=")[1];
-    let id = vars[1].split("=")[1];
-
-    let title = vars[2].split("=")[1];
-    fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: title,
-        orders: cart,
-        firstName: customer.firstName,
-        lastName: customer.lastName,
-        email: customer.email,
-        adminEmail: adminEmail,
-        totalamount: total,
-        status: "Order Preparing",
-        type:type
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        navigate(
-          `/mobile/payment/?email=${Email}&id=${id}&title=${title}&type=${type}&amount=${total}&customeremail=${customer.email}`,
-          { replace: true }
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
     if (total === 0) return;
+
+    setShowPaymentHandler(true,total,type);
+    return;
+
+
   };
 
   return (
@@ -288,37 +259,40 @@ const Cart = ({
         )}
            {type === "Pickup" || type === "Delivery" ? (
           
-          <FormControl component="fieldset">
-            <FormLabel component="legend">Type</FormLabel>
-            
-            <RadioGroup
-              aria-label="Type"
-              name="controlled-radio-buttons-group"
-              value={type}
-              onChange={(e) => {setType(e.target.value)}}
-            >
-          <Box sx={{display:"flex",justifyContent:"center"}}>
-           <FormControlLabel
-                value="Pickup"
-                control={<Radio />}
-                label="Pickup"
-              />
-              <FormControlLabel
-                value="Delivery"
-                control={<Radio />}
-                label="Delivery"
-              />
-             </Box>
-            </RadioGroup>
+         <Box sx={{display:"flex",justifyContent:"space-evenly",alignItems:"center"}}>
+          <label style={{fontWeight:"900"}} >TYPE</label>
+            <FormControl component="fieldset">
         
-          </FormControl>
+            
+        <RadioGroup
+          aria-label="Type"
+          name="controlled-radio-buttons-group"
+          value={type}
+          onChange={(e) => {setType(e.target.value)}}
+        >
+      <Box sx={{display:"flex",justifyContent:"center",m:0}}>
+       <FormControlLabel
+            value="Pickup"
+            control={<Radio />}
+            label="Pickup"
+          />
+          <FormControlLabel
+            value="Delivery"
+            control={<Radio />}
+            label="Delivery"
+          />
+         </Box>
+        </RadioGroup>
+    
+      </FormControl>
+           </Box>
            
         ) : null}
         <Container>
           <Typography
             color="textPrimary"
             variant="h3"
-            sx={{ textAlign: "left", mt: 5, fontWeight: "800" }}
+            sx={{ textAlign: "left", mt: 1, fontWeight: "800" }}
           >
             Bill Details
           </Typography>

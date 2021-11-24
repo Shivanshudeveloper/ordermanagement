@@ -93,6 +93,7 @@ const LatestOrders = ({ customers, setStatus, showStatus,handleDelete }) => {
                   <TableCell>Email</TableCell>
 
                   <TableCell>Type</TableCell>
+                  <TableCell>Payment</TableCell>
                   <TableCell>Total Amount</TableCell>
                   {showStatus ? <TableCell>Status</TableCell> : null}
                 </TableRow>
@@ -110,6 +111,7 @@ const LatestOrders = ({ customers, setStatus, showStatus,handleDelete }) => {
                         <TableCell>{customer.email}</TableCell>
 
                         <TableCell>{customer.type}</TableCell>
+                        <TableCell>{customer.payment}</TableCell>
                         <TableCell>{customer.totalamount}</TableCell>
                         {showStatus ? (
                           <TableCell>{customer.status}</TableCell>

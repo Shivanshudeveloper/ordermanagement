@@ -49,6 +49,7 @@ export default function ButtonAppBar({ cart, user,showCartHandler,customer,setCu
   const classes = useStyles();
   const navigate = useNavigate();
  const [showDrawer,setShowDrawer]=useState(false);
+ let query=window.location.search.substring(1);
  const logouthandle = () => {
   fetch(`${API_SERVICE}/api/v1/main/auth/logout`, {
     method: "POST",
@@ -61,7 +62,7 @@ export default function ButtonAppBar({ cart, user,showCartHandler,customer,setCu
     .then((res) => res.json()).then(res=>{
       console.log(res);
       setCustomerHandler(null)
-      navigate('/mobile/signin',{replace:true})
+      navigate(`/mobile/signin/?${query}`,{replace:true})
     }).catch(err=>console.log(err));
 
 };

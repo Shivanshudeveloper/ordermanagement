@@ -11,6 +11,7 @@ module.exports.addorder = async (req, res) => {
     status,
     totalamount,
     type,
+    payment
   } = req.body;
   try {
     const order = await Order_Model.create({
@@ -23,6 +24,7 @@ module.exports.addorder = async (req, res) => {
       status: status,
       totalamount: totalamount,
       type: type,
+      payment:payment
     });
     await order.save();
     res.send(order);

@@ -20,7 +20,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { API_SERVICE } from "../../URI";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import CardInput from "../components/CardInput";
-const Payment = () => {
+const Payment = ({ customer, cart, type, total, setShowPaymentHandler }) => {
   const navigate = useNavigate();
   const [showPopper, setShowPopper] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState({
@@ -31,24 +31,52 @@ const Payment = () => {
   const [Query, setQuery] = useState("");
   const [user, setUser] = useState({ email: "", username: "" });
   const [loading, setLoading] = useState(true);
-  const [amount, setAmount] = useState(1);
+  const [amount, setAmount] = useState(0);
   const [paysubmit, setPaySubmit] = useState(false);
   const [open, setOpen] = useState(false);
   const [openR, setOpenR] = useState(false);
   const [uEmail, setUEmail] = useState("");
   const [paymentDone, setPaymentDone] = useState(false);
+  const [guest, setGuest] = useState(false);
   const stripe = useStripe();
+
   const elements = useElements();
-  const login = (values, { setErrors, setSubmitting }) => {
-    const { email } = values;
-   
+  const pay = (values, { setErrors, setSubmitting }) => {
+    const { email, firstName, lastName } = values;
+
+    confirmPayment(email, firstName, lastName);
   };
-  const confirmPayment = async () => {
+  const confirmPayment = async (email, firstName, lastName) => {
     if (!stripe || !elements) {
       return;
     }
-
     setPaySubmit(true);
+
+    let query = window.location.search.substring(1);
+
+    let vars = query.split("&");
+    let Email = vars[0].split("=")[1];
+
+    let title = vars[2].split("=")[1];
+    await fetch(`${API_SERVICE}/api/v1/main/order/addorder`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: title,
+        orders: cart,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        adminEmail: Email,
+        totalamount: total,
+        status: "Order Preparing",
+        type: type,
+        payment:"Pending"
+      }),
+    });
 
     const raw = await fetch(`${API_SERVICE}/api/v1/main/charges`, {
       method: "POST",
@@ -57,38 +85,36 @@ const Payment = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: uEmail,
-        amount: amount,
+        email,
+        amount: total,
       }),
     });
 
     const res = await raw.json();
     let clientSecret = res.cc;
 
-    const result = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: elements.getElement(CardElement),
-        billing_details: {
-          email: uEmail,
+    try {
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+          billing_details: {
+            email: email,
+          },
         },
-      },
-    });
+      });
+    } catch (err) {
+      console.log(err);
+    }
     handleClick();
     setAmount(0);
+
+    setPaySubmit(false);
     setPaymentDone(true);
   };
   const handleClick = () => {
     setOpen(true);
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-    setOpenR(false);
-  };
   useEffect(() => {
     const get = async () => {
       try {
@@ -109,21 +135,19 @@ const Payment = () => {
   }, [Query]);
   useEffect(() => {
     let query = window.location.search.substring(1);
-    
     let vars = query.split("&");
     let Email = vars[0].split("=")[1];
-    let id=vars[1].split("=")[1];
-    let amt=vars[4].split("=")[1];
-    let custEmail=vars[5].split("=")[1];
-    setUEmail(custEmail);
+
     setUser((old) => ({ ...old, email: Email }));
-    setAmount(amt);
+
     setQuery(query);
   }, []);
+  useEffect(() => {
+    if (!guest && customer?.email === "dummy@gmail.com") setGuest(true);
+  }, [customer]);
   if (loading) {
     return <div>Loading</div>;
   } else if (paymentDone) {
-    let query = window.location.search.substring(1);
     return (
       <>
         <Helmet>
@@ -155,13 +179,7 @@ const Payment = () => {
             component="button"
             variant="h4"
             onClick={() => {
-              let vars = query.split("&");
-              let Email = vars[0].split("=")[1];
-              let id = vars[1].split("=")[1];
-        
-              let type=vars[3].split("=")[1];
-              let title = vars[2].split("=")[1];
-              navigate(`/mobile/?email=${Email}&id=${id}&title=${title}&type=${type}`, { replace: true });
+              setShowPaymentHandler(false, null, null);
             }}
           >
             Home
@@ -175,7 +193,7 @@ const Payment = () => {
       <Helmet>
         <title>Payment </title>
       </Helmet>
-
+      <Button sx={{m:0,mt:1,p:0}} onClick={()=>   setShowPaymentHandler(false, type, total  )}><ArrowBackIcon sx={{fontSize:"2.2em"}}  /></Button>
       <Box
         sx={{
           backgroundColor: "background.default",
@@ -185,13 +203,14 @@ const Payment = () => {
           justifyContent: "center",
         }}
       >
+          
         <Container maxWidth="sm">
           <Formik
             initialValues={{
-              email: uEmail,
-              firstName: user?.username?.split(" ")[0],
-              lastName: user?.username?.split(" ")[1],
-              amount: amount,
+              email: guest ? "" : customer.email,
+              firstName: guest ? "" : customer.firstName,
+              lastName: guest ? "" : customer.lastName,
+              amount: total,
             }}
             validationSchema={Yup.object().shape({
               email: Yup.string()
@@ -204,7 +223,7 @@ const Payment = () => {
               lastName: Yup.string().max(255).required("Last name is required"),
               amount: Yup.string().max(255).required("Last name is required"),
             })}
-            onSubmit={login}
+            onSubmit={pay}
           >
             {({
               errors,
@@ -238,7 +257,7 @@ const Payment = () => {
                   onBlur={handleBlur}
                   onChange={handleChange}
                   type="email"
-                  disabled={true}
+                  disabled={!guest}
                   value={values.email}
                   variant="outlined"
                 />
@@ -250,7 +269,7 @@ const Payment = () => {
                   margin="normal"
                   name="firstName"
                   onBlur={handleBlur}
-                  disabled={true}
+                  disabled={!guest}
                   onChange={handleChange}
                   value={values.firstName}
                   variant="outlined"
@@ -262,7 +281,7 @@ const Payment = () => {
                   label="Last name"
                   margin="normal"
                   name="lastName"
-                  disabled={true}
+                  disabled={!guest}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.lastName}
@@ -296,8 +315,8 @@ const Payment = () => {
 
                 <Box sx={{ py: 2, display: "flex", flexDirection: "column" }}>
                   <Button
+                    type="submit"
                     variant="contained"
-                    onClick={confirmPayment}
                     disabled={paysubmit}
                   >
                     {paysubmit ? "Confirming Payment" : "Pay"}

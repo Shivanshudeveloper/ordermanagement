@@ -67,14 +67,14 @@ const Register = () => {
       <Helmet>
         <title>Register </title>
       </Helmet>
-      <Button sx={{m:0,p:0}} onClick={()=>navigate(`/mobile/signin/?${Query}`)}><ArrowBackIcon sx={{fontSize:"2.2em"}}  /></Button>
+      <Button sx={{m:0,mt:1,p:0}} onClick={()=>navigate(`/mobile/signin/?${Query}`)}><ArrowBackIcon sx={{fontSize:"2.2em"}}  /></Button>
       <Box
         sx={{
           backgroundColor: "background.default",
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          justifyContent: "center",
+          justifyContent: "center"
         }}
       >
             
@@ -97,7 +97,6 @@ const Register = () => {
                 .required("First name is required"),
               lastName: Yup.string().max(255).required("Last name is required"),
               password: Yup.string().max(255).required("password is required"),
-          
             })}
             onSubmit={register}
           >

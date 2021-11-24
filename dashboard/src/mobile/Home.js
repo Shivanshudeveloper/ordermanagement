@@ -16,15 +16,29 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import Slide from "@material-ui/core/Slide";
-import { Snackbar, Alert,Toolbar,ListItem,ListItemText,Divider} from "@material-ui/core";
+import {
+  Snackbar,
+  Alert,
+  Toolbar,
+  ListItem,
+  ListItemText,
+  Divider,
+} from "@material-ui/core";
 import List from "./components/List";
 import Categories from "./components/Categories";
 import getUser from "../Firebase/getUser";
 import { useEffect, useState } from "react";
 import Cart from "./cart/Cart";
 import CloseIcon from "@material-ui/icons/Close";
-import {  useNavigate } from 'react-router-dom';
-import { API_SERVICE } from '../URI';
+import { useNavigate } from "react-router-dom";
+import { API_SERVICE } from "../URI";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import Payment from "./Payment/Payment";
+
+const stripePromise = loadStripe(
+  "pk_test_51JHsVhHTwp1a1ssgSKsY0MM2c51lL7qkbGLOghJe4SLwpbvZwSmJxjquqThrzP9LHQKkHdl2XGUoIT4o7u1rUi4I00U744HAUa"
+);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,7 +85,7 @@ const Home = () => {
   const navigate = useNavigate();
   const [User, setUser] = useState(null);
   const [user, setuser] = useState(null);
-  const [customer,setCustomer]=useState(null);
+  const [customer, setCustomer] = useState(null);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState();
   const [menuList, setMenuList] = useState([]);
@@ -84,9 +98,12 @@ const Home = () => {
   const [selectedCategory, setSlectedCategory] = useState("viewAll");
   const [showCart, setShowCart] = useState(false);
   const [showBannerDetails, setShowBannerDetails] = useState(false);
-  const [bannersDetails,setBannersDetails]=useState(null);
-  const [showSnack,setShowSnack]=useState(false);
-  const [Query,setQuery]=useState("");
+  const [bannersDetails, setBannersDetails] = useState(null);
+  const [showSnack, setShowSnack] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [type, setType] = useState("");
+  const [Query, setQuery] = useState("");
   const showCartHandler = (val) => {
     setShowCart(val);
   };
@@ -100,9 +117,6 @@ const Home = () => {
     setOpen(false);
   };
   const addToCart = () => {
-    if(customer===null){
-      navigate('/mobile/signin',{replace:true});
-    }
     let cartTemp = cart;
     let index = cart.findIndex(
       (item) => item.selectedItem._id === selectedItem._id
@@ -122,17 +136,13 @@ const Home = () => {
   useEffect(() => {
     let query = window.location.search.substring(1);
     setQuery(query);
-    console.log(query)
+    console.log(query);
     let vars = query?.split("&");
-  
-   
-                let Email = vars[0]?.split("=")[1];
-                let id= vars[1]?.split("=")[1];
-                setUser({email:Email,id:id});
-        
-
+    let Email = vars[0]?.split("=")[1];
+    let id = vars[1]?.split("=")[1];
+    setUser({ email: Email, id: id });
   }, []);
-  
+
   useEffect(() => {
     const get = async () => {
       try {
@@ -166,11 +176,10 @@ const Home = () => {
           `${API_SERVICE}/api/v1/main/banners/getbanners/${User.email}`
         );
         const content = await rawResponse.json();
-        console.log("Banners",content);
+        console.log("Banners", content);
         setBanners(content);
       } catch (err) {}
     };
-
     get();
     getBanners();
     getmenu();
@@ -206,7 +215,7 @@ const Home = () => {
     );
     if (cartTemp[index].count >= 1) {
       cartTemp[index].count += 1;
-    
+
       setCart(cartTemp);
     }
   };
@@ -218,62 +227,97 @@ const Home = () => {
     );
     setCart(cartTemp);
   };
-useEffect(()=>{
-  const getCustomer=async(c)=>{
-    try {
-      const rawResponse = await fetch(
-        `${API_SERVICE}/api/v1/main/customer/getcustomer/${c.id}`,{
-          method: "GET"
-        }
-      );
-      const content = await rawResponse.json();
-      setCustomer(content);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-  const verify = async () => {
-    try {
-      const rawResponse = await fetch(
-        `${API_SERVICE}/api/v1/main/auth/verify`,{
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      const content = await rawResponse.json();
-        console.log(content);
-      if(content.id!==null)
-      getCustomer(content)
-      else{
-        console.log(Query);
-        navigate(`/mobile/signin/?${Query}`);
+  useEffect(() => {
+    const getCustomer = async (c) => {
+      try {
+        const rawResponse = await fetch(
+          `${API_SERVICE}/api/v1/main/customer/getcustomer/${c.id}`,
+          {
+            method: "GET",
+          }
+        );
+        const content = await rawResponse.json();
+        setCustomer(content);
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
+    };
+    const verify = async () => {
+      let query = window.location.search.substring(1);
+
+      let vars = query.split("&");
+      let guest = "false";
+      if (vars.length === 5) {
+        guest = vars[4].split("=")[1];
+      }
+      try {
+        const rawResponse = await fetch(
+          `${API_SERVICE}/api/v1/main/auth/verify`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        const content = await rawResponse.json();
+        console.log(content);
+        if (content.id !== null) getCustomer(content);
+        else {
+          if (guest === "true") {
+            return;
+          }
+          navigate(`/mobile/signin/?${Query}`);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    verify();
+  }, [Query]);
+  const setCustomerHandler = (val) => {
+    setCustomer(val);
+  };
+  const setShowPaymentHandler = (val, total, type) => {
+    setShowPayment(val);
+    setType(type);
+    setTotal(total);
+    if (val === false && total===null) {
+      setShowCart(false);
+      setCart([]);
+    }else if(val===false && total!==null){
+      
     }
   };
-
-  verify();
-},[Query])
-const setCustomerHandler=(val)=>{
-  setCustomer(val);
-}
+  if (showPayment) {
+    return (
+      <Elements stripe={stripePromise}>
+        <Payment
+          total={total}
+          type={type}
+          setShowPaymentHandler={setShowPaymentHandler}
+          customer={customer}
+          cart={cart}
+        />
+      </Elements>
+    );
+  }
   return (
     <>
-     <Dialog
+      <Dialog
         fullScreen
-        sx={{mt:"50vh",height:"50vh"}}
+        sx={{ mt: "50vh", height: "50vh" }}
         open={showBannerDetails}
         onClose={() => setShowBannerDetails(false)}
         TransitionComponent={Transition}
       >
         <Toolbar>
-
-          <Typography sx={{ ml: 2, flex: 1,fontWeight:"800"}} variant="h5" component="div">
+          <Typography
+            sx={{ ml: 2, flex: 1, fontWeight: "800" }}
+            variant="h5"
+            component="div"
+          >
             Offer Details
-           
           </Typography>
-         
+
           <IconButton
             edge="start"
             color="inherit"
@@ -283,31 +327,76 @@ const setCustomerHandler=(val)=>{
             <CloseIcon />
           </IconButton>
         </Toolbar>
-        <Typography variant="subtitle2" sx={{ ml: 4,mb:1,fontWeight:"300"}}>Apply Coupons to get instant Discount</Typography>
+        <Typography
+          variant="subtitle2"
+          sx={{ ml: 4, mb: 1, fontWeight: "300" }}
+        >
+          Apply Coupons to get instant Discount
+        </Typography>
         <Divider />
-   
-          <ListItem >
-            <ListItemText primary="Coupon Name" secondary={<div><Box sx={{backgroundColor:"#e3fbe3",borderTop:"5px dashed lightgreen",borderBottom:"5px dashed lightgreen",fontWeight:"800",p:0.5,fontSize:"1.2em",textAlign:"center"}}>{bannersDetails?.coupon.couponCode}</Box><Box sx={{fontSize:"1.3em",fontWeight:"800"}} >Get {bannersDetails?.coupon.discount} OFF</Box></div>} />
-            <Typography onClick={()=>{navigator.clipboard.writeText(bannersDetails?.coupon.couponCode); setShowSnack(true)}} variant="h5" sx={{ ml: 4,mb:1,fontWeight:"800",color:"orange",textDecoration:"underline"}}>TAP TO COPY CODE</Typography>
-          </ListItem>
-         
 
-          <ListItem >
-            <ListItemText
-              primary={"Terms & Conditions"}
-              secondary={bannersDetails?.TandC}
-           
-            />
-          </ListItem>
-      
+        <ListItem>
+          <ListItemText
+            primary="Coupon Name"
+            secondary={
+              <div>
+                <Box
+                  sx={{
+                    backgroundColor: "#e3fbe3",
+                    borderTop: "5px dashed lightgreen",
+                    borderBottom: "5px dashed lightgreen",
+                    fontWeight: "800",
+                    p: 0.5,
+                    fontSize: "1.2em",
+                    textAlign: "center",
+                  }}
+                >
+                  {bannersDetails?.coupon.couponCode}
+                </Box>
+                <Box sx={{ fontSize: "1.3em", fontWeight: "800" }}>
+                  Get {bannersDetails?.coupon.discount} OFF
+                </Box>
+              </div>
+            }
+          />
+          <Typography
+            onClick={() => {
+              navigator.clipboard.writeText(bannersDetails?.coupon.couponCode);
+              setShowSnack(true);
+            }}
+            variant="h5"
+            sx={{
+              ml: 4,
+              mb: 1,
+              fontWeight: "800",
+              color: "orange",
+              textDecoration: "underline",
+            }}
+          >
+            TAP TO COPY CODE
+          </Typography>
+        </ListItem>
+
+        <ListItem>
+          <ListItemText
+            primary={"Terms & Conditions"}
+            secondary={bannersDetails?.TandC}
+          />
+        </ListItem>
       </Dialog>
-      <Snackbar open={showSnack} autoHideDuration={6000} onClose={()=>setShowSnack(false)}>
-      
-      <Alert onClose={()=>setShowSnack(false)} severity={"success"} sx={{ width: '100%' }}>
-      Copied
-      </Alert>
-  
-   </Snackbar>
+      <Snackbar
+        open={showSnack}
+        autoHideDuration={6000}
+        onClose={() => setShowSnack(false)}
+      >
+        <Alert
+          onClose={() => setShowSnack(false)}
+          severity={"success"}
+          sx={{ width: "100%" }}
+        >
+          Copied
+        </Alert>
+      </Snackbar>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -343,21 +432,25 @@ const setCustomerHandler=(val)=>{
           </Button>
         </DialogActions>
       </Dialog>
-     
+
       {showCart ? (
-           
-             <Cart
+        <Cart
+          setShowPaymentHandler={setShowPaymentHandler}
           handleDelete={handleDelete}
           increaseQuantity={increaseQuantity}
           decreaseQuantity={decreaseQuantity}
           showCartHandler={showCartHandler}
           cart={cart}
-          customer={customer} 
+          customer={customer}
         />
-            
-       
       ) : null}
-      <Header cart={cart} user={user} showCartHandler={showCartHandler} customer={customer} setCustomerHandler={setCustomerHandler} />
+      <Header
+        cart={cart}
+        user={user}
+        showCartHandler={showCartHandler}
+        customer={customer}
+        setCustomerHandler={setCustomerHandler}
+      />
       <Snackbar
         open={showSnackbar}
         autoHideDuration={6000}
@@ -374,14 +467,17 @@ const setCustomerHandler=(val)=>{
       <Container>
         <Carousel>
           {banners.map((item) => (
-               <Box onClick={()=>{
-                if(item.TandC!==""){
+            <Box
+              onClick={() => {
+                if (item.TandC !== "") {
                   setBannersDetails(item);
                   setShowBannerDetails(true);
                 }
-               }} sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-               <img alt="" width="80%" height="210px" src={item.banner} />
-             </Box>
+              }}
+              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+            >
+              <img alt="" width="80%" height="210px" src={item.banner} />
+            </Box>
           ))}
         </Carousel>
       </Container>
@@ -410,7 +506,7 @@ const setCustomerHandler=(val)=>{
           {filteredMenuList.length > 0 ? (
             filteredMenuList.map((menu) => {
               return (
-              <Grid
+                <Grid
                   key={menu._id}
                   item
                   xs={user === null ? 6 : user.layout ? 6 : 12}
@@ -432,22 +528,24 @@ const setCustomerHandler=(val)=>{
 
                       <h5 style={{ color: "red" }}>RM {menu.price}</h5>
                     </Paper>
-                  ) :   selectedCategory === "viewAll"?    (<Paper
-                  onClick={() => handleClickOpen(menu)}
-                  className={classes.paper}
-                >
-                  <center>
-                    <img
-                      alt=""
-                      src={menu.image}
-                      width="100px"
-                      height="100px"
-                    />
-                  </center>
-                  <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+                  ) : selectedCategory === "viewAll" ? (
+                    <Paper
+                      onClick={() => handleClickOpen(menu)}
+                      className={classes.paper}
+                    >
+                      <center>
+                        <img
+                          alt=""
+                          src={menu.image}
+                          width="100px"
+                          height="100px"
+                        />
+                      </center>
+                      <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
 
-                  <h5 style={{ color: "red" }}>RM {menu.price}</h5>
-                </Paper>):null }
+                      <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                    </Paper>
+                  ) : null}
                 </Grid>
               );
             })
@@ -480,22 +578,24 @@ const setCustomerHandler=(val)=>{
 
                       <h5 style={{ color: "red" }}>RM {menu.price}</h5>
                     </Paper>
-                  ) :   selectedCategory === "viewAll"?    (<Paper
-                  onClick={() => handleClickOpen(menu)}
-                  className={classes.paper}
-                >
-                  <center>
-                    <img
-                      alt=""
-                      src={menu.image}
-                      width="100px"
-                      height="100px"
-                    />
-                  </center>
-                  <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
+                  ) : selectedCategory === "viewAll" ? (
+                    <Paper
+                      onClick={() => handleClickOpen(menu)}
+                      className={classes.paper}
+                    >
+                      <center>
+                        <img
+                          alt=""
+                          src={menu.image}
+                          width="100px"
+                          height="100px"
+                        />
+                      </center>
+                      <h4 style={{ marginTop: "10px" }}>{menu.item}</h4>
 
-                  <h5 style={{ color: "red" }}>RM {menu.price}</h5>
-                </Paper>):null }
+                      <h5 style={{ color: "red" }}>RM {menu.price}</h5>
+                    </Paper>
+                  ) : null}
                 </Grid>
               );
             })

@@ -21,6 +21,9 @@ const OrderSchema=new mongoose.Schema({
     status:{
         type:String
     },
+    payment:{
+        type:String
+    },
     totalamount:{
         type:Number
     },
