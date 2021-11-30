@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import { auth } from '../Firebase/index';
+import { auth } from "../Firebase/index"
 import {
   Box,
   Button,
@@ -18,7 +18,7 @@ const Login = () => {
   const [showPopper, setShowPopper] = useState(false);
   const login = (values, { setErrors, setSubmitting }) => {
     const { password, email } = values;
-
+    console.log(password, email);
     auth.signInWithEmailAndPassword(email, password)
       .then(() => {
         auth.onAuthStateChanged((user) => {
@@ -26,7 +26,7 @@ const Login = () => {
             sessionStorage.setItem('userId', user.uid);
             sessionStorage.setItem('userEmail', user.email);
             if (user.emailVerified) {
-              navigate('/app/dashboard', { replace: true });
+              navigate('/app', { replace: true });
             } else {
               user.sendEmailVerification();
               setShowPopper(true);

@@ -19,15 +19,15 @@ mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true ,useFindA
 
 
 const app = express();
-// var corsOptions = {
-//     origin: 'http://localhost:3000',
-//     credentials:  true
-//   }
-
 var corsOptions = {
-  origin: 'https://ordermanagement.vercel.app',
-  credentials:  true
-}
+    origin: 'http://localhost:3000',
+    credentials:  true
+  }
+
+// var corsOptions = {
+//   origin: 'https://ordermanagement.vercel.app',
+//   credentials:  true
+// }
   
   app.use(cors(corsOptions))
   app.use(cookies());
