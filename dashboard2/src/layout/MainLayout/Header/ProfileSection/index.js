@@ -30,6 +30,7 @@ import {
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
+import { auth } from '../../../../Firebase/index';
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
@@ -58,7 +59,19 @@ const ProfileSection = () => {
     const handleLogout = async () => {
         console.log('Logout');
     };
-
+    const logout = () => {
+        auth.signOut()
+            .then(() => {
+                sessionStorage.setItem('userId', '');
+                sessionStorage.setItem('userEmail', '');
+                console.log('Successfully signed out.');
+                navigate('/free/pages/login/login3', { replace: true });
+            })
+            .catch((error) => {
+                console.log(error);
+                console.log('An error occurred');
+            });
+    };
     const handleClose = (event) => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
             return;
@@ -286,7 +299,7 @@ const ProfileSection = () => {
                                                 <ListItemButton
                                                     sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                     selected={selectedIndex === 4}
-                                                    onClick={handleLogout}
+                                                    onClick={logout}
                                                 >
                                                     <ListItemIcon>
                                                         <IconLogout stroke={1.5} size="1.3rem" />

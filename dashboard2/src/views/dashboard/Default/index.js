@@ -11,15 +11,29 @@ import TotalIncomeDarkCard from './TotalIncomeDarkCard';
 import TotalIncomeLightCard from './TotalIncomeLightCard';
 import TotalGrowthBarChart from './TotalGrowthBarChart';
 import { gridSpacing } from 'store/constant';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //
+function getSessionStorageOrDefault(key, defaultValue) {
+    const stored = sessionStorage.getItem(key);
+    if (!stored) {
+        return defaultValue;
+    }
 
+    return stored;
+}
 const Dashboard = () => {
     const [isLoading, setLoading] = useState(true);
+
+    const userId = getSessionStorageOrDefault('userId', '');
+    const navigate = useNavigate();
+
     useEffect(() => {
         setLoading(false);
+        if (userId === '') {
+            navigate('/free/pages/login/login3', { replace: true });
+        }
     }, []);
-
     return (
         <Grid container spacing={gridSpacing}>
             <Grid item xs={12}>
