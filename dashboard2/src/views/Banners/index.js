@@ -25,16 +25,27 @@ import {
     Divider,
     Select,
     MenuItem,
-    TextField
+    TextField,
+    Tooltip,
+    Grid,
+    CardMedia,
+    CardActions
 } from '@mui/material';
 import { useState, useEffect, forwardRef } from 'react';
 import firebase from '../../Firebase/index';
-
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import { API_SERVICE } from 'URI';
 /* eslint no-underscore-dangle: 0 */
-
+const Item = styled(Paper)(({ theme }) => ({
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary
+}));
 const Transition = forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 function getSessionStorageOrDefault(key, defaultValue) {
     const stored = sessionStorage.getItem(key);
@@ -265,6 +276,9 @@ const Banners = () => {
             }
         }
     }, [openEdit]);
+
+    /* eslint-disable */
+
     return (
         <>
             <Helmet>
@@ -285,10 +299,10 @@ const Banners = () => {
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                         m: 3,
-                        mb: 0
+                        mb: 5
                     }}
                 >
-                    <Typography color="textPrimary" variant="h2" sx={{ mb: 3 }}>
+                    <Typography color="textPrimary" variant="h2" sx={{ mb: 5 }}>
                         Banners
                     </Typography>
 
@@ -296,89 +310,74 @@ const Banners = () => {
                         Add Banner
                     </Button>
                 </Box>
-                <Box
-                    sx={{
-                        mt: 2,
-                        ml: 5,
-                        mr: 5,
-                        backgroundColor: 'white',
-                        border: '1px solid white',
-                        borderRadius: '10px',
-                        height: '70vh',
-                        overflow: 'scroll',
-                        overflowX: 'hidden'
-                    }}
-                >
-                    <ImageList sx={{ display: 'flex' }}>
-                        {banners.map((item) => (
-                            <ImageListItem
-                                key={item._id}
-                                sx={{
-                                    m: 5,
-                                    boxShadow: '1px 1px  10px 1px lightgrey',
-                                    width: '300px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                {/* eslint-disable */}
-                                <img
-                                    src={item.banner}
-                                    srcSet={item.banner}
-                                    alt={item.name}
-                                    loading="lazy"
-                                    type="image"
-                                    width="100px"
-                                    height="100px"
-                                    onKeyDown={(e) => {
-                                        console.log(e);
-                                    }}
-                                    onClick={() => {
-                                        if (item.TandC !== '') {
-                                            setBannersDetails(item);
-                                            setShowBannerDetails(true);
-                                        }
-                                    }}
-                                    onKeyDown={() => {
-                                        if (item.TandC !== '') {
-                                            setBannersDetails(item);
-                                            setShowBannerDetails(true);
-                                        }
-                                    }}
-                                />
-                                <ImageListItemBar title={item.name} position="below" />
-                                <Button
-                                    variant="contained"
-                                    component="label"
-                                    onClick={() => {
-                                        setBannersDetails(item);
-                                        setOpenEdit(true);
-                                    }}
-                                >
-                                    Edit Banner
-                                </Button>
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        ml: 15,
-                                        flexDirection: 'column',
-                                        justifyContent: 'center'
-                                    }}
-                                >
-                                    <Button
-                                        varient="contained"
-                                        onClick={() => {
-                                            setDeleteBanner(item);
-                                            setOpenDeleteBannerPrompt(true);
+
+                <Grid container spacing={2}>
+                    {banners.map((item) => (
+                        <Grid item xs={2} sm={3} md={3}>
+                            <Item>
+                                <Card sx={{ Width: 345, height: 600, boxShadow: 2, display: 'flex', flexDirection: 'column' }}>
+                                    <CardMedia component="img" image={item.banner} alt="green iguana" />
+                                    <CardContent sx={{ p: 1, mb: 0 }}>
+                                        <Typography gutterBottom variant="h5" component="div">
+                                            {item.name}
+                                        </Typography>
+                                        <Box sx={{ mt: 2 }}>
+                                            <Typography gutterBottom variant="h6" component="div">
+                                                Coupon Code
+                                            </Typography>
+                                            <Typography variant="body1" color="text.secondary">
+                                                {item?.coupon.couponCode + ' ' + item?.coupon.discount}
+                                            </Typography>
+                                        </Box>
+                                        {item?.TandC !== '' ? (
+                                            <Box sx={{ mt: 2 }}>
+                                                <Typography gutterBottom variant="h6" component="div">
+                                                    Terms and Conditions
+                                                </Typography>
+                                                <Typography sx={{ textAlign: 'justify' }} variant="body2" color="text.secondary">
+                                                    {item?.TandC}
+                                                </Typography>
+                                            </Box>
+                                        ) : null}
+                                    </CardContent>
+                                    <CardActions
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-evenly',
+                                            alignSelf: 'stretch'
                                         }}
-                                        style={{ color: 'red', width: '50%' }}
                                     >
-                                        delete <DeleteIcon style={{ color: 'red' }} />
-                                    </Button>
-                                </Box>
-                            </ImageListItem>
-                        ))}
-                    </ImageList>
-                </Box>
+                                        <Tooltip title="Edit Banner">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => {
+                                                    setBannersDetails(item);
+                                                    setOpenEdit(true);
+                                                }}
+                                                component="span"
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Delete Banner">
+                                            <IconButton
+                                                sx={{ color: 'rgb(205,10,10)' }}
+                                                onClick={() => {
+                                                    setDeleteBanner(item);
+                                                    setOpenDeleteBannerPrompt(true);
+                                                }}
+                                                component="span"
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </CardActions>
+                                </Card>
+                            </Item>
+                        </Grid>
+                    ))}
+                </Grid>
                 <Dialog fullScreen open={showBannerDetails} onClose={() => setShowBannerDetails(false)} TransitionComponent={Transition}>
                     <Toolbar>
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">

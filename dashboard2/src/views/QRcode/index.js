@@ -19,11 +19,14 @@ import {
     Toolbar,
     List,
     Select,
-    MenuItem
+    MenuItem,
+    Tooltip
 } from '@mui/material';
 import { useState, useEffect, forwardRef } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import { API_SERVICE, APP_URL } from 'URI';
@@ -244,6 +247,7 @@ const QRcode = () => {
                                     <TableCell>Title</TableCell>
 
                                     <TableCell>Type</TableCell>
+                                    <TableCell>Options</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -254,36 +258,41 @@ const QRcode = () => {
                                             <TableCell>{c.type}</TableCell>
 
                                             <TableCell>
-                                                <Button
-                                                    variant="outlined"
-                                                    onClick={() => {
-                                                        setSelectedQR(c);
-                                                        setShowView(true);
-                                                    }}
-                                                >
-                                                    QR code
-                                                </Button>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Button
-                                                    variant="contained"
-                                                    onClick={() => {
-                                                        setSelected(c);
-                                                        settitle(c.title);
-                                                        setQRType(c.type);
-                                                        setShowEdit(true);
-                                                    }}
-                                                >
-                                                    Edit
-                                                </Button>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Chip
-                                                    label="delete"
-                                                    onClick={() => deleteQRcode(c)}
-                                                    deleteIcon={<DeleteIcon style={{ color: 'red' }} />}
-                                                    style={{ color: 'red' }}
-                                                />
+                                                <Tooltip title="QR Code">
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            setSelectedQR(c);
+                                                            setShowView(true);
+                                                        }}
+                                                        sx={{ color: 'grey' }}
+                                                        component="span"
+                                                    >
+                                                        <VisibilityIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Edit">
+                                                    <IconButton
+                                                        color="primary"
+                                                        onClick={() => {
+                                                            setSelected(c);
+                                                            settitle(c.title);
+                                                            setQRType(c.type);
+                                                            setShowEdit(true);
+                                                        }}
+                                                        component="span"
+                                                    >
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Delete">
+                                                    <IconButton
+                                                        sx={{ color: 'rgb(205,10,10)' }}
+                                                        onClick={() => deleteQRcode(c)}
+                                                        component="span"
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </TableCell>
                                         </TableRow>
                                     </>

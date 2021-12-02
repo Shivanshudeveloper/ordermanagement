@@ -24,13 +24,17 @@ import {
     Typography,
     CircularProgress,
     Snackbar,
-    Alert
+    Alert,
+    Tooltip,
+    IconButton
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import firebase from '../../Firebase/index';
 
+import firebase from '../../Firebase/index';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { API_SERVICE } from '../../URI';
 
 const MenuList = (props) => {
@@ -173,6 +177,7 @@ const MenuList = (props) => {
                                 <TableCell>Price of Item</TableCell>
                                 <TableCell>Discount if any</TableCell>
                                 <TableCell>Category</TableCell>
+                                <TableCell>Options</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -185,35 +190,39 @@ const MenuList = (props) => {
                                         <TableCell>{menu.category}</TableCell>
 
                                         <TableCell>
-                                            <Button
-                                                variant="contained"
-                                                onClick={() => {
-                                                    setMenu(menu);
-                                                    setShowView(true);
-                                                }}
-                                            >
-                                                View Menu
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button
-                                                variant="outlined"
-                                                onClick={() => {
-                                                    setMenu(menu);
-                                                    setOpenEditMenu(true);
-                                                }}
-                                            >
-                                                Edit Menu
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label="delete"
-                                                onClick={() => handleClickOpen(menu)}
-                                                onDelete={() => {}}
-                                                deleteIcon={<DeleteIcon style={{ color: 'red' }} />}
-                                                style={{ color: 'red' }}
-                                            />
+                                            <Tooltip title="View Menu">
+                                                <IconButton
+                                                    onClick={() => {
+                                                        setMenu(menu);
+                                                        setShowView(true);
+                                                    }}
+                                                    sx={{ color: 'grey' }}
+                                                    component="span"
+                                                >
+                                                    <VisibilityIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title="Edit Menu">
+                                                <IconButton
+                                                    color="primary"
+                                                    onClick={() => {
+                                                        setMenu(menu);
+                                                        setOpenEditMenu(true);
+                                                    }}
+                                                    component="span"
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title="Delete Menu">
+                                                <IconButton
+                                                    sx={{ color: 'rgb(205,10,10)' }}
+                                                    onClick={() => handleClickOpen(menu)}
+                                                    component="span"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Tooltip>
                                         </TableCell>
                                     </TableRow>
                                 </>

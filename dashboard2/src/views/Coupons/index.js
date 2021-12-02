@@ -13,7 +13,9 @@ import {
     TableBody,
     Chip,
     Snackbar,
-    Alert
+    Alert,
+    Tooltip,
+    IconButton
 } from '@mui/material';
 import { Helmet } from 'react-helmet';
 import { useState, useEffect } from 'react';
@@ -228,6 +230,7 @@ const Coupons = () => {
                             <TableRow>
                                 <TableCell>Coupon Code</TableCell>
                                 <TableCell>Discount</TableCell>
+                                <TableCell>Option</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -238,12 +241,15 @@ const Coupons = () => {
 
                                         <TableCell>{cop.discount}</TableCell>
                                         <TableCell>
-                                            <Chip
-                                                label="delete"
-                                                onClick={() => deleteCoupon(cop)}
-                                                deleteIcon={<DeleteIcon style={{ color: 'red' }} />}
-                                                style={{ color: 'red' }}
-                                            />
+                                            <Tooltip title="Delete Coupon">
+                                                <IconButton
+                                                    sx={{ color: 'rgb(205,10,10)' }}
+                                                    onClick={() => deleteCoupon(cop)}
+                                                    component="span"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Tooltip>
                                         </TableCell>
                                     </TableRow>
                                 </>

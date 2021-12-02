@@ -16,7 +16,9 @@ import {
     Dialog,
     DialogTitle,
     DialogActions,
-    Button
+    Button,
+    Tooltip,
+    IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
@@ -69,6 +71,7 @@ const CategoryList = (props) => {
                             <TableRow>
                                 <TableCell>Category</TableCell>
                                 <TableCell>Icon</TableCell>
+                                <TableCell>Option</TableCell>
                             </TableRow>
                         </TableHead>
 
@@ -82,13 +85,15 @@ const CategoryList = (props) => {
                                             <img alt="" width="50px" height="50px" src={category.icon} />
                                         </TableCell>
                                         <TableCell>
-                                            <Chip
-                                                label="delete"
-                                                onClick={() => handleClickOpen(category._id)}
-                                                onDelete={() => {}}
-                                                deleteIcon={<DeleteIcon style={{ color: 'red' }} />}
-                                                style={{ color: 'red' }}
-                                            />
+                                            <Tooltip title="Delete Category">
+                                                <IconButton
+                                                    sx={{ color: 'rgb(205,10,10)' }}
+                                                    onClick={() => handleClickOpen(category._id)}
+                                                    component="span"
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Tooltip>
                                         </TableCell>
                                     </TableRow>
                                 </>

@@ -23,9 +23,12 @@ import {
     DialogContent,
     DialogActions,
     Tooltip,
-    Typography
+    Typography,
+    IconButton
 } from '@mui/material';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 /* eslint no-underscore-dangle: 0 */
@@ -94,6 +97,7 @@ const LatestOrders = ({ customers, setStatus, showStatus, handleDelete, showDele
                                     <TableCell>Payment</TableCell>
                                     <TableCell>Total Amount</TableCell>
                                     {showStatus ? <TableCell>Status</TableCell> : null}
+                                    <TableCell>Options</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -109,40 +113,44 @@ const LatestOrders = ({ customers, setStatus, showStatus, handleDelete, showDele
                                                 {showStatus ? <TableCell>{customer.status}</TableCell> : null}
 
                                                 <TableCell>
-                                                    <Button
-                                                        variant="contained"
-                                                        onClick={() => {
-                                                            setOrders(customer);
-                                                            setShowView(true);
-                                                        }}
-                                                    >
-                                                        View Order
-                                                    </Button>
-                                                </TableCell>
-                                                {showEditButton ? (
-                                                    <TableCell>
-                                                        <Button
-                                                            variant="outlined"
+                                                    <Tooltip title="View Order">
+                                                        <IconButton
                                                             onClick={() => {
-                                                                setSlectedCustomer(customer);
-                                                                setShowEdit(true);
+                                                                setOrders(customer);
+                                                                setShowView(true);
                                                             }}
+                                                            sx={{ color: 'grey' }}
+                                                            component="span"
                                                         >
-                                                            Edit Order
-                                                        </Button>
-                                                    </TableCell>
-                                                ) : null}
-                                                {showDelete ? (
-                                                    <TableCell>
-                                                        <Chip
-                                                            label="delete"
-                                                            onDelete={() => {}}
-                                                            onClick={() => setOpenDeleteOrderPrompt(true)}
-                                                            deleteIcon={<DeleteIcon style={{ color: 'red' }} />}
-                                                            style={{ color: 'red' }}
-                                                        />
-                                                    </TableCell>
-                                                ) : null}
+                                                            <VisibilityIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    {showEditButton ? (
+                                                        <Tooltip title="Edit Order">
+                                                            <IconButton
+                                                                color="primary"
+                                                                onClick={() => {
+                                                                    setSlectedCustomer(customer);
+                                                                    setShowEdit(true);
+                                                                }}
+                                                                component="span"
+                                                            >
+                                                                <EditIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    ) : null}
+                                                    {showDelete ? (
+                                                        <Tooltip title="Delete Order">
+                                                            <IconButton
+                                                                sx={{ color: 'rgb(205,10,10)' }}
+                                                                onClick={() => setOpenDeleteOrderPrompt(true)}
+                                                                component="span"
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    ) : null}
+                                                </TableCell>
                                                 <Dialog
                                                     fullWidth
                                                     open={openDeleteOrderPrompt}
