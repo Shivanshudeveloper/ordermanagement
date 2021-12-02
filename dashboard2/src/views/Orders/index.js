@@ -101,7 +101,14 @@ const Orders = () => {
                 <Container maxWidth={false}>
                     <Grid container spacing={3}>
                         <Grid item lg={12} md={12} xl={12} xs={12}>
-                            <LatestOrders setStatus={setStatus} handleDelete={handleDelete} showStatus customers={customers} />
+                            <LatestOrders
+                                setStatus={setStatus}
+                                handleDelete={handleDelete}
+                                showEditButton
+                                showDelete
+                                showStatus
+                                customers={customers}
+                            />
                         </Grid>
                     </Grid>
                 </Container>

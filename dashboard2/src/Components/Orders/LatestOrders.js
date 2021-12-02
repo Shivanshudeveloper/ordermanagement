@@ -30,7 +30,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 /* eslint no-underscore-dangle: 0 */
 
-const LatestOrders = ({ customers, setStatus, showStatus, handleDelete }) => {
+const LatestOrders = ({ customers, setStatus, showStatus, handleDelete, showDelete, showEditButton }) => {
     const [orders, setOrders] = useState(null);
     const [showView, setShowView] = useState(false);
     const [filterStatus, setFilterStatus] = useState('All');
@@ -119,26 +119,30 @@ const LatestOrders = ({ customers, setStatus, showStatus, handleDelete }) => {
                                                         View Order
                                                     </Button>
                                                 </TableCell>
-                                                <TableCell>
-                                                    <Button
-                                                        variant="outlined"
-                                                        onClick={() => {
-                                                            setSlectedCustomer(customer);
-                                                            setShowEdit(true);
-                                                        }}
-                                                    >
-                                                        Edit Order
-                                                    </Button>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Chip
-                                                        label="delete"
-                                                        onDelete={() => {}}
-                                                        onClick={() => setOpenDeleteOrderPrompt(true)}
-                                                        deleteIcon={<DeleteIcon style={{ color: 'red' }} />}
-                                                        style={{ color: 'red' }}
-                                                    />
-                                                </TableCell>
+                                                {showEditButton ? (
+                                                    <TableCell>
+                                                        <Button
+                                                            variant="outlined"
+                                                            onClick={() => {
+                                                                setSlectedCustomer(customer);
+                                                                setShowEdit(true);
+                                                            }}
+                                                        >
+                                                            Edit Order
+                                                        </Button>
+                                                    </TableCell>
+                                                ) : null}
+                                                {showDelete ? (
+                                                    <TableCell>
+                                                        <Chip
+                                                            label="delete"
+                                                            onDelete={() => {}}
+                                                            onClick={() => setOpenDeleteOrderPrompt(true)}
+                                                            deleteIcon={<DeleteIcon style={{ color: 'red' }} />}
+                                                            style={{ color: 'red' }}
+                                                        />
+                                                    </TableCell>
+                                                ) : null}
                                                 <Dialog
                                                     fullWidth
                                                     open={openDeleteOrderPrompt}
