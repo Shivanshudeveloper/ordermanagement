@@ -214,6 +214,7 @@ const CustomerListToolbar = (props) => {
                                 setItemImage(null);
                                 setImage(null);
                                 setError({ error: false, message: '' });
+                                setCategory({ category: '', icon: '' });
                                 handleClose(null);
                             }}
                         >

@@ -2309,6 +2309,18 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@stripe/react-stripe-js@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@stripe/react-stripe-js/-/react-stripe-js-1.6.0.tgz#e3adf6a6ea6d839193164fa3cfe73cf52db3a080"
+  integrity sha512-tMmsPD+wkpiiVJZgQ1E06tklG5MZHG462s6OWja9abpxq76kerAxMFN+KdhUg0LIEY79THbzvH3s/WGHasnV3w==
+  dependencies:
+    prop-types "^15.7.2"
+
+"@stripe/stripe-js@^1.21.2":
+  version "1.21.2"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-1.21.2.tgz#3501100a1dcd34bbf6d97c5d3e97b18eaa43c242"
+  integrity sha512-iIXe+XF9XdyO4/1i+TPRdsjy4rFOkYLeCsmB/uuSrCVs+Y0nxCdaRK3oD6n7c7lEi1sxDbAQX615wlt9E4EqWQ==
+
 "@surma/rollup-plugin-off-main-thread@^1.1.1":
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@surma/rollup-plugin-off-main-thread/-/rollup-plugin-off-main-thread-1.4.2.tgz#e6786b6af5799f82f7ab3a82e53f6182d2b91a58"
@@ -6138,7 +6150,7 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^4.1.13:
+framer-motion@^4.1.13, framer-motion@^4.1.17:
   version "4.1.17"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-4.1.17.tgz#4029469252a62ea599902e5a92b537120cc89721"
   integrity sha512-thx1wvKzblzbs0XaK2X0G1JuwIdARcoNOW7VVwjO8BUltzXPyONGAElLu6CiCScsOQRI7FIk/45YTFtJw5Yozw==
@@ -10422,6 +10434,13 @@ react-is@^17.0.1, react-is@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
+
+react-material-ui-carousel@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-material-ui-carousel/-/react-material-ui-carousel-3.1.0.tgz#36a6b632f9c7e1a916252e6ae463091a31555b8f"
+  integrity sha512-UuaS2IGjpNhQ6S5dfnZjPL3ri4DCGsMxeQokl9/Q4lGwYocRiR480PNUa/Zzc+i6aRB4CtsQX25noy0myxp4kg==
+  dependencies:
+    framer-motion "^4.1.17"
 
 react-perfect-scrollbar@^1.5.8:
   version "1.5.8"

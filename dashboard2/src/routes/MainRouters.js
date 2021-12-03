@@ -26,6 +26,7 @@ const BannersPage = Loadable(lazy(() => import('views/Banners')));
 const CouponsPage = Loadable(lazy(() => import('views/Coupons')));
 const QRcodePage = Loadable(lazy(() => import('views/QRcode')));
 const APIsPage = Loadable(lazy(() => import('views/APIs')));
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {

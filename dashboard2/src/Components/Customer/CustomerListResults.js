@@ -9,6 +9,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Avatar, Box, Card, Checkbox, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
 
 import getInitials from 'utils/getInitials';
+/* eslint no-underscore-dangle: 0 */
 
 const CustomerListResults = ({ customers, ...rest }) => {
     const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);

@@ -408,7 +408,7 @@ const MenuList = (props) => {
                 <DialogActions>
                     <Button
                         onClick={() => {
-                            setShowView(null);
+                            setShowView(false);
                         }}
                     >
                         Close

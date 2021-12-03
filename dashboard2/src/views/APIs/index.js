@@ -26,7 +26,7 @@ const APIs = () => {
     useEffect(() => {
         setUser({ email: userEmail });
         if (userEmail === '') {
-            navigate('/free/pages/login/login3', { replace: true });
+            navigate('/pages/login/login3', { replace: true });
         }
     }, []);
     const getOrders = async () => {

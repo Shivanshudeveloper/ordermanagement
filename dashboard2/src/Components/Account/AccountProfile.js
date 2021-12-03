@@ -41,7 +41,7 @@ const AccountProfile = (props) => {
         })
             .then(() => {
                 console.log('PhotoUpdated');
-                navigate('/free/account', { replace: true });
+                navigate('/account', { replace: true });
                 setLoading(false);
 
                 setShowChooseBUtton(true);
@@ -89,13 +89,13 @@ const AccountProfile = (props) => {
             const content = await rawres.json();
             setLogoUrl(content[0].logo);
             console.log(content);
-            navigate('/free/account', { replace: true });
+            navigate('/account', { replace: true });
             setLoadinglogo(false);
 
             setShowChooseBUtton(true);
         } catch (err) {
             console.log(err);
-            navigate('/free/account', { replace: true });
+            navigate('/account', { replace: true });
             setLoadinglogo(false);
 
             setShowChooseBUtton(true);

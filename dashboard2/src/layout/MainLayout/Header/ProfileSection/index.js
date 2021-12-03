@@ -65,7 +65,7 @@ const ProfileSection = () => {
                 sessionStorage.setItem('userId', '');
                 sessionStorage.setItem('userEmail', '');
                 console.log('Successfully signed out.');
-                navigate('/free/pages/login/login3', { replace: true });
+                navigate('/pages/login/login3', { replace: true });
             })
             .catch((error) => {
                 console.log(error);
@@ -209,7 +209,7 @@ const ProfileSection = () => {
                                                 <ListItemButton
                                                     sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                     selected={selectedIndex === 0}
-                                                    onClick={(event) => handleListItemClick(event, 0, '/free/account')}
+                                                    onClick={(event) => handleListItemClick(event, 0, '/account')}
                                                 >
                                                     <ListItemIcon>
                                                         <IconSettings stroke={1.5} size="1.3rem" />

@@ -71,7 +71,7 @@ const FirebaseLogin = ({ ...others }) => {
                         sessionStorage.setItem('userId', user.uid);
                         sessionStorage.setItem('userEmail', user.email);
                         if (user.emailVerified) {
-                            navigate('/free/dashboard/default', { replace: true });
+                            navigate('/dashboard/default', { replace: true });
                         } else {
                             user.sendEmailVerification();
                             setShowPopper(true);
@@ -93,7 +93,7 @@ const FirebaseLogin = ({ ...others }) => {
                 sessionStorage.setItem('userId', user.uid);
                 sessionStorage.setItem('userEmail', user.email);
                 if (user.emailVerified) {
-                    navigate('/free/dashboard/default', { replace: true });
+                    navigate('/dashboard/default', { replace: true });
                 } else {
                     user.sendEmailVerification();
                     setShowPopper(true);
@@ -191,7 +191,7 @@ const FirebaseLogin = ({ ...others }) => {
                         </Box>
                         <Typography color="textSecondary" variant="body1">
                             Don&apos;t have an account?{' '}
-                            <Link component={RouterLink} to="/free/pages/register/register3" variant="h6" underline="hover">
+                            <Link component={RouterLink} to="/pages/register/register3" variant="h6" underline="hover">
                                 Sign up
                             </Link>
                         </Typography>

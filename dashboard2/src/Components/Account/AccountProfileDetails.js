@@ -153,7 +153,7 @@ const AccountProfileDetails = (props) => {
                         .then(() => {
                             setNotify({ success: true, message: 'Email updated' });
                             setSubmitting(false);
-                            navigate('/free/pages/login/login3', { replace: true });
+                            navigate('/login/login3', { replace: true });
                         })
                         .catch((error) => {
                             console.log(error);

@@ -74,7 +74,7 @@ const QRcode = () => {
     useEffect(() => {
         setUser({ email: userEmail });
         if (userEmail === '') {
-            navigate('/free/pages/login/login3', { replace: true });
+            navigate('/pages/login/login3', { replace: true });
         }
     }, []);
     const setQRCodeHandler = async () => {
@@ -418,18 +418,7 @@ const QRcode = () => {
                         </Button>
                     </DialogActions>
                 </Dialog>
-                {qrCode !== '' ? (
-                    <Box
-                        sx={{
-                            ml: 60,
-                            backgroundColor: 'white',
-                            width: '600px',
-                            boxShadow: '1px 1px 40px 1px grey'
-                        }}
-                    >
-                        <QRCode value={qrCode} />
-                    </Box>
-                ) : null}
+
                 <Dialog open={showView} onClose={() => setShowView(false)} TransitionComponent={Transition}>
                     <Box
                         sx={{

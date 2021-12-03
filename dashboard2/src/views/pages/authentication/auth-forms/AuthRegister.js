@@ -99,7 +99,7 @@ const FirebaseRegister = ({ ...others }) => {
                             displayName: name
                         });
                         console.log(user);
-                        navigate('/free/pages/login/login3', { replace: true });
+                        navigate('/pages/login/login3', { replace: true });
                     })
                     .catch((err) => {
                         setSubmitting(false);
@@ -237,7 +237,7 @@ const FirebaseRegister = ({ ...others }) => {
                         </Box>
                         <Typography color="textSecondary" variant="body1">
                             Have an account?{' '}
-                            <Link component={RouterLink} to="/free/pages/login/login3" variant="h6" underline="hover">
+                            <Link component={RouterLink} to="/pages/login/login3" variant="h6" underline="hover">
                                 Sign in
                             </Link>
                         </Typography>

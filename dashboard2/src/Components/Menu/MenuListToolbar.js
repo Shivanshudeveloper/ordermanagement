@@ -85,6 +85,14 @@ const MenuListToolbar = (props) => {
                             userID: User.uid,
                             image: ul
                         });
+                        setMenu({
+                            item: '',
+                            price: null,
+                            discount: '',
+                            category: '',
+                            description: '',
+                            image: ''
+                        });
                         setloading(false);
                     })
                     .catch((err) => {
