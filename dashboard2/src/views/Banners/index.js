@@ -315,7 +315,7 @@ const Banners = () => {
                     {banners.map((item) => (
                         <Grid item xs={2} sm={3} md={3}>
                             <Item>
-                                <Card sx={{ Width: 345, height: 600, boxShadow: 2, display: 'flex', flexDirection: 'column' }}>
+                                <Card sx={{ Width: 345, height: 'auto', boxShadow: 2, display: 'flex', flexDirection: 'column' }}>
                                     <CardMedia component="img" image={item.banner} alt="green iguana" />
                                     <CardContent sx={{ p: 1, mb: 0 }}>
                                         <Typography gutterBottom variant="h5" component="div">
