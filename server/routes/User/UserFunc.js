@@ -20,6 +20,17 @@ module.exports.getuser = async (req, res) => {
     console.log(err);
   }
 };
+module.exports.getalluser = async (req, res) => {
+  
+  try {
+    const user = await User_Model.find({ });
+
+    res.status(200).send(user);
+  } catch (err) {
+    res.status(400).json({ err: err });
+    console.log(err);
+  }
+};
 
 module.exports.setlayout = (req, res) => {
   const { email, grid } = req.body;
@@ -44,7 +55,18 @@ module.exports.updaterestaurantName = (req, res) => {
     }
   );
 };
-
+module.exports.changeuseraccess = (req, res) => {
+  const { email, access } = req.body;
+  User_Model.findOneAndUpdate(
+    { email: email },
+    { access: access },
+    { runValidators: true },
+    function (err, doc) {
+      if (err) return res.send(500, { error: err });
+      return res.send(doc);
+    }
+  );
+};
 module.exports.updaterestaurantAddress = (req, res) => {
   const { email, restaurantAddress } = req.body;
   User_Model.findOneAndUpdate(

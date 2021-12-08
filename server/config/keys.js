@@ -5,6 +5,3 @@ module.exports = {
 // module.exports = {
 //     MongoURI: 'mongodb://localhost:27017/search'
 // }
-// module.exports = {
-//     MongoURI: 'mongodb+srv://dbUser:gkf2Yvbhx5hmiFe@cluster0.vmjpo.mongodb.net/docsup?retryWrites=true&w=majority'
-// }
